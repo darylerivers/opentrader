@@ -1,0 +1,421 @@
+{
+  "timestamp": "2026-07-18T21:40:08.997037+00:00",
+  "findings": [
+    {
+      "source": "hf_models",
+      "title": "mindchain/qwen35-2b-trading-sft-v10-unsloth-gguf",
+      "url": "https://huggingface.co/mindchain/qwen35-2b-trading-sft-v10-unsloth-gguf",
+      "summary": "Tags: gguf, qwen3_5, llama.cpp, unsloth, vision-language-model, endpoints_compatible, region:us, conversational. Downloads: 1359",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 1359
+    },
+    {
+      "source": "hf_models",
+      "title": "fuchenru/Trading-Hero-LLM",
+      "url": "https://huggingface.co/fuchenru/Trading-Hero-LLM",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, sentiment analysis, financial sentiment analysis, finance, finbert, financial, arxiv:2006.08097. Downloads: 359",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 359
+    },
+    {
+      "source": "hf_models",
+      "title": "DidulaThavishaPro/ppo-gtc-trading-agent",
+      "url": "https://huggingface.co/DidulaThavishaPro/ppo-gtc-trading-agent",
+      "summary": "Tags: pytorch, region:us. Downloads: 345",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 345
+    },
+    {
+      "source": "hf_models",
+      "title": "drdanicka/trading-strategy-tester-weights",
+      "url": "https://huggingface.co/drdanicka/trading-strategy-tester-weights",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 295",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 295
+    },
+    {
+      "source": "hf_models",
+      "title": "yoshi221/Qwen3.5-2B-Trading-Guru-GGUF",
+      "url": "https://huggingface.co/yoshi221/Qwen3.5-2B-Trading-Guru-GGUF",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 291",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 291
+    },
+    {
+      "source": "hf_models",
+      "title": "ethien007/qwen3vl-trading-finetune",
+      "url": "https://huggingface.co/ethien007/qwen3vl-trading-finetune",
+      "summary": "Tags: gguf, qwen3_vl, llama.cpp, unsloth, vision-language-model, endpoints_compatible, region:us, conversational. Downloads: 244",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 244
+    },
+    {
+      "source": "hf_models",
+      "title": "heffter/llama-3.1-8b-mes-trading-signals",
+      "url": "https://huggingface.co/heffter/llama-3.1-8b-mes-trading-signals",
+      "summary": "Tags: safetensors, gguf, llama, endpoints_compatible, region:us, conversational. Downloads: 225",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 225
+    },
+    {
+      "source": "hf_models",
+      "title": "d3xt3rm0rgan/trading-strategy-skeptic-qwen3-4b-gguf",
+      "url": "https://huggingface.co/d3xt3rm0rgan/trading-strategy-skeptic-qwen3-4b-gguf",
+      "summary": "Tags: gguf, qwen3, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 217",
+      "capability": "data_augmentation",
+      "relevance": 0.267,
+      "actionable": false,
+      "downloads": 217
+    },
+    {
+      "source": "hf_models",
+      "title": "kishore601/trading-mentor-llama3-GGUF",
+      "url": "https://huggingface.co/kishore601/trading-mentor-llama3-GGUF",
+      "summary": "Tags: gguf, llama, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 209",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 209
+    },
+    {
+      "source": "hf_models",
+      "title": "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, pytorch, tensorboard, safetensors, roberta, text-classification, generated_from_trainer, financial, stocks, sentiment. Downloads: 227535",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 227535
+    },
+    {
+      "source": "hf_models",
+      "title": "human-centered-summarization/financial-summarization-pegasus",
+      "url": "https://huggingface.co/human-centered-summarization/financial-summarization-pegasus",
+      "summary": "Tags: transformers, pytorch, tf, safetensors, pegasus, text2text-generation, summarization, en, dataset:xsum, arxiv:1912.08777. Downloads: 166114",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 166114
+    },
+    {
+      "source": "hf_models",
+      "title": "mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, tensorboard, safetensors, deberta-v2, text-classification, generated_from_trainer, arxiv:2006.03654, arxiv:2111.09543, base_model:microsoft/deberta-v3-small, base_model:finetune:microsoft/deberta-v3-small. Downloads: 160868",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 160868
+    },
+    {
+      "source": "hf_models",
+      "title": "ahmedrachid/FinancialBERT-Sentiment-Analysis",
+      "url": "https://huggingface.co/ahmedrachid/FinancialBERT-Sentiment-Analysis",
+      "summary": "Tags: transformers, pytorch, bert, text-classification, financial-sentiment-analysis, sentiment-analysis, en, dataset:financial_phrasebank, text-embeddings-inference, endpoints_compatible. Downloads: 147897",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 147897
+    },
+    {
+      "source": "hf_models",
+      "title": "mxlcw/rubert-tiny2-russian-financial-sentiment",
+      "url": "https://huggingface.co/mxlcw/rubert-tiny2-russian-financial-sentiment",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, sentiment-analysis, multi-class-classification, financial, telegram, rubert, sentiment. Downloads: 11826",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 11826
+    },
+    {
+      "source": "hf_models",
+      "title": "AnkitAI/distilbert-base-uncased-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/AnkitAI/distilbert-base-uncased-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, safetensors, distilbert, text-classification, financial-sentiment-analysis, sentiment-analysis, financial-news, finance, stocks, trading. Downloads: 7707",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 7707
+    },
+    {
+      "source": "hf_models",
+      "title": "hw2942/bert-base-chinese-finetuning-financial-news-sentiment-v2",
+      "url": "https://huggingface.co/hw2942/bert-base-chinese-finetuning-financial-news-sentiment-v2",
+      "summary": "Tags: transformers, pytorch, bert, text-classification, finance, zh, endpoints_compatible, region:us. Downloads: 6974",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 6974
+    },
+    {
+      "source": "hf_models",
+      "title": "soleimanian/financial-roberta-large-sentiment",
+      "url": "https://huggingface.co/soleimanian/financial-roberta-large-sentiment",
+      "summary": "Tags: transformers, pytorch, roberta, text-classification, Sentiment, RoBERTa, Financial Statements, Accounting, Finance, Business. Downloads: 4065",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 4065
+    },
+    {
+      "source": "hf_models",
+      "title": "nickmuchi/distilroberta-finetuned-financial-text-classification",
+      "url": "https://huggingface.co/nickmuchi/distilroberta-finetuned-financial-text-classification",
+      "summary": "Tags: transformers, pytorch, tensorboard, roberta, text-classification, financial-sentiment-analysis, sentiment-analysis, sentence_50agree, generated_from_trainer, sentiment. Downloads: 2218",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 2218
+    },
+    {
+      "source": "hf_models",
+      "title": "Jean-Baptiste/roberta-large-financial-news-sentiment-en",
+      "url": "https://huggingface.co/Jean-Baptiste/roberta-large-financial-news-sentiment-en",
+      "summary": "Tags: transformers, pytorch, onnx, safetensors, roberta, text-classification, financial, stocks, sentiment, en. Downloads: 1506",
+      "capability": "inference_efficiency",
+      "relevance": 0.45,
+      "actionable": true,
+      "downloads": 1506
+    },
+    {
+      "source": "hf_models",
+      "title": "marketeam/Qwen-Marketing",
+      "url": "https://huggingface.co/marketeam/Qwen-Marketing",
+      "summary": "Tags: transformers, safetensors, qwen3, text-generation, marketing, reasoning, conversational, en, arxiv:2505.09388, base_model:Qwen/Qwen3-8B. Downloads: 17706",
+      "capability": "multi_step_reasoning",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 17706
+    },
+    {
+      "source": "hf_models",
+      "title": "Market5/Self-Forcing_CausVid_Accvid_Lora_Lp",
+      "url": "https://huggingface.co/Market5/Self-Forcing_CausVid_Accvid_Lora_Lp",
+      "summary": "Tags: diffusers, text-to-image, lora, template:diffusion-lora, base_model:Wan-AI/Wan2.1-I2V-14B-720P, base_model:adapter:Wan-AI/Wan2.1-I2V-14B-720P, license:other, region:us. Downloads: 853",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 853
+    },
+    {
+      "source": "hf_models",
+      "title": "WonseokJayJung/marketing_agent-v2",
+      "url": "https://huggingface.co/WonseokJayJung/marketing_agent-v2",
+      "summary": "Tags: safetensors, gguf, llama, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 516",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 516
+    },
+    {
+      "source": "hf_models",
+      "title": "baptle/FinBERT_market_based",
+      "url": "https://huggingface.co/baptle/FinBERT_market_based",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, finance, finbert, market, financial, generated_from_trainer, stocks. Downloads: 490",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 490
+    },
+    {
+      "source": "hf_models",
+      "title": "afzalur/Qwen-Market-Prediction-Model",
+      "url": "https://huggingface.co/afzalur/Qwen-Market-Prediction-Model",
+      "summary": "Tags: transformers, safetensors, qwen3, text-generation, finan, market-prediction, stock-market, nifty50, technical-analysis, qwen. Downloads: 457",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 457
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/micks99_-_gemma-2b-instruct-ft-Data-Analytics-Digital-Marketing-Project-Management-QA-gguf",
+      "url": "https://huggingface.co/RichardErkhov/micks99_-_gemma-2b-instruct-ft-Data-Analytics-Digital-Marketing-Project-Management-QA-gguf",
+      "summary": "Tags: gguf, arxiv:1910.09700, endpoints_compatible, region:us, conversational. Downloads: 406",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 406
+    },
+    {
+      "source": "hf_models",
+      "title": "WonseokJayJung/marketing_agent-v3",
+      "url": "https://huggingface.co/WonseokJayJung/marketing_agent-v3",
+      "summary": "Tags: safetensors, gguf, llama, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 364",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 364
+    },
+    {
+      "source": "hf_models",
+      "title": "seojinju8818/marketing-v8",
+      "url": "https://huggingface.co/seojinju8818/marketing-v8",
+      "summary": "Tags: gguf, gemma4, llama.cpp, unsloth, vision-language-model, endpoints_compatible, region:us, conversational. Downloads: 320",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 320
+    },
+    {
+      "source": "hf_models",
+      "title": "AventIQ-AI/sentiment-analysis-for-stock-market-sentiment",
+      "url": "https://huggingface.co/AventIQ-AI/sentiment-analysis-for-stock-market-sentiment",
+      "summary": "Tags: safetensors, bert, region:us. Downloads: 312",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 312
+    },
+    {
+      "source": "hf_models",
+      "title": "pucpr/clinicalnerpt-quantitative",
+      "url": "https://huggingface.co/pucpr/clinicalnerpt-quantitative",
+      "summary": "Tags: transformers, pytorch, bert, token-classification, pt, dataset:SemClinBr, endpoints_compatible, region:us. Downloads: 13",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 13
+    },
+    {
+      "source": "hf_models",
+      "title": "Quantitative-Strategies-Group/mistral-7b-news-impact-2023-lora",
+      "url": "https://huggingface.co/Quantitative-Strategies-Group/mistral-7b-news-impact-2023-lora",
+      "summary": "Tags: peft, safetensors, arxiv:1910.09700, base_model:mistralai/Mistral-7B-v0.3, base_model:adapter:mistralai/Mistral-7B-v0.3, region:us. Downloads: 5",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 5
+    },
+    {
+      "source": "hf_models",
+      "title": "jsonexb/Quantitative-model-for-amx-test",
+      "url": "https://huggingface.co/jsonexb/Quantitative-model-for-amx-test",
+      "summary": "Tags: onnx, region:us. Downloads: 0",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "umak11/qwen2.5-7b_vl_quantitative_g",
+      "url": "https://huggingface.co/umak11/qwen2.5-7b_vl_quantitative_g",
+      "summary": "Tags: transformers, safetensors, generated_from_trainer, sft, trl, base_model:Qwen/Qwen2.5-VL-7B-Instruct, base_model:finetune:Qwen/Qwen2.5-VL-7B-Instruct, endpoints_compatible, region:us. Downloads: 0",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "assix-research/Quantitative-Equity-Alpha-Transformer",
+      "url": "https://huggingface.co/assix-research/Quantitative-Equity-Alpha-Transformer",
+      "summary": "Tags: pytorch-forecasting, finance, quantitative-finance, systematic-trading, alpha-discovery, temporal-fusion-transformer, time-series, macro-economics, liquidity-cycles, nvidia-blackwell. Downloads: 0",
+      "capability": "trade_signal",
+      "relevance": 0.3,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v2-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v2-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 1083",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 1083
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v1-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v1-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 564",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 564
+    },
+    {
+      "source": "hf_models",
+      "title": "Nashhz/SBERT_KFOLD_User_Portfolio_to_Job_Descriptions",
+      "url": "https://huggingface.co/Nashhz/SBERT_KFOLD_User_Portfolio_to_Job_Descriptions",
+      "summary": "Tags: sentence-transformers, safetensors, bert, sentence-similarity, feature-extraction, generated_from_trainer, dataset_size:16682, loss:CosineSimilarityLoss, arxiv:1908.10084, base_model:sentence-transformers/all-MiniLM-L6-v2. Downloads: 51",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 51
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-7b-v3-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-7b-v3-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 43",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 43
+    },
+    {
+      "source": "hf_models",
+      "title": "psychopunksage/portfolio-slm",
+      "url": "https://huggingface.co/psychopunksage/portfolio-slm",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 35",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 35
+    },
+    {
+      "source": "hf_models",
+      "title": "Bharatdeep-H/portfolio-query-qwen-2.5-3b-v1-cot-RL",
+      "url": "https://huggingface.co/Bharatdeep-H/portfolio-query-qwen-2.5-3b-v1-cot-RL",
+      "summary": "Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 21",
+      "capability": "training_technique",
+      "relevance": 0.4,
+      "actionable": true,
+      "downloads": 21
+    },
+    {
+      "source": "hf_models",
+      "title": "monusharma21/gemma-2b-portfolio-assistant",
+      "url": "https://huggingface.co/monusharma21/gemma-2b-portfolio-assistant",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 20",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 20
+    },
+    {
+      "source": "hf_models",
+      "title": "Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL",
+      "url": "https://huggingface.co/Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL",
+      "summary": "Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 18",
+      "capability": "training_technique",
+      "relevance": 0.4,
+      "actionable": true,
+      "downloads": 18
+    }
+  ],
+  "surveyed_sources": [
+    "arxiv",
+    "hf_models"
+  ],
+  "total_findings": 41,
+  "actionable_findings": 3
+}

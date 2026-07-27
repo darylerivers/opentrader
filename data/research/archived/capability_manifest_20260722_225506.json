@@ -1,0 +1,831 @@
+{
+  "timestamp": "2026-07-22T22:55:07.751255+00:00",
+  "findings": [
+    {
+      "source": "arxiv",
+      "title": "Gaussian Boson Sampling for Asset Clustering in Statistical Arbitrage Portfolios",
+      "url": "http://arxiv.org/abs/2607.19279v1",
+      "summary": "Gaussian Boson Sampling (GBS) provides a native photonic quantum heuristic for sampling dense subgraphs from adjacency matrices, offering a scalable physical approach to combinatorial graph search problems. Simultaneously, correlation matrix clustering algorithms, such as Spectral and SPONGE, have established robust benchmarks for identifying co-moving assets from correlation matrices in statistical arbitrage (StatArb) strategies. In this work, we map S&P 500 residual correlation data into GBS-c",
+      "capability": "regime_detection",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-21T16:48:37Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Benchmarking Generalization in Financial Statement Fraud Detection: robust evaluation and novel tasks",
+      "url": "http://arxiv.org/abs/2607.19259v1",
+      "summary": "Financial statement fraud detection (FSFD) is crucial for market integrity but faces challenges from increasingly sophisticated schemes and under-utilized textual data in financial reports. Existing methods often rely on random data splits, leading to overoptimistic performance estimates that do not reflect real-world generalization to new companies or future periods. To address this recurring problem with the state of the art, we propose a robust FSFD framework leveraging Large Language Models ",
+      "capability": "eval_methodology",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-21T16:32:54Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Denoising Subordinated Probabilistic Models: Diffusion with a Tempered-Stable Volatility Clock, and What the Noise Mechanism Actually Controls",
+      "url": "http://arxiv.org/abs/2607.19218v1",
+      "summary": "Heavy-tailed diffusion models replace Gaussian noise by a Gaussian variance mixture: denoising Levy probabilistic models (DLPM) take the mixing variables i.i.d. across coordinates, while Student-t EDM shares one mixing variable per sample. Neither has dynamics, yet temporal dependence of the noise amplitude - volatility clustering - is the defining stylized fact of financial returns. We introduce the Denoising Subordinated Probabilistic Model (DSPM), whose mixing vector is a stationary AR(1) cha",
+      "capability": "risk_management",
+      "relevance": 0.241,
+      "actionable": false,
+      "published": "2026-07-21T15:48:50Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "MIRAGE: Multi-scale Lesion-Informed Representation with Auxiliary Guidance for MRI Contrast Enhancement",
+      "url": "http://arxiv.org/abs/2607.19137v1",
+      "summary": "Inferring contrast enhancement from one pre-contrast breast MRI slice is underdetermined: post-contrast appearance contains physiological information that is not uniquely encoded in baseline anatomy. Optimizing only paired pixel fidelity can suppress uncertain lesion enhancement, whereas adversarial or stochastic generative objectives can favor realistic post-contrast appearance without guaranteeing patient-specific lesion fidelity. We introduce MIRAGE, a residual 2D U-Net that combines global r",
+      "capability": "training_technique",
+      "relevance": 0.25,
+      "actionable": false,
+      "published": "2026-07-21T14:26:59Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Unsupervised Multi-kernel Learning for Automated Algorithm Selection",
+      "url": "http://arxiv.org/abs/2607.19031v1",
+      "summary": "Automated algorithm selection in black-box optimization typically relies on supervised models that map landscape features to algorithm performance labels. Such models are costly to train, benchmark-dependent, and often fail to generalize to unseen problem classes. We study an unsupervised alternative: multi-kernel clustering over heterogeneous landscape representations, in which problem instances are grouped without using performance labels in the clustering stage, and the resulting clusters are",
+      "capability": "eval_methodology",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-21T12:18:49Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Pricing options on illiquid assets using liquid market benchmarks: an application to energy markets",
+      "url": "http://arxiv.org/abs/2607.19030v1",
+      "summary": "The Gasoil options market is illiquid, making it difficult to construct its implied volatility surface directly. However, it is closely linked to the highly liquid Brent options market. In this paper, we jointly model Brent and Gasoil futures prices through a correlated Bachelier local volatility model: the Brent factor is described by a normal mixture diffusion model, while the Gasoil-Brent spot volatility spread is estimated using a data-driven procedure that identifies clusters of historical ",
+      "capability": "eval_methodology",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-21T12:17:59Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Observable Matrix Dynamics of Stocks",
+      "url": "http://arxiv.org/abs/2607.19005v1",
+      "summary": "The Observable Matrix Dynamics (OMD) approach monitors the time development of complex non-linear systems through the trajectory of a fixed-size distance matrix and its spectrum. We apply it to the S\\&P 500 cross section over three crisis decades, the 2001 dot-com bust, the 2007--2008 financial crisis, and the 2020 Covid crash, with three fixed-size observables on a fixed universe. The arccos distance matrix of the rolling return correlations reads the correlation geometry: its effective dimensi",
+      "capability": "regime_detection",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-21T11:38:58Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Breaking Feedback-Blindness: Utility-Augmented Transformer for Sequential Decision Making",
+      "url": "http://arxiv.org/abs/2607.18910v1",
+      "summary": "Sequential decision making in non-stationary and partially observable environments requires rapid adaptation to latent regime changes. However, existing Transformer decision models face a structural bottleneck in the retrieval mechanism: even when reward is used for training or exposed as an input token, attention retrieval remains primarily driven by observation-derived similarity. We formalize this limitation as feedback-blind retrieval, and formally show that, on feedback-informative tasks, o",
+      "capability": "multi_step_reasoning",
+      "relevance": 0.243,
+      "actionable": false,
+      "published": "2026-07-21T09:52:23Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "KALE: Kernel Alignment with Loss Equilibration for Stable CLIP-DINOv2 Alignment at Web Scale",
+      "url": "http://arxiv.org/abs/2607.18885v1",
+      "summary": "Kernel-based alignment of CLIP toward a vision centric teacher such as DINOv2 (KUEA) improves CLIP's visual representations while preserving text-encoder compatibility, using a fixed trade-off weight tuned on curated ImageNet-1K. We ask whether this transfers to noisy, web-scale data (CC12M) and find that it does not: the alignment term's weighted contribution falls to about 0.2% of the clean term, so under any fixed weight its gradient is effectively inert. We introduce KALE, a loss-equilibrati",
+      "capability": "regime_detection",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-21T09:14:33Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "HindsightBench: A Black-Box Behavioral Audit Protocol for Parametric Hindsight in Time-Indexed LLM Decision Tasks",
+      "url": "http://arxiv.org/abs/2607.18867v1",
+      "summary": "Large language models leak parametric knowledge of realized outcomes into historical financial decision tasks. Existence is settled; what users lack is a cheap way to audit a given model for it. We present HindsightBench, a black-box behavioral audit protocol that profiles parametric hindsight in any time-indexed LLM decision task at probe-level cost (no backtests, no logprobs, no corpus access). The protocol chains a four-arm date-manipulation matrix (revealed/date-only/masked/transplanted), du",
+      "capability": "inference_efficiency",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-21T08:58:36Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Optimizing Regret",
+      "url": "http://arxiv.org/abs/2607.18866v1",
+      "summary": "Building on the identity that expected regret equals the covariance between costs and decisions, this paper develops the complete derivative theory of the covariance regret functional. We derive the Gâteaux derivative, showing that the universal steepest-descent direction is the contrarian policy $-(c-\\bar{c})$, while ascent yields momentum. For linear policies $\\hatπ(c) = Ac+b$, the gradient is the cost covariance matrix $Σ_c$, with a zero Hessian implying boundary-optimal solutions such as the",
+      "capability": "trade_signal",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-21T08:58:25Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Mixing-Law Uncertainty in Multivariate Normal Mean-Variance Mixtures: Semi-parametric Estimation and Robust Cumulative-Prospect Decisions",
+      "url": "http://arxiv.org/abs/2607.18813v1",
+      "summary": "The distribution of a normal mean-variance mixture depends on the law of its positive mixing variable. We compare six parametric mixing laws with a grid nonparametric maximum likelihood estimator under the same determinant identification constraint. The mixing mean $m=\\E(Z)$ is estimated and is not fixed at one. A paired block bootstrap is used to compare multivariate holdout log scores. The models that cannot be distinguished from the model with the largest score define a finite ambiguity set. ",
+      "capability": "risk_management",
+      "relevance": 0.432,
+      "actionable": true,
+      "published": "2026-07-21T07:49:31Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Mark, Don't Erase: Token Inoculation for Dual-Use Knowledge in LLMs",
+      "url": "http://arxiv.org/abs/2607.18639v1",
+      "summary": "Safety interventions on dual-use knowledge typically choose between destroying hazardous content (e.g., unlearning, filtering) and suppressing it at the output layer (e.g., refusal training); both pay a tax in adjacent-domain competence or over-refusal. We argue that the right operation is conditioning, not reduction: we show that hazardous knowledge can be retained in the model and behaviorally gated by a privileged control token. Our method, Token Inoculation, introduces a binding-and-branchin",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "published": "2026-07-21T02:15:39Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "End-to-end Conditional Diffusion for Realistic and Controllable Visual Traffic Scenario Generation",
+      "url": "http://arxiv.org/abs/2607.18637v1",
+      "summary": "Generating closed-loop traffic scenarios that are both realistic and controllable is crucial for evaluating autonomous driving systems, especially under rare safety-critical interactions. Existing learning-based methods often struggle to balance controllability and realism, offering either limited fine-grained control over traffic behavior or controllable scenarios at the expense of behavioral plausibility. This paper presents E2E-CDiff, an end-to-end conditional diffusion framework for controll",
+      "capability": "multi_step_reasoning",
+      "relevance": 0.243,
+      "actionable": false,
+      "published": "2026-07-21T02:13:25Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Graph Neural Network-based Algorithm Selection for the Traveling Salesman Problem: A Systematic Study of Cost and Rank Losses under Distinct Budget Regimes",
+      "url": "http://arxiv.org/abs/2607.18632v1",
+      "summary": "Automated Algorithm Selection (AS) aims to improve problem-solving performance by selecting, for each problem instance, the most suitable algorithm from a predefined portfolio. This is particularly relevant to the Traveling Salesman Problem (TSP), where solver performance is strongly instance-dependent. We introduce GNNAS-TSP, a Graph Neural Network (GNN)-based AS framework that learns TSP instance representations directly from raw graph data, avoiding manual feature engineering. GNNAS-TSP formu",
+      "capability": "regime_detection",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-21T02:01:01Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Dead Reckoning: Counting Your Customers Who Never Say Goodbye",
+      "url": "http://arxiv.org/abs/2607.18623v1",
+      "summary": "Firms in non-contractual commerce face the challenge of knowing how many customers they actually have because customers can stop buying without ever saying they have left. Buy-Till-You-Die models address this by estimating each customer's probability of being alive, a quantity called P(alive) and used in every major software tool for dashboards, churn, customer equity, and enterprise valuation. We show this practice confounds two distinct quantities. Within the beta-geometric family, P(alive) is",
+      "capability": "eval_methodology",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-21T01:46:35Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Prediction of bank transaction fraud using TabNet an adaptive deep learning architecture",
+      "url": "http://arxiv.org/abs/2607.18616v1",
+      "summary": "The development of online banking has brought about an increase in fraudulent operations, which is a major problem for banks. This study delves into the urgent requirement for interpretable, scalable, and top-notch fraud detection systems by using TabNet, an adaptable deep learning framework, on a Kaggle dataset consisting of actual bank transactions in India. Maximizing operational risk management by improving the accuracy of transaction anomaly detection and ensuring regulatory compliance thro",
+      "capability": "training_technique",
+      "relevance": 0.4,
+      "actionable": true,
+      "published": "2026-07-21T01:36:04Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Adaptive Two-Stage Online Learning for Service-Affecting Failure Detection in Mobile Core Networks",
+      "url": "http://arxiv.org/abs/2607.18522v1",
+      "summary": "Mobile network operators monitor aggregated traffic volumes to assess the operational health of core network infrastructure. Reliable failure detection is challenging due to strong temporal structure, non-stationarity, measurement artefacts, and extreme class imbalance, which limit static threshold-based monitoring. This paper proposes a two-stage online learning framework for traffic-based failure detection in mobile core networks. Stage I incrementally models normal traffic dynamics using ligh",
+      "capability": "eval_methodology",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-20T21:33:56Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Causal Discovery on Irregular Time Series",
+      "url": "http://arxiv.org/abs/2607.18226v1",
+      "summary": "Causal discovery methods have shown strong performance in temporal systems, but they typically rely on regular and discrete lag structures, limiting their applicability to regularly sampled data. However, many real-world tasks require dealing with irregularly sampled streams of events, such as sensor streams, healthcare data, and financial transactions. In this work, we propose an extension of PCMCI+, a state-of-the-art method for causal discovery on regular multivariate time series, to allow fo",
+      "capability": "risk_management",
+      "relevance": 0.241,
+      "actionable": false,
+      "published": "2026-07-20T17:57:45Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "COVAriance-Induced Fairness Gap Penalty for Subgroup-Fair Clustering",
+      "url": "http://arxiv.org/abs/2607.18119v1",
+      "summary": "Fair clustering aims to make cluster assignments independent of sensitive attributes, but this goal becomes challenging when multiple sensitive attributes jointly define many subgroups. In such settings, directly extending existing fair clustering algorithms is computationally expensive or numerically unstable, especially when the number of subgroups grows exponentially and some subgroups contain only a few instances. To address these challenges, we define a subgroup-fairness gap for clustering ",
+      "capability": "eval_methodology",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-20T16:14:13Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "WorldCupArena: Fine-Grained Evaluation of Language Models and Deep-Research Agents on Football Forecasting",
+      "url": "http://arxiv.org/abs/2607.18084v1",
+      "summary": "Predicting a football match before kickoff requires more than knowing past results: a model must use changing information and make a clear prediction before the answer is available. We present WorldCupArena, a dynamic benchmark for language models and deep-research agents. The 2026 FIFA World Cup is its first evaluation, and the same process can be reused for future leagues and cups. Before each match, a model either receives a common evidence package or searches for information itself. It predi",
+      "capability": "eval_methodology",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-20T15:52:48Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "AlphaZeroBeta: Deep Reinforcement Learning for Market-Neutral Portfolios",
+      "url": "http://arxiv.org/abs/2607.18001v1",
+      "summary": "Market-neutral portfolios aim to generate consistent returns while offsetting systematic market risk. Traditional approaches based on factor models or convex optimization often underperform during market regime shifts or when structural assumptions break down. We propose AlphaZeroBeta, a deep reinforcement learning framework designed to deliver benchmark-relative alpha (excess returns) with near-zero beta (market neutrality). AlphaZeroBeta combines a composite reward function that balances risk-",
+      "capability": "eval_methodology",
+      "relevance": 0.825,
+      "actionable": true,
+      "published": "2026-07-20T14:33:47Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Optimal Market Making in Prediction Markets",
+      "url": "http://arxiv.org/abs/2607.17991v1",
+      "summary": "Prediction markets are attracting growing attention as trading volumes rise and their practical relevance increases. To ensure efficient price discovery, liquidity provision becomes ever more important. Due to the binary settlement structure in prediction markets, optimal market making leads to an optimization problem that is fundamentally different from the ones studied in classical settings. In this paper, we develop a stochastic control framework for prediction markets in which the market pri",
+      "capability": "eval_methodology",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-20T14:22:52Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "fSRD: Fuzzy Spectral Region Decomposition -- Automated Multi Operator Koopman Representations via an Adaptive Spectral Learning Architecture",
+      "url": "http://arxiv.org/abs/2607.17990v1",
+      "summary": "Highly nonlinear chaotic dynamical systems remain difficult to model due to fundamental trade-offs between complexity, expressivity, and data efficiency. Modern machine learning methods achieve strong predictive performance but often rely on a-priori system knowledge or curated data with limited interpretability. Koopman operator theory offers a promising direction via linear representation in an infinite-dimensional observable space. However, many data-driven Koopman methods seek globally valid",
+      "capability": "regime_detection",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-20T14:21:06Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "FIFA World Cup 2026 as a Contamination-Free Benchmark for LLM Forecasting Agents: Four Models, a Bookmaker, and 104 Matches",
+      "url": "http://arxiv.org/abs/2607.17765v1",
+      "summary": "We introduce WC2026-Agents, a benchmark and dataset for evaluating large language models (LLMs) as autonomous forecasting agents on real, future events. For every one of the 104 matches of the 2026 FIFA World Cup, four frontier models -- Claude Opus 4.8, ChatGPT (GPT-5.5, high reasoning), Gemini 3.1 Pro, and Grok (Expert Mode) -- ran an identical search-act-reflect loop: gather evidence with a web tool, commit to a 1X2 (team-A win / draw / team-B win) distribution and a virtual 100-USD bet, and,",
+      "capability": "eval_methodology",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-20T10:00:11Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Volatility-Aware Extreme Event Detection in High-Frequency Financial Markets",
+      "url": "http://arxiv.org/abs/2607.17555v1",
+      "summary": "Predicting extreme price movements in high-frequency financial markets is a challenging task due to non-stationarity, heavy-tailed return distributions, and severe class imbalance. In particular, rare but impactful events are often difficult to detect using conventional modeling approaches, which typically treat extreme movements as isolated observations. This study proposes a volatility-aware approach for extreme event detection using high-frequency Bitcoin limit order book (LOB) data. Motivate",
+      "capability": "regime_detection",
+      "relevance": 0.65,
+      "actionable": true,
+      "published": "2026-07-20T05:01:18Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Mean-field equilibrium price formation under single-default risk",
+      "url": "http://arxiv.org/abs/2607.17502v1",
+      "summary": "We study equilibrium price formation in an incomplete financial market with a large population of agents, where stock prices are subject to a single-default event. Agents are assumed to be heterogeneous in their risk aversion and terminal liabilities, and maximize exponential utility of terminal net wealth. We first characterize each agent's optimal strategy by a quadratic-growth backward stochastic differential equation (BSDE) driven by Brownian motions and a compensated default martingale. We ",
+      "capability": "trade_signal",
+      "relevance": 0.2,
+      "actionable": false,
+      "published": "2026-07-20T03:17:24Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Abliteration Is Not a Scalpel: Off-Target Effects of Refusal Removal on Decision Disposition Across Model Families",
+      "url": "http://arxiv.org/abs/2607.17427v1",
+      "summary": "Abliteration - deleting a model's refusal direction from its weights - is the standard recipe behind popular \"uncensored\" open-weight models. We show the surgery is not clean. As a disposition probe we use 21,600 decisions under uncertainty - weekly up/down calls on 60 Warsaw Stock Exchange equities over 18 weeks, replayed through a frozen pipeline so the decision-layer model is the only variable. The task elicits no refusals at all, so any between-arm delta is pure side effect. Holding provenan",
+      "capability": "training_technique",
+      "relevance": 0.65,
+      "actionable": true,
+      "published": "2026-07-19T22:27:00Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Kernelized Linear Attention: Breaking the Capacity Wall with Symmetric Cones",
+      "url": "http://arxiv.org/abs/2607.17419v1",
+      "summary": "Linear attention promises constant-time recurrent inference but degrades sharply on associative recall. We formulate attention recall as a spherical-packing problem and introduce Kernelized Linear Attention Activations (KATA), a framework whose feature maps are derived from first principles by certifying nonnegative attention weights through a self-dual homogeneous cone. Building on this observation, we show that rank-one positive semi-definite (PSD) features offer a favorable capacity--interfer",
+      "capability": "inference_efficiency",
+      "relevance": 0.5,
+      "actionable": true,
+      "published": "2026-07-19T21:46:09Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Determining Insolvency Regions in Banks: A Stochastic Dynamic Approach Integrating Liquidity and Credit Risk",
+      "url": "http://arxiv.org/abs/2607.17381v1",
+      "summary": "We develop a continuous-time structural dynamic model to determine the exact insolvency regions of banks arising from the non-linear interaction between liquidity and credit risk. While existing literature predominantly treats these risks in isolation or via reduced-form specifications, we explicitly model the feedback loop where funding shocks and regulatory constraints force balance-sheet adjustments that can lead to endogenous insolvency. By incorporating Basel III regulatory requirements (LC",
+      "capability": "inference_efficiency",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-19T18:48:00Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "When Drift Detectors cry Wolf: False Alarm Rates in continuous ML Monitoring",
+      "url": "http://arxiv.org/abs/2607.17336v1",
+      "summary": "Drift detection is a core component of production machine learning monitoring systems, where detectors are used to compare incoming data with a reference distribution and trigger alerts when changes occur. However, these detectors are often evaluated in research settings that emphasize detection accuracy under synthetic shifts, while overlooking false alarms under continuous monitoring. In production environments, models are monitored repeatedly over time and across many features, and even small",
+      "capability": "regime_detection",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-19T16:54:29Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Interpreting Quantum Learning Models via Stochastic Processes",
+      "url": "http://arxiv.org/abs/2607.17327v1",
+      "summary": "Quantum machine learning models define probabilistic input--output maps through coherent quantum evolution and measurement. While such models can exhibit computational advantages, their internal functioning and decision making generally resists interpretation in terms of stochastic trajectories through intermediate configurations. In contrast to classical (Markovian) stochastic processes, quantum dynamics generically violates the Chapman--Kolmogorov divisibility condition, preventing a decomposi",
+      "capability": "regime_detection",
+      "relevance": 0.275,
+      "actionable": false,
+      "published": "2026-07-19T16:31:14Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Risk Measures on Lipschitz Spaces",
+      "url": "http://arxiv.org/abs/2607.17020v1",
+      "summary": "This paper develops a theory of monetary risk measures on metric state spaces. We propose the space of Lipschitz functions vanishing at a reference state as a natural domain for financial positions. The associated Lipschitz-free space provides its canonical predual, linking anchored Lipschitz payoffs to transport-based dual variables interpreted as redistributions of mass around the benchmark. Since the domain lacks constants and need not be a Banach lattice under the Lipschitz norm, standard ca",
+      "capability": "eval_methodology",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-19T01:17:46Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "WHALE: A Scalable Unified Model for Recommendation with Wukong-HSTU Architecture",
+      "url": "http://arxiv.org/abs/2607.17017v1",
+      "summary": "As scalability becomes increasingly important in recommendation modeling, recent architectures have advanced the modeling of two broad sources of ranking signals along separate paths: non-sequence features, including user, item, context, and cross features; and sequence features from user behavior histories. Wukong and HSTU have emerged as representative scalable backbones for these paths: Wukong scales high-order non-sequence feature-interaction modeling, while HSTU scales long user-behavior se",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-19T00:59:09Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "A Method for Learning Value Systems in Generative AI",
+      "url": "http://arxiv.org/abs/2607.16903v1",
+      "summary": "Value-aware AI systems require explicit computational representations of human values (groundings) and their aggregation into value systems in order to align their decisions with ours. As such representations are difficult to elicit, value learning seeks to infer them by observing human behaviour. This work addresses the lack of grounded value learning methods in generative AI: existing approaches typically replicate human preferences without awareness of the multidimensional structure of value ",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "published": "2026-07-18T17:37:50Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "TVGL-CFM:Generating and Forecasting Time-Varying Trajectories of Dynamic Networks with Conditional Flow Matching",
+      "url": "http://arxiv.org/abs/2607.16894v1",
+      "summary": "Many complex systems such as brain networks, financial markets, and gene-regulatory circuits are described not by a fixed graph but by one that changes over time. A standard way to summarise such structure at each instant is the sparse precision (inverse-covariance) matrix, and the time-varying graphical lasso (TVGL) turns a multivariate signal into a smooth chain of these matrices. We introduce TVGL-CFM, a single model that learns the distribution of such chains and can both generate new, reali",
+      "capability": "risk_management",
+      "relevance": 0.241,
+      "actionable": false,
+      "published": "2026-07-18T17:29:55Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Certified-Gap Dual-Price Policies for Real-Time Truckload Bid Acceptance with Relocating, Clock-Constrained Resources",
+      "url": "http://arxiv.org/abs/2607.16891v1",
+      "summary": "A truckload carrier must accept or reject each load tender within seconds. The decision depends on fleet state, hours-of-service (HOS) clocks, and appointment windows. We model this as a weakly coupled dynamic program in which the resources relocate and carry clocks: serving a request moves the truck to a new market and depletes its clocks, and whether a truck can serve a request depends on its state. Occupancy-based reusable-resource models do not cover this setting. We build a real-time dual-p",
+      "capability": "regime_detection",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-18T17:16:42Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "A Practical Guide to Simulating Correlated Binary Outcomes",
+      "url": "http://arxiv.org/abs/2607.16801v1",
+      "summary": "Simulating dependent Bernoulli outcomes with prescribed means and pairwise Pearson correlations is a common task in risk modeling. A familiar approach is the Gaussian-threshold workflow for binary outcomes, often viewed as a Bernoulli analogue of the Gaussian copula construction. We show that setting latent Gaussian correlations equal to target Bernoulli correlations is generally incorrect after thresholding, and that pairwise tetrachoric calibration is exact only when the calibrated latent matr",
+      "capability": "training_technique",
+      "relevance": 0.25,
+      "actionable": false,
+      "published": "2026-07-18T12:48:31Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "On the Potential of Graph Neural Networks as Metamodels for Supply Chain Optimization: Dataset, Architectures, and Directions",
+      "url": "http://arxiv.org/abs/2607.16769v1",
+      "summary": "Graph Neural Networks (GNNs) have emerged as a powerful, differentiable class of learning models for graph-structured systems. Their ability to generalize across topologies opens the prospect of a surrogate for combined structural and parametric optimization, which classical metamodels cannot offer. Supply chains are a natural target, yet the use of GNN surrogates for supply chain problems is largely unexplored. This paper lays the foundation, presents initial steps, and discusses key research d",
+      "capability": "eval_methodology",
+      "relevance": 0.225,
+      "actionable": false,
+      "published": "2026-07-18T11:06:22Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Half the Experts, All the Code: One-Shot Domain Pruning of Mixture-of-Experts LLMs for Coding",
+      "url": "http://arxiv.org/abs/2607.16721v1",
+      "summary": "The strongest open-weight coding models are mixture-of-experts (MoE) networks: most of their size comes from large pools of \"expert\" subnetworks, of which only a few act on any token. That pool is why these models do not fit on the machines most developers own, yet for a user who only wants coding help, most experts encode abilities that will never be invoked. We ask how many experts can be removed, and which, by pruning two recent open-weight MoE models from different families (Qwen3.6-35B-A3B ",
+      "capability": "eval_methodology",
+      "relevance": 0.45,
+      "actionable": true,
+      "published": "2026-07-18T09:17:41Z"
+    },
+    {
+      "source": "arxiv",
+      "title": "Proof-of-Stake Dynamics: The Elusive Price Anchor and Endogenous Volatility Harvesting",
+      "url": "http://arxiv.org/abs/2607.16622v1",
+      "summary": "In this paper, we develop an open-economy macroeconomic model of a Proof-of-Stake network to analyze nominal token-price dynamics and the systemic effects of speculative capital. We first consider a network populated solely by active utility users, who finance network activity through a steady exogenous inflow of fiat currency. We prove the existence of a unique, globally asymptotically stable steady-state equilibrium with a well-defined nominal token price and derive a closed-form expression fo",
+      "capability": "eval_methodology",
+      "relevance": 0.325,
+      "actionable": false,
+      "published": "2026-07-18T03:47:16Z"
+    },
+    {
+      "source": "hf_models",
+      "title": "mindchain/qwen35-2b-trading-sft-v10-unsloth-gguf",
+      "url": "https://huggingface.co/mindchain/qwen35-2b-trading-sft-v10-unsloth-gguf",
+      "summary": "Tags: gguf, qwen3_5, llama.cpp, unsloth, vision-language-model, endpoints_compatible, region:us, conversational. Downloads: 1069",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 1069
+    },
+    {
+      "source": "hf_models",
+      "title": "fuchenru/Trading-Hero-LLM",
+      "url": "https://huggingface.co/fuchenru/Trading-Hero-LLM",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, sentiment analysis, financial sentiment analysis, finance, finbert, financial, arxiv:2006.08097. Downloads: 518",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 518
+    },
+    {
+      "source": "hf_models",
+      "title": "DidulaThavishaPro/ppo-gtc-trading-agent",
+      "url": "https://huggingface.co/DidulaThavishaPro/ppo-gtc-trading-agent",
+      "summary": "Tags: pytorch, region:us. Downloads: 310",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 310
+    },
+    {
+      "source": "hf_models",
+      "title": "drdanicka/trading-strategy-tester-weights",
+      "url": "https://huggingface.co/drdanicka/trading-strategy-tester-weights",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 282",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 282
+    },
+    {
+      "source": "hf_models",
+      "title": "yoshi221/Qwen3.5-2B-Trading-Guru-GGUF",
+      "url": "https://huggingface.co/yoshi221/Qwen3.5-2B-Trading-Guru-GGUF",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 263",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 263
+    },
+    {
+      "source": "hf_models",
+      "title": "d3xt3rm0rgan/trading-strategy-skeptic-qwen3-4b-gguf",
+      "url": "https://huggingface.co/d3xt3rm0rgan/trading-strategy-skeptic-qwen3-4b-gguf",
+      "summary": "Tags: gguf, qwen3, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 234",
+      "capability": "data_augmentation",
+      "relevance": 0.267,
+      "actionable": false,
+      "downloads": 234
+    },
+    {
+      "source": "hf_models",
+      "title": "ethien007/qwen3vl-trading-finetune",
+      "url": "https://huggingface.co/ethien007/qwen3vl-trading-finetune",
+      "summary": "Tags: gguf, qwen3_vl, llama.cpp, unsloth, vision-language-model, endpoints_compatible, region:us, conversational. Downloads: 220",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 220
+    },
+    {
+      "source": "hf_models",
+      "title": "heffter/llama-3.1-8b-mes-trading-signals",
+      "url": "https://huggingface.co/heffter/llama-3.1-8b-mes-trading-signals",
+      "summary": "Tags: safetensors, gguf, llama, endpoints_compatible, region:us, conversational. Downloads: 215",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 215
+    },
+    {
+      "source": "hf_models",
+      "title": "kishore601/trading-mentor-llama3-GGUF",
+      "url": "https://huggingface.co/kishore601/trading-mentor-llama3-GGUF",
+      "summary": "Tags: gguf, llama, llama.cpp, unsloth, endpoints_compatible, region:us, conversational. Downloads: 203",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 203
+    },
+    {
+      "source": "hf_models",
+      "title": "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, pytorch, tensorboard, safetensors, roberta, text-classification, generated_from_trainer, financial, stocks, sentiment. Downloads: 224777",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 224777
+    },
+    {
+      "source": "hf_models",
+      "title": "mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/mrm8488/deberta-v3-ft-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, tensorboard, safetensors, deberta-v2, text-classification, generated_from_trainer, arxiv:2006.03654, arxiv:2111.09543, base_model:microsoft/deberta-v3-small, base_model:finetune:microsoft/deberta-v3-small. Downloads: 193801",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 193801
+    },
+    {
+      "source": "hf_models",
+      "title": "ahmedrachid/FinancialBERT-Sentiment-Analysis",
+      "url": "https://huggingface.co/ahmedrachid/FinancialBERT-Sentiment-Analysis",
+      "summary": "Tags: transformers, pytorch, bert, text-classification, financial-sentiment-analysis, sentiment-analysis, en, dataset:financial_phrasebank, text-embeddings-inference, endpoints_compatible. Downloads: 189373",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 189373
+    },
+    {
+      "source": "hf_models",
+      "title": "human-centered-summarization/financial-summarization-pegasus",
+      "url": "https://huggingface.co/human-centered-summarization/financial-summarization-pegasus",
+      "summary": "Tags: transformers, pytorch, tf, safetensors, pegasus, text2text-generation, summarization, en, dataset:xsum, arxiv:1912.08777. Downloads: 157973",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 157973
+    },
+    {
+      "source": "hf_models",
+      "title": "mxlcw/rubert-tiny2-russian-financial-sentiment",
+      "url": "https://huggingface.co/mxlcw/rubert-tiny2-russian-financial-sentiment",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, sentiment-analysis, multi-class-classification, financial, telegram, rubert, sentiment. Downloads: 11704",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 11704
+    },
+    {
+      "source": "hf_models",
+      "title": "AnkitAI/distilbert-base-uncased-financial-news-sentiment-analysis",
+      "url": "https://huggingface.co/AnkitAI/distilbert-base-uncased-financial-news-sentiment-analysis",
+      "summary": "Tags: transformers, safetensors, distilbert, text-classification, financial-sentiment-analysis, sentiment-analysis, financial-news, finance, stocks, trading. Downloads: 8753",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 8753
+    },
+    {
+      "source": "hf_models",
+      "title": "soleimanian/financial-roberta-large-sentiment",
+      "url": "https://huggingface.co/soleimanian/financial-roberta-large-sentiment",
+      "summary": "Tags: transformers, pytorch, roberta, text-classification, Sentiment, RoBERTa, Financial Statements, Accounting, Finance, Business. Downloads: 4076",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 4076
+    },
+    {
+      "source": "hf_models",
+      "title": "hw2942/bert-base-chinese-finetuning-financial-news-sentiment-v2",
+      "url": "https://huggingface.co/hw2942/bert-base-chinese-finetuning-financial-news-sentiment-v2",
+      "summary": "Tags: transformers, pytorch, bert, text-classification, finance, zh, endpoints_compatible, region:us. Downloads: 3839",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 3839
+    },
+    {
+      "source": "hf_models",
+      "title": "nickmuchi/distilroberta-finetuned-financial-text-classification",
+      "url": "https://huggingface.co/nickmuchi/distilroberta-finetuned-financial-text-classification",
+      "summary": "Tags: transformers, pytorch, tensorboard, roberta, text-classification, financial-sentiment-analysis, sentiment-analysis, sentence_50agree, generated_from_trainer, sentiment. Downloads: 2210",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 2210
+    },
+    {
+      "source": "hf_models",
+      "title": "philschmid/bge-base-financial-matryoshka",
+      "url": "https://huggingface.co/philschmid/bge-base-financial-matryoshka",
+      "summary": "Tags: sentence-transformers, safetensors, bert, sentence-similarity, feature-extraction, dataset_size:1K<n<10K, loss:MatryoshkaLoss, loss:MultipleNegativesRankingLoss, en, arxiv:1908.10084. Downloads: 1619",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 1619
+    },
+    {
+      "source": "hf_models",
+      "title": "marketeam/Qwen-Marketing",
+      "url": "https://huggingface.co/marketeam/Qwen-Marketing",
+      "summary": "Tags: transformers, safetensors, qwen3, text-generation, marketing, reasoning, conversational, en, arxiv:2505.09388, base_model:Qwen/Qwen3-8B. Downloads: 25497",
+      "capability": "multi_step_reasoning",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 25497
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/micks99_-_gemma-2b-instruct-ft-Data-Analytics-Digital-Marketing-Project-Management-QA-gguf",
+      "url": "https://huggingface.co/RichardErkhov/micks99_-_gemma-2b-instruct-ft-Data-Analytics-Digital-Marketing-Project-Management-QA-gguf",
+      "summary": "Tags: gguf, arxiv:1910.09700, endpoints_compatible, region:us, conversational. Downloads: 464",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 464
+    },
+    {
+      "source": "hf_models",
+      "title": "afzalur/Qwen-Market-Prediction-Model",
+      "url": "https://huggingface.co/afzalur/Qwen-Market-Prediction-Model",
+      "summary": "Tags: transformers, safetensors, qwen3, text-generation, finan, market-prediction, stock-market, nifty50, technical-analysis, qwen. Downloads: 455",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 455
+    },
+    {
+      "source": "hf_models",
+      "title": "baptle/FinBERT_market_based",
+      "url": "https://huggingface.co/baptle/FinBERT_market_based",
+      "summary": "Tags: transformers, safetensors, bert, text-classification, finance, finbert, market, financial, generated_from_trainer, stocks. Downloads: 445",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 445
+    },
+    {
+      "source": "hf_models",
+      "title": "AventIQ-AI/sentiment-analysis-for-stock-market-sentiment",
+      "url": "https://huggingface.co/AventIQ-AI/sentiment-analysis-for-stock-market-sentiment",
+      "summary": "Tags: safetensors, bert, region:us. Downloads: 319",
+      "capability": "sentiment_analysis",
+      "relevance": 0.243,
+      "actionable": false,
+      "downloads": 319
+    },
+    {
+      "source": "hf_models",
+      "title": "Market5/Oral_Insertion",
+      "url": "https://huggingface.co/Market5/Oral_Insertion",
+      "summary": "Tags: diffusers, text-to-image, lora, template:diffusion-lora, base_model:Wan-AI/Wan2.1-I2V-14B-720P, base_model:adapter:Wan-AI/Wan2.1-I2V-14B-720P, license:other, region:us. Downloads: 311",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 311
+    },
+    {
+      "source": "hf_models",
+      "title": "AbdulrahmanOmar/qwen-marketing-s1",
+      "url": "https://huggingface.co/AbdulrahmanOmar/qwen-marketing-s1",
+      "summary": "Tags: transformers, safetensors, qwen3, text-generation, marketing, content-generation, social-media, structured-output, json, qlora. Downloads: 283",
+      "capability": "training_technique",
+      "relevance": 0.6,
+      "actionable": true,
+      "downloads": 283
+    },
+    {
+      "source": "hf_models",
+      "title": "Market5/Wan_2.2-2.1_POV_Missionary",
+      "url": "https://huggingface.co/Market5/Wan_2.2-2.1_POV_Missionary",
+      "summary": "Tags: diffusers, text-to-image, lora, template:diffusion-lora, base_model:Wan-AI/Wan2.1-I2V-14B-480P, base_model:adapter:Wan-AI/Wan2.1-I2V-14B-480P, license:other, region:us. Downloads: 255",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 255
+    },
+    {
+      "source": "hf_models",
+      "title": "marketplacehub/mh-embed-v2",
+      "url": "https://huggingface.co/marketplacehub/mh-embed-v2",
+      "summary": "Tags: sentence-transformers, safetensors, xlm-roberta, sentence-similarity, feature-extraction, generated_from_trainer, dataset_size:870712, loss:MultipleNegativesRankingLoss, arxiv:1908.10084, arxiv:1807.03748. Downloads: 244",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 244
+    },
+    {
+      "source": "hf_models",
+      "title": "pucpr/clinicalnerpt-quantitative",
+      "url": "https://huggingface.co/pucpr/clinicalnerpt-quantitative",
+      "summary": "Tags: transformers, pytorch, bert, token-classification, pt, dataset:SemClinBr, endpoints_compatible, region:us. Downloads: 12",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 12
+    },
+    {
+      "source": "hf_models",
+      "title": "Quantitative-Strategies-Group/mistral-7b-news-impact-2023-lora",
+      "url": "https://huggingface.co/Quantitative-Strategies-Group/mistral-7b-news-impact-2023-lora",
+      "summary": "Tags: peft, safetensors, arxiv:1910.09700, base_model:mistralai/Mistral-7B-v0.3, base_model:adapter:mistralai/Mistral-7B-v0.3, region:us. Downloads: 5",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 5
+    },
+    {
+      "source": "hf_models",
+      "title": "jsonexb/Quantitative-model-for-amx-test",
+      "url": "https://huggingface.co/jsonexb/Quantitative-model-for-amx-test",
+      "summary": "Tags: onnx, region:us. Downloads: 0",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "umak11/qwen2.5-7b_vl_quantitative_g",
+      "url": "https://huggingface.co/umak11/qwen2.5-7b_vl_quantitative_g",
+      "summary": "Tags: transformers, safetensors, generated_from_trainer, sft, trl, base_model:Qwen/Qwen2.5-VL-7B-Instruct, base_model:finetune:Qwen/Qwen2.5-VL-7B-Instruct, endpoints_compatible, region:us. Downloads: 0",
+      "capability": "training_technique",
+      "relevance": 0.2,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "assix-research/Quantitative-Equity-Alpha-Transformer",
+      "url": "https://huggingface.co/assix-research/Quantitative-Equity-Alpha-Transformer",
+      "summary": "Tags: pytorch-forecasting, finance, quantitative-finance, systematic-trading, alpha-discovery, temporal-fusion-transformer, time-series, macro-economics, liquidity-cycles, nvidia-blackwell. Downloads: 0",
+      "capability": "trade_signal",
+      "relevance": 0.3,
+      "actionable": false,
+      "downloads": 0
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v2-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v2-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 1220",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 1220
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v1-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-3b-v1-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 645",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 645
+    },
+    {
+      "source": "hf_models",
+      "title": "RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-7b-v3-cot-gguf",
+      "url": "https://huggingface.co/RichardErkhov/Bharatdeep-H_-_portfolio-query-qwen-2.5-7b-v3-cot-gguf",
+      "summary": "Tags: gguf, endpoints_compatible, region:us, conversational. Downloads: 88",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 88
+    },
+    {
+      "source": "hf_models",
+      "title": "Nashhz/SBERT_KFOLD_User_Portfolio_to_Job_Descriptions",
+      "url": "https://huggingface.co/Nashhz/SBERT_KFOLD_User_Portfolio_to_Job_Descriptions",
+      "summary": "Tags: sentence-transformers, safetensors, bert, sentence-similarity, feature-extraction, generated_from_trainer, dataset_size:16682, loss:CosineSimilarityLoss, arxiv:1908.10084, base_model:sentence-transformers/all-MiniLM-L6-v2. Downloads: 66",
+      "capability": "inference_efficiency",
+      "relevance": 0.225,
+      "actionable": false,
+      "downloads": 66
+    },
+    {
+      "source": "hf_models",
+      "title": "tensorblock/portfolio-query-qwen-2.5-7b-v5-cot-GGUF",
+      "url": "https://huggingface.co/tensorblock/portfolio-query-qwen-2.5-7b-v5-cot-GGUF",
+      "summary": "Tags: transformers, gguf, text-generation-inference, unsloth, qwen2, trl, sft, TensorBlock, GGUF, en. Downloads: 38",
+      "capability": "inference_efficiency",
+      "relevance": 0.45,
+      "actionable": true,
+      "downloads": 38
+    },
+    {
+      "source": "hf_models",
+      "title": "karanowalekar/llama-3-8b-Instruct-bnb-4bit-karanowalekar-portfolio",
+      "url": "https://huggingface.co/karanowalekar/llama-3-8b-Instruct-bnb-4bit-karanowalekar-portfolio",
+      "summary": "Tags: transformers, gguf, llama, text-generation-inference, unsloth, en, base_model:unsloth/llama-3-8b-Instruct-bnb-4bit, base_model:quantized:unsloth/llama-3-8b-Instruct-bnb-4bit, license:apache-2.0, endpoints_compatible. Downloads: 22",
+      "capability": "inference_efficiency",
+      "relevance": 0.45,
+      "actionable": true,
+      "downloads": 22
+    },
+    {
+      "source": "hf_models",
+      "title": "Bharatdeep-H/portfolio-query-qwen-2.5-3b-v1-cot-RL",
+      "url": "https://huggingface.co/Bharatdeep-H/portfolio-query-qwen-2.5-3b-v1-cot-RL",
+      "summary": "Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 22",
+      "capability": "training_technique",
+      "relevance": 0.4,
+      "actionable": true,
+      "downloads": 22
+    },
+    {
+      "source": "hf_models",
+      "title": "Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL",
+      "url": "https://huggingface.co/Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL",
+      "summary": "Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 18",
+      "capability": "training_technique",
+      "relevance": 0.4,
+      "actionable": true,
+      "downloads": 18
+    }
+  ],
+  "surveyed_sources": [
+    "arxiv",
+    "hf_models"
+  ],
+  "total_findings": 82,
+  "actionable_findings": 18
+}

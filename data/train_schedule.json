@@ -1,0 +1,20 @@
+{
+  "score": 0.75,
+  "can_train": true,
+  "reasons": [
+    "\u2705 Win rate 50% < 65% \u2192 training needed",
+    "\u274c 18 examples < 20 \u2192 insufficient data",
+    "\u2705 F&G 50 in [20,55] \u2192 moderate volatility",
+    "\u2705 Hour 17 UTC in window [12-18] \u2192 low volume",
+    "\u2705 61732 cycles since last train >= 50"
+  ],
+  "metrics": {
+    "win_rate": 0.5,
+    "examples": 18,
+    "fear_greed": 50,
+    "hour_utc": 17,
+    "cycles_since_train": 61732,
+    "has_positions": false
+  },
+  "timestamp": "2026-07-25T17:45:42.697401+00:00"
+}

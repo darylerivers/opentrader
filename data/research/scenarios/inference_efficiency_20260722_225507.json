@@ -1,0 +1,23 @@
+{
+  "capability": "inference_efficiency",
+  "source_manifest": "capability_manifest_20260722_225506.json",
+  "origin": "https://huggingface.co/karanowalekar/llama-3-8b-Instruct-bnb-4bit-karanowalekar-portfolio",
+  "scenarios": [
+    {
+      "id": "inferenc_001",
+      "type": "inference_efficiency",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: Tags: transformers, gguf, llama, text-generation-inference, unsloth, en, base_model:unsloth/llama-3-8b-Instruct-bnb-4bit, base_model:quantized:unsloth/llama-3-8b-Instruct-bnb-4bit, license:apache-2.0, endpoints_compatible. Downloads: 22",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: karanowalekar/llama-3-8b-Instruct-bnb-4bit-karanowalekar-portfolio. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "easy"
+    },
+    {
+      "id": "inferenc_002",
+      "type": "inference_efficiency",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: Tags: transformers, gguf, llama, text-generation-inference, unsloth, en, base_model:unsloth/llama-3-8b-Instruct-bnb-4bit, base_model:quantized:unsloth/llama-3-8b-Instruct-bnb-4bit, license:apache-2.0, endpoints_compatible. Downloads: 22",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: karanowalekar/llama-3-8b-Instruct-bnb-4bit-karanowalekar-portfolio. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "easy"
+    }
+  ]
+}

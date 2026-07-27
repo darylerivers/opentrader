@@ -1,0 +1,32 @@
+[
+  {
+    "tool": "llm_call",
+    "duration_ms": 1200,
+    "outcome_delta": 0.15,
+    "cycle": 0
+  },
+  {
+    "tool": "file_read",
+    "duration_ms": 340,
+    "outcome_delta": 0.05,
+    "cycle": 0
+  },
+  {
+    "tool": "bash_cmd",
+    "duration_ms": 2500,
+    "outcome_delta": -0.1,
+    "cycle": 0
+  },
+  {
+    "tool": "file_write",
+    "duration_ms": 890,
+    "outcome_delta": 0.3,
+    "cycle": 0
+  },
+  {
+    "tool": "llm_call",
+    "duration_ms": 1400,
+    "outcome_delta": 0.22,
+    "cycle": 0
+  }
+]

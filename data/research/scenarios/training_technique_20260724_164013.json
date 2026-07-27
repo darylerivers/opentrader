@@ -1,0 +1,31 @@
+{
+  "capability": "training_technique",
+  "source_manifest": "capability_manifest_20260724_164005.json",
+  "origin": "https://huggingface.co/AbdulrahmanOmar/qwen-marketing-s1",
+  "scenarios": [
+    {
+      "id": "training_001",
+      "type": "training_technique",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: Tags: transformers, safetensors, qwen3, text-generation, marketing, content-generation, social-media, structured-output, json, qlora. Downloads: 299",
+      "expected_reasoning": "Apply training technique principles. Consider the key insight from: AbdulrahmanOmar/qwen-marketing-s1. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "medium"
+    },
+    {
+      "id": "training_002",
+      "type": "training_technique",
+      "prompt": "Assess the following market conditions and provide a trading recommendation.\n\nContext: Tags: transformers, safetensors, qwen3, text-generation, marketing, content-generation, social-media, structured-output, json, qlora. Downloads: 299",
+      "expected_reasoning": "Apply training technique principles. Consider the key insight from: AbdulrahmanOmar/qwen-marketing-s1. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "medium"
+    },
+    {
+      "id": "training_003",
+      "type": "training_technique",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: Tags: transformers, safetensors, qwen3, text-generation, marketing, content-generation, social-media, structured-output, json, qlora. Downloads: 299",
+      "expected_reasoning": "Apply training technique principles. Consider the key insight from: AbdulrahmanOmar/qwen-marketing-s1. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "medium"
+    }
+  ]
+}

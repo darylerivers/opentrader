@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""Finnhub Stock Exchange — free OHLCV data for US equities.
+
+Paper execution on real market data. No real money leaves the system.
+Finnhub free tier: 60 API calls/minute, all US stocks, real-time quotes.
+
+Usage:
+    export FINNHUB_API_KEY="your_key"
+    python3 harness.py --exchange finnhub --symbol AAPL
+
+This adapter follows the same ExchangeBase interface as LiveExchange (crypto).
+Once registered, use --exchange finnhub exactly like --exchange kraken.
+"""
+import json
+import logging
+import os
+import time
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+from urllib.request import Request, urlopen
+
+import pandas as pd
+from urllib.error import URLError
+
+from .base import ExchangeBase, OHLCV, OrderResult, Balance, register_exchange
+
+logger = logging.getLogger("opentrader.finnhub")
+
+FINNHUB_BASE = "https://finnhub.io/api/v1"
+
+# Finnhub resolution string -> candlestick resolution code
+_RESOLUTION_MAP = {
+    "1m":  "1",
+    "5m":  "5",
+    "15m": "15",
+    "30m": "30",
+    "1h":  "60",
+    "1d":  "D",
+    "1w":  "W",
+}
+
+# Default rate limit for free tier (60 calls/min -> 1 call/sec safe)
+DEFAULT_RATE_LIMIT = 1.0  # seconds between calls
+
+
+class FinnhubExchange(ExchangeBase):
+    """US stock exchange adapter using Finnhub free API.
+
+    Fetches real price data from Finnhub. Order execution is paper (in-memory ledger).
+    """
+
+    def __init__(self, name: str = "finnhub", config: dict = None):
+        super().__init__(name, config)
+        config = config or {}
+
+        # Read key from connections store first, then env var, then config
+        self._api_key = (
+            config.get("api_key")
+            or self._read_key_from_store()
+            or os.environ.get("FINNHUB_API_KEY", "")
+        )
+        if not self._api_key:
+            logger.error(
+                "FinnhubExchange: FINNHUB_API_KEY not set. "
+                "Add your key in the dashboard Connections tab or set the env var. "
+                "Exchange will not connect."
+            )
+            self._connected = False  # grace degrade — harness falls back
+
+        # Paper ledger state (same pattern as LiveExchange/PaperExchange)
+        self._cash: float = float(config.get("initial_cash", 100_000))
+        self._positions: Dict[str, float] = {}
+        self._cost_basis: Dict[str, float] = {}
+        self._fills: List[dict] = []
+        self._order_counter: int = 1
+
+        # Cache
+        self._bar_cache: Dict[str, List[OHLCV]] = {}
+        self._price_cache: Dict[str, float] = {}
+        self._cache_ttl: float = config.get("cache_ttl", 30.0)
+        self._last_fetch: Dict[str, float] = {}
+        self._last_api_call: float = 0.0
+        self._rate_limit: float = float(config.get("rate_limit", DEFAULT_RATE_LIMIT))
+
+    @staticmethod
+    def _read_key_from_store() -> str:
+        try:
+            from connections import get_api_key
+            return get_api_key("finnhub")
+        except ImportError:
+            return ""
+
+    def connect(self) -> bool:
+        if not self._api_key:
+            logger.error("FinnhubExchange: no API key set")
+            return False
+        try:
+            url = f"{FINNHUB_BASE}/quote?symbol=AAPL&token={self._api_key}"
+            with urlopen(Request(url), timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+                if "c" in data:
+                    self._connected = True
+                    logger.info("FinnhubExchange: connected (free tier, 60 calls/min)")
+                    return True
+                logger.error(f"Finnhub auth failed: {data}")
+                return False
+        except Exception as e:
+            logger.error(f"Finnhub connect failed: {e}")
+            return False
+
+    def _rate_limit_wait(self):
+        elapsed = time.time() - self._last_api_call
+        if elapsed < self._rate_limit:
+            time.sleep(self._rate_limit - elapsed)
+        self._last_api_call = time.time()
+
+    def _api_get(self, path: str, params: dict = None) -> dict:
+        """Call Finnhub REST API with rate limiting."""
+        params = params or {}
+        params["token"] = self._api_key
+        qs = "&".join(f"{k}={v}" for k, v in params.items())
+        url = f"{FINNHUB_BASE}{path}?{qs}"
+
+        self._rate_limit_wait()
+        req = Request(url)
+        req.add_header("User-Agent", "OpenTrader/1.0")
+        try:
+            with urlopen(req, timeout=15) as resp:
+                raw = resp.read().decode()
+                return json.loads(raw)
+        except URLError as e:
+            logger.error(f"Finnhub API error: {e}")
+            return {}
+        except json.JSONDecodeError as e:
+            logger.error(f"Finnhub bad JSON: {e}")
+            return {}
+
+    # ── OHLCV ────────────────────────────────────────────────
+
+    def _resolution_code(self, timeframe: str) -> Optional[str]:
+        """Map timeframe string to Finnhub resolution code."""
+        return _RESOLUTION_MAP.get(timeframe)
+
+    def _compute_from_timestamp(self, timeframe: str, limit: int) -> int:
+        """Compute 'from' unix timestamp for N candles back."""
+        now = int(time.time())
+        tf_minutes = {
+            "1m": 1, "5m": 5, "15m": 15, "30m": 30,
+            "1h": 60, "1d": 1440, "1w": 10080,
+        }
+        minutes = tf_minutes.get(timeframe, 60)
+        return now - (limit * minutes * 60)
+
+    # yfinance interval mapping for OHLCV fallback
+    _YF_INTERVAL_MAP = {
+        "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
+        "1h": "1h", "4h": "1h", "1d": "1d", "1w": "1wk", "1M": "1mo",
+    }
+
+    def get_bars(self, symbol: str = "AAPL", timeframe: str = "1h",
+                 limit: int = 100) -> List[OHLCV]:
+        cache_key = f"{symbol}:{timeframe}:{limit}"
+        now_ts = time.time()
+        if cache_key in self._bar_cache:
+            if now_ts - self._last_fetch.get(cache_key, 0) < self._cache_ttl:
+                return self._bar_cache[cache_key]
+
+        bars: List[OHLCV] = []
+
+        # Try Finnhub candle API first (premium users only; free tier gets 403)
+        if self._connected:
+            resolution = self._resolution_code(timeframe)
+            if resolution:
+                from_ts = self._compute_from_timestamp(timeframe, limit)
+                try:
+                    data = self._api_get("/stock/candle", {
+                        "symbol": symbol, "resolution": resolution,
+                        "from": str(from_ts), "to": str(int(time.time())),
+                    })
+                    if data.get("s") == "ok":
+                        bars = self._parse_candle_bars(data)
+                except Exception:
+                    pass
+
+        # Fallback: yfinance for free OHLCV (no API key needed)
+        if not bars:
+            try:
+                bars = self._fetch_yfinance_bars(symbol, timeframe, limit)
+            except Exception as e:
+                logger.warning(f"yfinance bars failed for {symbol}: {e}")
+
+        if bars:
+            self._bar_cache[cache_key] = bars
+            self._last_fetch[cache_key] = now_ts
+            self._price_cache[symbol] = bars[-1].close
+
+        logger.debug(f"Stock bars {symbol} ({timeframe}): {len(bars)} bars")
+        return bars or self._bar_cache.get(cache_key, [])
+
+    def _parse_candle_bars(self, data: dict) -> List[OHLCV]:
+        timestamps = data.get("t", [])
+        opens = data.get("o", [])
+        highs = data.get("h", [])
+        lows = data.get("l", [])
+        closes = data.get("c", [])
+        volumes = data.get("v", [])
+        bars = []
+        for i in range(len(timestamps)):
+            bars.append(OHLCV(
+                timestamp=timestamps[i],
+                open=float(opens[i]), high=float(highs[i]),
+                low=float(lows[i]), close=float(closes[i]),
+                volume=float(volumes[i]),
+            ))
+        return bars
+
+    def _fetch_yfinance_bars(self, symbol: str, timeframe: str,
+                             limit: int) -> List[OHLCV]:
+        import yfinance as yf
+        yf_interval = self._YF_INTERVAL_MAP.get(timeframe, "1h")
+        period_map = {
+            "1m": "7d", "5m": "1mo", "15m": "1mo", "30m": "1mo",
+            "1h": "1mo", "4h": "3mo", "1d": "6mo", "1w": "1y", "1M": "2y",
+        }
+        period = period_map.get(timeframe, "1mo")
+        df = yf.download(symbol, period=period, interval=yf_interval,
+                         progress=False, auto_adjust=True)
+        if df.empty:
+            return []
+        # Handle multi-level columns from yfinance (e.g. ('Open', 'AAPL'))
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+        bars = []
+        for idx, row in df.tail(limit + 5).iterrows():
+            ts = int(idx.timestamp())
+            bars.append(OHLCV(
+                timestamp=ts,
+                open=float(row["Open"]), high=float(row["High"]),
+                low=float(row["Low"]), close=float(row["Close"]),
+                volume=float(row["Volume"]),
+            ))
+        return bars
+
+    def get_current_price(self, symbol: str) -> Optional[float]:
+        if symbol in self._price_cache:
+            return self._price_cache[symbol]
+
+        try:
+            data = self._api_get("/quote", {"symbol": symbol})
+            price = data.get("c")
+            if price and price > 0:
+                self._price_cache[symbol] = float(price)
+                return float(price)
+        except Exception as e:
+            logger.debug(f"Finnhub quote failed for {symbol}: {e}")
+
+        return self._price_cache.get(symbol)
+
+    # ── Paper execution ──────────────────────────────────────
+
+    def place_order(self, symbol: str, side: str, quantity: float,
+                    order_type: str = "market",
+                    price: Optional[float] = None) -> OrderResult:
+        fill_price = price or self.get_current_price(symbol)
+        if not fill_price or fill_price <= 0:
+            return OrderResult(
+                order_id="", symbol=symbol, side=side,
+                quantity=quantity, price=0, status="rejected",
+                timestamp=datetime.now(timezone.utc).isoformat(),
+                raw={"error": "no price data"},
+            )
+        cost = fill_price * quantity
+
+        if side.upper() == "BUY":
+            if cost > self._cash:
+                affordable_qty = self._cash / fill_price
+                if affordable_qty <= 0:
+                    return OrderResult(
+                        order_id=f"fh_{self._order_counter}",
+                        symbol=symbol, side=side, quantity=quantity,
+                        price=fill_price, status="rejected",
+                        timestamp=datetime.now(timezone.utc).isoformat(),
+                        raw={"error": "insufficient cash"},
+                    )
+                quantity = affordable_qty
+                cost = fill_price * quantity
+            self._cash -= cost
+            self._positions[symbol] = self._positions.get(symbol, 0) + quantity
+            self._cost_basis[symbol] = self._cost_basis.get(symbol, 0) + cost
+
+        elif side.upper() == "SELL":
+            pos = self._positions.get(symbol, 0)
+            if pos <= 0:
+                return OrderResult(
+                    order_id=f"fh_{self._order_counter}",
+                    symbol=symbol, side=side, quantity=quantity,
+                    price=fill_price, status="rejected",
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    raw={"error": "no position"},
+                )
+            quantity = min(quantity, pos)
+            self._cash += fill_price * quantity
+            self._positions[symbol] -= quantity
+            if self._positions[symbol] <= 0:
+                del self._positions[symbol]
+                self._cost_basis.pop(symbol, None)
+
+        order_id = f"fh_{self._order_counter}"
+        self._order_counter += 1
+        fill = {
+            "order_id": order_id, "symbol": symbol, "side": side,
+            "quantity": round(quantity, 8), "price": fill_price,
+            "cost": round(cost, 2), "cash_after": round(self._cash, 2),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+        self._fills.append(fill)
+        return OrderResult(
+            order_id=order_id, symbol=symbol, side=side,
+            quantity=round(quantity, 8), price=fill_price,
+            status="filled", timestamp=fill["timestamp"], raw=fill,
+        )
+
+    def get_balance(self) -> Balance:
+        portfolio_value = self._cash
+        for sym, qty in self._positions.items():
+            price = self._price_cache.get(sym)
+            if not price or price <= 0:
+                price = self.get_current_price(sym) or 0
+            portfolio_value += price * qty
+        return Balance(
+            cash=round(self._cash, 2),
+            total_value=round(portfolio_value, 2),
+            positions={k: round(v, 8) for k, v in self._positions.items()},
+        )
+
+    def get_fills(self) -> List[dict]:
+        return self._fills
+
+    def load_bars(self, symbol: str, bars: List[dict]) -> None:
+        """Pre-load OHLCV bars (for backtesting)."""
+        cache_key = f"{symbol}:1h:{len(bars)}"
+        self._bar_cache[cache_key] = [OHLCV.from_dict(b) for b in bars]
+        if self._bar_cache[cache_key]:
+            self._price_cache[symbol] = self._bar_cache[cache_key][-1].close
+
+    def disconnect(self) -> None:
+        self._connected = False
+        logger.info("FinnhubExchange: disconnected")
+
+    def reset(self, initial_cash: float = 100_000) -> None:
+        self._cash = initial_cash
+        self._positions.clear()
+        self._cost_basis.clear()
+        self._fills.clear()
+        self._order_counter = 1
+
+
+register_exchange("finnhub", FinnhubExchange)
+register_exchange("finnhub_stock", FinnhubExchange)
+register_exchange("stock", FinnhubExchange)

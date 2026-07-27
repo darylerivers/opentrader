@@ -1,0 +1,169 @@
+#!/bin/bash
+# Cartographer Pipeline — automated adapter training, conversion, registration, deployment
+# Usage: ./cartographer_pipeline.sh --version <VERSION> [--alias <ALIAS>] [--base <BASE_MODEL>] [--data <DATA_FILE>]
+set -e
+
+VERSION=""
+ALIAS=""
+BASE_MODEL="Qwen/Qwen2.5-7B-Instruct"
+DATA="/home/mrc/opentrader/data/training_data_adir.jsonl"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --version) VERSION="$2"; shift 2 ;;
+        --alias)   ALIAS="$2"; shift 2 ;;
+        --base)    BASE_MODEL="$2"; shift 2 ;;
+        --data)    DATA="$2"; shift 2 ;;
+        *) echo "Unknown option: $1"; exit 1 ;;
+    esac
+done
+
+if [ -z "$VERSION" ]; then
+    echo "ERROR: --version is required"
+    echo "Usage: $0 --version <VERSION> [--alias <ALIAS>] [--base <BASE_MODEL>] [--data <DATA_FILE>]"
+    exit 1
+fi
+
+ALIAS="${ALIAS:-$VERSION}"
+TRAIN_DIR="/home/mrc/opentrader/models/finetune/$VERSION"
+LOG="/home/mrc/opentrader/data/pipeline.log"
+  LLAMA_HOST="http://127.0.0.1:5802"
+
+log() { echo "$(date '+%H:%M:%S') $*" | tee -a "$LOG"; }
+
+log "===== CARTOGRAPHER PIPELINE STARTED: $VERSION ====="
+log "Base model: $BASE_MODEL"
+log "Output dir: $TRAIN_DIR"
+
+# ── Step 1: Wait for data ──
+TIMEOUT=$(( 6 * 3600 ))
+WAITED=0
+while true; do
+    if [ -f "$DATA" ] && [ $(wc -l < "$DATA" 2>/dev/null || echo 0) -gt 10 ]; then
+        COUNT=$(wc -l < "$DATA")
+        log "Data ready: $COUNT examples in $DATA"
+        break
+    fi
+    sleep 60
+    WAITED=$(( WAITED + 60 ))
+    if [ $WAITED -ge $TIMEOUT ]; then
+        log "TIMEOUT after ${WAITED}s — data never reached threshold"
+        exit 1
+    fi
+done
+
+# ── Step 2: Train ──
+log "Training $VERSION on $(wc -l < "$DATA") examples (2 epochs)..."
+python3 /home/mrc/opentrader/training/finetune_cycle.py \
+    --data "$DATA" \
+    --output "$TRAIN_DIR" \
+    --version "$VERSION" \
+    --batch-size 1 \
+    --grad-accum 4 \
+    --epochs 2 \
+    --lr 2e-4 \
+    >> "$LOG" 2>&1
+
+if [ ! -f "$TRAIN_DIR/adapter_model.safetensors" ] && [ ! -f "$TRAIN_DIR/adapter/adapter_model.safetensors" ]; then
+    log "ERROR: Training failed — no adapter produced"
+    exit 1
+fi
+
+ADAPTER_PATH="$TRAIN_DIR"
+if [ -f "$TRAIN_DIR/adapter/adapter_model.safetensors" ]; then
+    ADAPTER_PATH="$TRAIN_DIR/adapter"
+fi
+log "Training complete: adapter at $ADAPTER_PATH"
+
+# ── Step 3: Convert to GGUF-LoRA ──
+log "Converting to GGUF-LoRA..."
+CONVERTER="/home/mrc/src/modelai-llama.cpp/convert_lora_to_gguf.py"
+if [ ! -f "$CONVERTER" ]; then
+    CONVERTER="/home/mrc/src/modelai-llama.cpp/convert-lora-to-gguf.py"
+fi
+python3 "$CONVERTER" \
+    "$ADAPTER_PATH/adapter_model.safetensors" \
+    --base-model-id "$BASE_MODEL" \
+    --outfile "$TRAIN_DIR/adapter.gguf" \
+    >> "$LOG" 2>&1
+
+if [ -f "$TRAIN_DIR/adapter.gguf" ]; then
+    log "GGUF-LoRA: $(ls -la $TRAIN_DIR/adapter.gguf | awk '{print $5}') bytes"
+else
+    log "WARNING: GGUF conversion may have failed"
+fi
+
+# ── Step 4: Register adapter via MCP ──
+log "Registering $VERSION in adapter registry..."
+python3 -c "
+import json, os
+reg_path = '/home/mrc/opentrader/data/adapter_registry.json'
+if os.path.exists(reg_path):
+    with open(reg_path) as f: reg = json.load(f)
+else:
+    reg = {}
+reg['$VERSION'] = {
+    'version': '$VERSION',
+    'path': '$TRAIN_DIR',
+    'lora': os.path.join('$TRAIN_DIR', 'adapter.gguf'),
+    'base_model': '$BASE_MODEL',
+    'created': '$(date -Iseconds)',
+    'examples': $(wc -l < $DATA 2>/dev/null || echo 0),
+    'status': 'ready'
+}
+with open(reg_path, 'w') as f: json.dump(reg, f, indent=2)
+print('Adapter $VERSION registered')
+" >> "$LOG" 2>&1
+log "$VERSION registered in adapter registry"
+
+# ── Step 5: Relaunch llama-server with new LoRA ──
+log "Relaunching llama-server with $VERSION LoRA..."
+pkill -f "llama-server.*--port 5802" 2>/dev/null || true
+sleep 3
+
+MODEL="/home/mrc/.cache/huggingface/hub/models--bartowski--Qwen2.5-7B-Instruct-GGUF/snapshots/*/Qwen2.5-7B-Instruct-Q4_K_M.gguf"
+MODEL=$(ls $MODEL 2>/dev/null | head -1)
+if [ -z "$MODEL" ]; then
+    MODEL="/home/mrc/.cache/lm-studio/models/bartowski/Qwen2.5-7B-Instruct-GGUF/Qwen2.5-7B-Instruct-Q4_K_M.gguf"
+fi
+
+export LD_LIBRARY_PATH="/home/mrc/src/modelai-llama.cpp/build-wmma/bin:/opt/rocm/lib:/opt/rocm/hip/lib"
+nohup /home/mrc/src/modelai-llama.cpp/build-wmma/bin/llama-server \
+    -m "$MODEL" \
+    --lora "$TRAIN_DIR/adapter.gguf" \
+    --host 0.0.0.0 --port 5802 \
+    --alias "$ALIAS" \
+    --ctx-size 16384 \
+    --cache-type-k q8_0 --cache-type-v q8_0 \
+    --cont-batching --parallel 4 \
+    --jinja --reasoning off --spec-type none \
+    >> "$LOG" 2>&1 &
+LLAMA_PID=$!
+log "llama-server relaunched with $ALIAS (PID $LLAMA_PID)"
+
+sleep 10
+for i in $(seq 1 12); do
+    if curl -s -o /dev/null -w "%{http_code}" "$LLAMA_HOST/health" 2>/dev/null | grep -q 200; then
+        log "llama-server healthy"
+        break
+    fi
+    sleep 5
+done
+
+# ── Step 6: Restart harness ──
+log "Restarting harness..."
+pkill -f "harness.py.*--debate-mode adir" 2>/dev/null || true
+sleep 3
+nohup python3 /home/mrc/opentrader/harness.py \
+    --live --exchange kraken \
+    --debate-mode adir \
+    --llama-host "$LLAMA_HOST" \
+    >> "$LOG" 2>&1 &
+HARNESS_PID=$!
+log "Harness restarted with $VERSION (PID $HARNESS_PID)"
+sleep 5
+
+log "===== CARTOGRAPHER PIPELINE COMPLETE: $VERSION ====="
+log "Dashboard: http://localhost:8097"
+log "Server:   $LLAMA_HOST"
+log "Adapter:  $TRAIN_DIR"

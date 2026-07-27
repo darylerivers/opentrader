@@ -1,0 +1,15 @@
+{
+  "steps": [
+    {
+      "version": "",
+      "input_trades": 0,
+      "examples_built": 0,
+      "mean_reward": 0.0,
+      "status": "skipped",
+      "error": "insufficient trades: 0 < 3",
+      "adapter_path": "",
+      "duration_s": 0.0,
+      "timestamp": ""
+    }
+  ]
+}

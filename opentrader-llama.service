@@ -1,0 +1,23 @@
+# opentrader-llama.service — DISABLED
+# Previously launched a DIRECT llama-server on port 5809 with broken config
+# (--parallel 4, --ctx-size 16384 → only 4096 tokens/slot, --n-predict 2048).
+# This caused the opentrader harness to exhaust its context window and fail
+# with "request (25006 tokens) exceeds the available context size (4096 tokens)".
+#
+# REPLACED BY: llama-swap on :8080, which manages qwythos-9b-mtp with the
+# corrected wrapper at /home/mrc/.local/bin/llama-dynamic-qwythos-9b-mtp
+# (--parallel 1, --ctx-size 32768, --n-predict 8192 → full 32k context).
+#
+# Do NOT enable this service. It is kept for reference only.
+# To permanently disable: sudo systemctl disable opentrader-llama.service
+[Unit]
+Description=DEPRECATED — OpenTrader Qwythos-9B LLM Server (use llama-swap instead)
+ConditionPathExists=/dev/null
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

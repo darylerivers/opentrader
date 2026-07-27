@@ -1,0 +1,471 @@
+================================================================================
+OPENTRADER DASHBOARD — FRONTEND AUDIT REPORT
+Generated: 2026-07-08
+Scope: /home/mrc/opentrader/dashboard.py (3120 lines, single-file Dash+inline JS)
+Methodology: Full file read, regex cross-ref of HTML IDs ↔ JS getElementById,
+             API response shapes ↔ JS access patterns, CSS variable inventory.
+================================================================================
+
+SEVERITY KEY:
+  CRITICAL — JS runtime crash, data corruption, or silently broken core feature
+  HIGH     — Visual/functional bug affecting user-visible data or layout
+  MEDIUM   — Edge-case bug, deprecated API, or dead code path
+  LOW      — Cosmetic, performance, or theoretical issue
+
+================================================================================
+FINDING #1 [CRITICAL] — Undeclared variable `assetPts` (implicit global)
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1535, 1537
+  Evidence:
+    Line 1535:                             if (btc) assetPts.push({ts, BTC: btc, ETH: eth, SOL: sol});
+    Line 1537:                         _assetData = assetPts;
+
+  The variable `assetPts` is used without ANY declaration (no `let`, `const`,
+  or `var`). In non-strict mode, JavaScript creates this as an implicit global
+  (`window.assetPts`). The script has no `"use strict"` directive.
+
+  CONSEQUENCES:
+  - On harness reset (detected at lines 1506-1509), `historyData` is cleared
+    but `assetPts` (now a global) retains stale data from the previous run.
+    The `.then()` at line 1519 pushes NEW history data into this old array,
+    mixing old and new asset prices. This causes the equity chart overlay
+    to show incorrect asset comparison lines.
+  - If `refresh()` fires before the history fetch `.then()` resolves, two
+    async callbacks both push to the same global `assetPts` array, creating
+    duplicate or interleaved data.
+
+  FIX: Add `const assetPts = [];` before line 1535 inside the `.then()` block.
+
+================================================================================
+FINDING #2 [CRITICAL] — Missing `alerts` and `hodl_benchmark` in /api/dashboard/state
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 99–121 (API endpoint), 1357, 1373 (JS consumer)
+
+  Evidence:
+    API endpoint /api/dashboard/state (lines 108–121):
+      return {
+          "cycle":       s.get("cycle", 0),
+          "timestamp":   s.get("timestamp", ""),
+          ...
+          "signals":     s.get("signals", []),
+          "regime":      h,
+          "charts":      charts,
+      }
+    -> NO "alerts" field. NO "hodl_benchmark" field.
+
+    JS consumer in updateMetrics() (lines 1357, 1373):
+      Line 1357:   const alerts = data.alerts || [];          // always undefined->[]
+      Line 1373:   const hb = data.hodl_benchmark || {};     // always undefined->{}
+
+    The `refresh()` function (line 1804) calls `/api/dashboard/state`, NOT
+    `/api/dashboard/summary`. The `/api/dashboard/summary` endpoint (lines
+    124–150) DOES return `alerts` (line 146) and `hodl_benchmark` (line 149),
+    but it is NEVER called from the frontend.
+
+  CONSEQUENCES:
+  - The Alerts panel (#alerts-panel at line 1188) always shows "no alerts yet"
+    regardless of actual alert data in paper_state.json.
+  - The HODL benchmark display (#hodl-bench at line 1186) always shows "vs HODL: —"
+    regardless of actual outperform data.
+  - Two key dashboard features are permanently broken.
+
+  FIX: Either add `"alerts": s.get("alerts", [])` and
+  `"hodl_benchmark": s.get("hodl_benchmark", {})` to the
+  `/api/dashboard/state` return dict (lines 108–121), or change `refresh()`
+  to also call `/api/dashboard/summary`.
+
+================================================================================
+FINDING #3 [HIGH] — Undefined CSS variable `--bg-card`
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1238, 1252 (usage), 658–671 (CSS variable definitions)
+
+  Evidence:
+    Line 1238:  <div id="builder-progress" style="... background:var(--bg-card); ...">
+    Line 1252:  <div id="builder-live-log" style="... background:var(--bg-card); ...">
+
+    The CSS :root block (lines 658–671) defines:
+      --bg, --bg-panel, --bg-hover, --border, --text, --text-dim, --text-hdr,
+      --green, --red, --cyan, --yellow, --white
+    `--bg-card` is NOT in this list.
+
+  CONSEQUENCES:
+  - The builder progress panel and builder live-log panel render with
+    transparent background (CSS fallback for undefined custom property).
+    On the dark theme (body bg: #0a0a0a), they are barely visible and
+    blend into the page background.
+  - Text inside these panels may be unreadable against the dark background.
+
+  FIX: Add `--bg-card: #111111;` (or similar) to the :root block, or
+  replace `var(--bg-card)` with `var(--bg-panel)` at lines 1238 and 1252.
+
+================================================================================
+FINDING #4 [HIGH] — Undefined CSS variable `--orange`
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 1988
+
+  Evidence:
+    Line 1988:  volatile: 'var(--orange)',
+
+    `--orange` is NOT defined in the CSS :root block (lines 658–671) or
+    anywhere else in the stylesheet.
+
+  CONSEQUENCES:
+  - When the regime API returns `regime: "volatile"` for any symbol, the
+    regime badge text color falls back to `inherit` (browser default or
+    parent element color). The "volatile" regime label appears in an
+    unpredictable/wrong color instead of the intended orange.
+  - All other regime types (trending_up, trending_down, bullish, bearish,
+    ranging) use valid CSS variables and render correctly.
+
+  FIX: Add `--orange: #ff8800;` to the :root block (line 658–671).
+
+================================================================================
+FINDING #5 [HIGH] — Overnight schedule intervals broken (VRAM + active state)
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 2144 (recalcHourly), 2158 (renderSchedule), 2207–2221 (PRESETS data)
+
+  Evidence:
+    The VRAM calculation loop (line 2144):
+      const s = sl.start||0, e = sl.end===0?24:sl.end||24;
+      for (let h = s; h < e; h++) if (h>=0 && h<24) hourly[h] += sl.vram||0;
+
+    The active-state check (line 2158):
+      let active = (curH >= s && curH < e) ? 'on' : 'off';
+
+    Both assume start < end. But these PRESETS use wrapping intervals:
+
+    crisis preset (lines 2212–2216):
+      trading: start=22, end=6   →  for(h=22; h<6; h++)  → ZERO iterations!
+      regime:  start=22, end=6   →  for(h=22; h<6; h++)  → ZERO iterations!
+
+    day-only preset (lines 2217–2221):
+      code:    start=22, end=2   →  for(h=22; h<2; h++)  → ZERO iterations!
+
+  CONSEQUENCES:
+  - VRAM calculation: Overnight roles contribute 0 GB to the hourly VRAM
+    chart/summary. The peak VRAM display under-reports actual peak usage
+    when overnight schedules are active.
+  - Active dot: Overnight roles never show the green "active" status dot,
+    even during their scheduled hours (e.g., 11 PM for crisis trading).
+    They always show the gray "off" dot.
+  - The sequential preset works fine because its only "end=0" entry (regime)
+    is converted to 24 by the `sl.end===0?24` guard.
+
+  FIX: Modify recalcHourly() and renderSchedule() to handle wrapping
+  intervals where start > end. For example:
+    if (s < e) { for (let h = s; h < e; h++) ... }
+    else       { for (let h = s; h < 24; h++) ...; for (let h = 0; h < e; h++) ... }
+
+================================================================================
+FINDING #6 [MEDIUM] — Race condition: overlapping refresh() corrupts historyData
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1504–1570 (history tracking), 2090 (setInterval)
+
+  Evidence:
+    Line 2090:  setInterval(refresh, 2000);
+
+    The `refresh()` function is async and takes ~N*100ms to complete (multiple
+    `await fetch` calls). The interval fires every 2 seconds regardless of
+    whether the previous refresh completed. Inside updateMetrics(), the
+    history tracking uses a mutex-like `historyData._loaded` flag:
+
+    Line 1512:  historyData._loaded = true;
+    Line 1519:  fetch('/api/dashboard/history').then(r => r.json()).then(h => {
+    Line 1524:      historyData.length = 0;          // clears everything
+    Line 1546:      historyData.push(seed);          // restores latest point
+    Line 1547:      updateChart();
+    Line 1548:  });
+
+    If a second refresh() call runs between lines 1512 and 1524:
+    1. Call 1 sets _loaded=true, pushes seed, starts history fetch.
+    2. Call 2 (2s later): _loaded is true, enters `else if` at line 1552.
+       Pushes a new live data point to historyData.
+    3. Call 1's `.then()` fires: `historyData.length = 0` — wipes Call 2's point!
+       Then pushes `seed` (which is stale since Call 2 moved historyData[0]).
+
+  CONSEQUENCES:
+  - Under load or slow API, equity curve data points are silently dropped.
+  - The chart may show gaps or inconsistent history.
+  - This is a Heisenbug that worsens with API latency.
+
+  FIX: Either (a) use a generation counter or (b) prevent overlapping
+  refresh() calls with an `isRefreshing` guard, or (c) use
+  `setTimeout(refresh, 2000)` chaining (calling setTimeout at the end of
+  each refresh completion) instead of `setInterval`.
+
+================================================================================
+FINDING #7 [MEDIUM] — `NaN` display when signal confidence is missing
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 1490
+
+  Evidence:
+    Line 1490:  <td>${(s.confidence*100).toFixed(0)}%</td>
+
+    If a signal object has no `confidence` field (undefined):
+      undefined * 100  →  NaN
+      NaN.toFixed(0)   →  "NaN"      (does NOT throw — toFixed works on NaN)
+    The signal history table would display "NaN%" for that row's Confidence
+    column.
+
+  CONSEQUENCES:
+  - Minor visual corruption. Does not crash — `NaN.toFixed()` is spec-
+    compliant and returns the string `"NaN"`.
+  - Triggered if paper_state.json signals lack a confidence field (possible
+    with older or hand-edited state files).
+
+  FIX: Use `(s.confidence || 0)` before multiplying:
+    `${((s.confidence || 0) * 100).toFixed(0)}%`
+
+================================================================================
+FINDING #8 [MEDIUM] — `location.reload(true)` deprecated
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 2725
+
+  Evidence:
+    Line 2725:  if (srv.build_ts > emb + 5) { location.reload(true); }
+
+    The boolean `true` argument to `location.reload()` (force-reload, bypass
+    cache) is deprecated and ignored in all modern browsers (Chrome, Firefox,
+    Safari). The page will reload but may serve a cached version, defeating
+    the intended purpose of the build-timestamp check.
+
+  CONSEQUENCES:
+  - If the dashboard server is restarted with a new build timestamp, the
+    browser may reload the cached (old) version, showing the stale dashboard.
+  - The user would need to manually hard-refresh (Ctrl+Shift+R) to see updates.
+
+  FIX: Remove the `true` argument (just `location.reload()`) or use a
+  cache-busting technique like appending `?v=` + srv.build_ts to the URL.
+
+================================================================================
+FINDING #9 [MEDIUM] — Dead endpoint: /api/dashboard/summary never called
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 124–150 (endpoint definition), 1804 (only state endpoint called)
+
+  Evidence:
+    The `/api/dashboard/summary` endpoint (line 124) returns richer data
+    including alerts, HODL benchmark, drawdown, and regime posture. But:
+      - `refresh()` (line 1804) calls only `/api/dashboard/state`
+      - No other JS code references `/api/dashboard/summary`
+
+  CONSEQUENCES:
+  - Dead backend code. Unused. The summary endpoint's extra fields (posture,
+    return_pct, cycle_time_s) are never rendered on the dashboard.
+  - Contributes to Finding #2 since alerts are locked behind this endpoint.
+
+================================================================================
+FINDING #10 [LOW] — `cycle-count` element does not exist
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 1382
+
+  Evidence:
+    Line 1382:  const cycleEl = document.getElementById('cycle-count');
+
+    No element with `id="cycle-count"` exists in the HTML (lines 1002–1323).
+    The code guards with `if (cycleEl)` but this is dead code that never
+    executes its body.
+
+  FIX: Either add an element with `id="cycle-count"` or remove lines 1382–1383.
+
+================================================================================
+FINDING #11 [LOW] — O(n*m) performance in chart asset lookup
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1667–1680
+
+  Evidence:
+    Line 1602:  const p = _nearestAsset(ts);   // called for EACH of 500 windowed points
+    Line 1675:  for (const p of _assetData) {  // O(n) scan per call
+
+    With ROLLING_WINDOW=500 and _assetData possibly 500+ points, each chart
+    update does 500 × 500 = 250,000 comparisons calling `new Date().getTime()`.
+
+  CONSEQUENCES:
+  - Noticeable jank on chart updates, especially on lower-end hardware.
+  - Worsens linearly as more cycles accumulate.
+
+  FIX: Build a timestamp→data lookup map once before the windowed.forEach loop.
+
+================================================================================
+FINDING #12 [LOW] — Asset axis hardcoded to ±5%
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1653–1654
+
+  Evidence:
+    Line 1653:  'y-assets': { type:'linear', display:true, position:'right',
+    Line 1654:      min: -5, max: 5, ...
+
+    Asset price overlay data (% change from baseline) is plotted on a
+    right-side Y-axis hardcoded to -5% to +5%. If BTC or ETH moves more
+    than ±5% from baseline, the line is clipped and invisible beyond those
+    bounds. In volatile markets (common in crypto), this makes the asset
+    comparison lines disappear entirely.
+
+  CONSEQUENCES:
+  - During market swings >5%, the "Portfolio vs BTC/ETH/SOL" overlay
+    disappears, making it seem like feature is broken.
+
+  FIX: Compute min/max dynamically from the asset data arrays, with a
+  fallback. Or increase the range to ±20%.
+
+================================================================================
+FINDING #13 [LOW] — `perf-streak` always red for undefined/missing data
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 1906
+
+  Evidence:
+    Line 1906:  set('perf-streak', m.current_streak || '—',
+                   m.current_streak && m.current_streak.includes('win')
+                     ? 'var(--green)' : 'var(--red)');
+
+    When `m.current_streak` is undefined/null, the text shows "—" but the
+    conditional `undefined && ...` evaluates to `undefined` (falsy), so the
+    color is always red. A dash should be neutral (dim), not red (which
+    implies a losing streak).
+
+  CONSEQUENCES:
+  - Cosmetic: "—" displayed in red looks like an error condition.
+
+  FIX: Check for `m.current_streak` before applying color:
+    ...(m.current_streak ? (m.current_streak.includes('win') ? 'var(--green)' : 'var(--red)') : 'var(--text-dim)')
+
+================================================================================
+FINDING #14 [LOW] — `eval-scores` container cleared when transforms is empty
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 1757–1762
+
+  Evidence:
+    Line 1757:  if (es.transforms) {
+    Line 1758:      const container = document.getElementById('eval-scores');
+    Line 1759:      container.innerHTML = Object.entries(es.transforms).map(...).join('');
+    Line 1762:  }
+
+    If `es.transforms` is `{}` (empty object, truthy), `Object.entries({})`
+    returns `[]`, `.join('')` returns `""`, so `container.innerHTML = ""`.
+    The default text "run evaluation to populate" (line 1268) is wiped,
+    leaving a blank panel.
+
+  CONSEQUENCES:
+  - After an evaluation that returns an empty transforms object, the
+    Evaluation Scores panel appears empty with no explanation.
+
+  FIX: Check `Object.keys(es.transforms).length > 0` before replacing
+  innerHTML.
+
+================================================================================
+FINDING #15 [LOW] — String coercion of `a.training_examples` shows "undefined"
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Lines: 2645–2658
+
+  Evidence:
+    Line 2647:  const rows = ad.adapters.slice(0, 5).map(a => {
+    Line 2648:      const p = a.performance || {};
+    Line 2649:      return `<tr>
+    Line 2650:          <td>${a.version}</td>
+    Line 2651:          <td>${a.status}</td>
+    Line 2652:          <td>${p.win_rate != null ? ...}</td>
+    Line 2655:          <td>${a.training_examples || 0}</td>
+
+    If `a.version` or `a.status` is undefined, the template literal renders
+    the string "undefined" in the table cell. `a.training_examples` has a
+    fallback (`|| 0`) but `a.version` and `a.status` do not.
+
+  CONSEQUENCES:
+  - Adapter list shows literal "undefined" text if API returns incomplete
+    adapter objects.
+
+  FIX: Add fallbacks: `${a.version || '—'}` and `${a.status || '—'}`.
+
+================================================================================
+FINDING #16 [LOW] — Undefined `pnl_pct` in alerts shows "NaN%" (if alerts worked)
+================================================================================
+
+  File: /home/mrc/opentrader/dashboard.py
+  Line: 1365
+
+  Evidence:
+    Line 1365:  ... (a.pnl_pct*100).toFixed(2) + '%' ...
+
+    If `a.pnl_pct` is undefined: `undefined * 100` → `NaN`,
+    `NaN.toFixed(2)` → `"NaN"`, displaying "NaN%". Additionally, the
+    conditional `a.pnl_pct >= 0` on the same line evaluates `undefined >= 0`
+    → `false`, so the color is always red.
+
+    This bug is masked by Finding #2 (alerts never populated), but would
+    surface if the alerts data path is fixed.
+
+  FIX: Guard with `(a.pnl_pct != null ? (a.pnl_pct * 100).toFixed(2) : '—')`.
+
+================================================================================
+SUMMARY TABLE
+================================================================================
+
+  #  Severity   Category                  Element/Feature Affected
+  ──  ────────  ────────────────────────  ────────────────────────────
+  1   CRITICAL  JS: undeclared variable   assetPts → equity chart overlay
+  2   CRITICAL  API: data shape mismatch  Alerts panel, HODL benchmark
+  3   HIGH      CSS: undefined variable   Builder panels background
+  4   HIGH      CSS: undefined variable   Volatile regime badge color
+  5   HIGH      JS: logic error           Overnight schedule VRAM/active
+  6   MEDIUM    JS: race condition        Equity curve history data
+  7   MEDIUM    JS: NaN handling          Signal confidence column
+  8   MEDIUM    JS: deprecated API        Build version hot-reload
+  9   MEDIUM    Backend: dead code        /api/dashboard/summary unused
+  10  LOW       JS: dead code path        cycle-count element missing
+  11  LOW       JS: performance           Chart _nearestAsset linear scan
+  12  LOW       JS: hardcoded range       Asset axis clips beyond ±5%
+  13  LOW       JS: misleading color      perf-streak default "—" in red
+  14  LOW       JS: empty state display   eval-scores cleared on empty {}
+  15  LOW       JS: string coercion       Adapter list "undefined" cells
+  16  LOW       JS: NaN handling          Alert pnl_pct (masked by #2)
+
+================================================================================
+INTERVAL INVENTORY (all in onDomReady, none cleared):
+================================================================================
+
+  Interval         Function             Frequency
+  ───────────────  ───────────────────  ─────────
+  Line 2090        refresh()            2s
+  Line 2719        updateVRAM()         5s
+  Line 2737        updateScheduleStatus 30s
+  Line 2740        checkHarnessStatus   5s
+  Line 2741        updateProgress()     5s
+  Line 2743        updateMoT()          60s
+  Line 2745        updateFinetune()     30s
+
+  Note: These are intentional for a live dashboard. No interval leak from
+  duplicate onDomReady calls (guarded by readyState check). However, the
+  2-second refresh interval can overlap with itself (see Finding #6).
+
+================================================================================
+END OF REPORT
+================================================================================

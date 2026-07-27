@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-07-27T05:15:05.886546+00:00",
+  "checks": {
+    "eval_lock": "held_no_holder",
+    "harness_state": "dead",
+    "harness_pid": null,
+    "harness_restart": "failed:no_new_pid",
+    "scheduler": "stale_triggered",
+    "eval_server": "clean"
+  },
+  "warnings": []
+}

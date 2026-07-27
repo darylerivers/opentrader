@@ -1,0 +1,47 @@
+{
+  "capability": "sentiment_analysis",
+  "source_manifest": "capability_manifest_20260718_090506.json",
+  "origin": "http://arxiv.org/abs/2607.15258v1",
+  "scenarios": [
+    {
+      "id": "sentimen_001",
+      "type": "sentiment_analysis",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: The growing use of Bitcoin as a decentralized digital asset and investment tool has sparked strong interest in understanding its market behavior. This study presents a new approach to analyze Bitcoin market sentiment by combining on-chain and financial data with social media posts. Unlike models that aim to predict prices, this work focuses on explaining market sentiment using blockchain transactions, historical price data of Bitcoin, and daily Twitter sentiment classifications. The method merge",
+      "expected_reasoning": "Apply sentiment analysis principles. Consider the key insight from: Decoding Market Emotion from Blockchain Activity: A Data-Driven Sentiment Classifier. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sentimen_002",
+      "type": "sentiment_analysis",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: The growing use of Bitcoin as a decentralized digital asset and investment tool has sparked strong interest in understanding its market behavior. This study presents a new approach to analyze Bitcoin market sentiment by combining on-chain and financial data with social media posts. Unlike models that aim to predict prices, this work focuses on explaining market sentiment using blockchain transactions, historical price data of Bitcoin, and daily Twitter sentiment classifications. The method merge",
+      "expected_reasoning": "Apply sentiment analysis principles. Consider the key insight from: Decoding Market Emotion from Blockchain Activity: A Data-Driven Sentiment Classifier. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sentimen_003",
+      "type": "sentiment_analysis",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: The growing use of Bitcoin as a decentralized digital asset and investment tool has sparked strong interest in understanding its market behavior. This study presents a new approach to analyze Bitcoin market sentiment by combining on-chain and financial data with social media posts. Unlike models that aim to predict prices, this work focuses on explaining market sentiment using blockchain transactions, historical price data of Bitcoin, and daily Twitter sentiment classifications. The method merge",
+      "expected_reasoning": "Apply sentiment analysis principles. Consider the key insight from: Decoding Market Emotion from Blockchain Activity: A Data-Driven Sentiment Classifier. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sentimen_004",
+      "type": "sentiment_analysis",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: The growing use of Bitcoin as a decentralized digital asset and investment tool has sparked strong interest in understanding its market behavior. This study presents a new approach to analyze Bitcoin market sentiment by combining on-chain and financial data with social media posts. Unlike models that aim to predict prices, this work focuses on explaining market sentiment using blockchain transactions, historical price data of Bitcoin, and daily Twitter sentiment classifications. The method merge",
+      "expected_reasoning": "Apply sentiment analysis principles. Consider the key insight from: Decoding Market Emotion from Blockchain Activity: A Data-Driven Sentiment Classifier. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sentimen_005",
+      "type": "sentiment_analysis",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: The growing use of Bitcoin as a decentralized digital asset and investment tool has sparked strong interest in understanding its market behavior. This study presents a new approach to analyze Bitcoin market sentiment by combining on-chain and financial data with social media posts. Unlike models that aim to predict prices, this work focuses on explaining market sentiment using blockchain transactions, historical price data of Bitcoin, and daily Twitter sentiment classifications. The method merge",
+      "expected_reasoning": "Apply sentiment analysis principles. Consider the key insight from: Decoding Market Emotion from Blockchain Activity: A Data-Driven Sentiment Classifier. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "medium"
+    }
+  ]
+}

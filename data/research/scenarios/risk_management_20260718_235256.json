@@ -1,0 +1,23 @@
+{
+  "capability": "risk_management",
+  "source_manifest": "capability_manifest_20260718_235255.json",
+  "origin": "http://arxiv.org/abs/2607.12205v1",
+  "scenarios": [
+    {
+      "id": "risk_man_001",
+      "type": "risk_management",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: During the 1999-2019 U.S. housing cycle, three empirical facts present a puzzle: in the boom period, the correlation between income growth and mortgage growth is (1) negative across ZIP codes within a metropolitan area, but (2) positive across metropolitan areas, and (3) the metropolitan areas that experience the worst bust also show the strongest recovery. I develop a unified credit expansion theory that explains both within- and cross-metro patterns in the prior, boom, bust, and recovery perio",
+      "expected_reasoning": "Apply risk management principles. Consider the key insight from: A Unified Credit Expansion Theory on Housing Cycle: Causal Evidence for Within- and Cross-Metro Patterns in the Prior, Boom, Bust, and Recovery Periods. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "hard"
+    },
+    {
+      "id": "risk_man_002",
+      "type": "risk_management",
+      "prompt": "The market is exhibiting unusual patterns. What is your trading decision?\n\nContext: During the 1999-2019 U.S. housing cycle, three empirical facts present a puzzle: in the boom period, the correlation between income growth and mortgage growth is (1) negative across ZIP codes within a metropolitan area, but (2) positive across metropolitan areas, and (3) the metropolitan areas that experience the worst bust also show the strongest recovery. I develop a unified credit expansion theory that explains both within- and cross-metro patterns in the prior, boom, bust, and recovery perio",
+      "expected_reasoning": "Apply risk management principles. Consider the key insight from: A Unified Credit Expansion Theory on Housing Cycle: Causal Evidence for Within- and Cross-Metro Patterns in the Prior, Boom, Bust, and Recovery Periods. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "hard"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# Systemd service for OpenTrader Dashboard (NO --reload flag!)
+[Unit]
+Description=OpenTrader Dashboard
+After=network.target opentrader-harness.service
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/rocm_venv/bin/python3 /home/mrc/opentrader/dashboard.py --port 8097
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

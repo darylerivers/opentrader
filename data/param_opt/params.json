@@ -1,0 +1,187 @@
+{
+  "optimized_at": "2026-07-05T23:25:37",
+  "total_trials": 500,
+  "duration_seconds": 12.579648971557617,
+  "scales": {
+    "100": {
+      "portfolio_size": 100,
+      "max_position_pct": 0.4926473649738088,
+      "kelly_fraction": 0.31443755025238856,
+      "min_hold_bars": 8,
+      "stop_loss_pct": 0.07914435956407022,
+      "take_profit_pct": 0.3075174462348733,
+      "max_total_exposure": 0.8289793651721656,
+      "confidence_threshold": 0.3414358045318778,
+      "score": 26.632534203526152,
+      "metrics": {
+        "avg_return": 0.018381,
+        "avg_sharpe": 1.4544,
+        "avg_dd": 0.0084,
+        "avg_wr": 1.0,
+        "total_trades": 6
+      }
+    },
+    "250": {
+      "portfolio_size": 250,
+      "max_position_pct": 0.4357645499719689,
+      "kelly_fraction": 0.3806132564587648,
+      "min_hold_bars": 8,
+      "stop_loss_pct": 0.011852604486622221,
+      "take_profit_pct": 0.0465188013933192,
+      "max_total_exposure": 0.8659541126403374,
+      "confidence_threshold": 0.3061695553391381,
+      "score": 25.498298625846765,
+      "metrics": {
+        "avg_return": 0.021505,
+        "avg_sharpe": 1.7913,
+        "avg_dd": 0.0073,
+        "avg_wr": 0.9167,
+        "total_trades": 9
+      }
+    },
+    "500": {
+      "portfolio_size": 500,
+      "max_position_pct": 0.2611910822747312,
+      "kelly_fraction": 0.3806132564587648,
+      "min_hold_bars": 15,
+      "stop_loss_pct": 0.011852604486622221,
+      "take_profit_pct": 0.0465188013933192,
+      "max_total_exposure": 0.8659541126403374,
+      "confidence_threshold": 0.3061695553391381,
+      "score": 25.523213516732156,
+      "metrics": {
+        "avg_return": 0.022837,
+        "avg_sharpe": 1.8025,
+        "avg_dd": 0.0081,
+        "avg_wr": 0.9167,
+        "total_trades": 9
+      }
+    },
+    "1000": {
+      "portfolio_size": 1000,
+      "max_position_pct": 0.12684696167331222,
+      "kelly_fraction": 0.19489517294094566,
+      "min_hold_bars": 17,
+      "stop_loss_pct": 0.0648249316755204,
+      "take_profit_pct": 0.11428920314064872,
+      "max_total_exposure": 0.3341431102144888,
+      "confidence_threshold": 0.3312268392838127,
+      "score": 26.779870191560526,
+      "metrics": {
+        "avg_return": 0.021819,
+        "avg_sharpe": 1.9151,
+        "avg_dd": 0.0062,
+        "avg_wr": 1.0,
+        "total_trades": 6
+      }
+    },
+    "2500": {
+      "portfolio_size": 2500,
+      "max_position_pct": 0.08716661415588911,
+      "kelly_fraction": 0.3296635409213171,
+      "min_hold_bars": 13,
+      "stop_loss_pct": 0.05759654704966165,
+      "take_profit_pct": 0.20574347799380452,
+      "max_total_exposure": 0.8704591203748674,
+      "confidence_threshold": 0.3893504765096061,
+      "score": 25.591588335868963,
+      "metrics": {
+        "avg_return": 0.016371,
+        "avg_sharpe": 1.406,
+        "avg_dd": 0.0075,
+        "avg_wr": 0.9333,
+        "total_trades": 12
+      }
+    },
+    "5000": {
+      "portfolio_size": 5000,
+      "max_position_pct": 0.09293803964068593,
+      "kelly_fraction": 0.0662576444519992,
+      "min_hold_bars": 25,
+      "stop_loss_pct": 0.04239958350058539,
+      "take_profit_pct": 0.07049477637244173,
+      "max_total_exposure": 0.9591084298026666,
+      "confidence_threshold": 0.6828160165372796,
+      "score": 26.552122209345452,
+      "metrics": {
+        "avg_return": 0.013974,
+        "avg_sharpe": 1.3797,
+        "avg_dd": 0.0059,
+        "avg_wr": 1.0,
+        "total_trades": 5
+      }
+    },
+    "10000": {
+      "portfolio_size": 10000,
+      "max_position_pct": 0.04343003944591606,
+      "kelly_fraction": 0.21336355936340567,
+      "min_hold_bars": 16,
+      "stop_loss_pct": 0.1723338998246082,
+      "take_profit_pct": 0.3876380987103897,
+      "max_total_exposure": 0.6554585481726581,
+      "confidence_threshold": 0.35477426123904005,
+      "score": 25.497230081798122,
+      "metrics": {
+        "avg_return": 0.021037,
+        "avg_sharpe": 1.8256,
+        "avg_dd": 0.0067,
+        "avg_wr": 0.9167,
+        "total_trades": 8
+      }
+    },
+    "25000": {
+      "portfolio_size": 25000,
+      "max_position_pct": 0.11230849509707833,
+      "kelly_fraction": 0.33878064564459826,
+      "min_hold_bars": 35,
+      "stop_loss_pct": 0.17815161764567095,
+      "take_profit_pct": 0.5,
+      "max_total_exposure": 0.2012174440063344,
+      "confidence_threshold": 0.415758044751569,
+      "score": 25.54003361268736,
+      "metrics": {
+        "avg_return": 0.015158,
+        "avg_sharpe": 1.329,
+        "avg_dd": 0.0082,
+        "avg_wr": 0.9333,
+        "total_trades": 13
+      }
+    },
+    "50000": {
+      "portfolio_size": 50000,
+      "max_position_pct": 0.1305955411373656,
+      "kelly_fraction": 0.2603902541101231,
+      "min_hold_bars": 29,
+      "stop_loss_pct": 0.013911053916202464,
+      "take_profit_pct": 0.054597751492507354,
+      "max_total_exposure": 0.8659541126403374,
+      "confidence_threshold": 0.3061695553391381,
+      "score": 25.417615787836716,
+      "metrics": {
+        "avg_return": 0.018986,
+        "avg_sharpe": 1.6112,
+        "avg_dd": 0.0076,
+        "avg_wr": 0.9167,
+        "total_trades": 9
+      }
+    },
+    "100000": {
+      "portfolio_size": 100000,
+      "max_position_pct": 0.1320780777640237,
+      "kelly_fraction": 0.3453146111125984,
+      "min_hold_bars": 18,
+      "stop_loss_pct": 0.1502112653319927,
+      "take_profit_pct": 0.4939899766421951,
+      "max_total_exposure": 0.6737880420616374,
+      "confidence_threshold": 0.38276409712581966,
+      "score": 25.71803357292847,
+      "metrics": {
+        "avg_return": 0.020683,
+        "avg_sharpe": 1.6874,
+        "avg_dd": 0.0076,
+        "avg_wr": 0.9333,
+        "total_trades": 11
+      }
+    }
+  }
+}

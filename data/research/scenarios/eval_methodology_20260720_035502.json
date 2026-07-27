@@ -1,0 +1,23 @@
+{
+  "capability": "eval_methodology",
+  "source_manifest": "capability_manifest_20260720_035500.json",
+  "origin": "http://arxiv.org/abs/2607.13968v1",
+  "scenarios": [
+    {
+      "id": "eval_met_001",
+      "type": "eval_methodology",
+      "prompt": "Assess the following market conditions and provide a trading recommendation.\n\nContext: Measuring sentiment from financial news is a central task in economics and finance, yet most existing indicators rely on dictionary-based approaches that infer sentiment from word counts and only partially capture context, negation, and semantic structure. This paper proposes a framework for constructing daily news mood indices using transformer-based language models and evaluates whether they better represent sentiment than dictionary-based alternatives. Using 143,755 financial news articles fr",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: Measuring Sentiment News with Transformer-Based Language Models. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "hard"
+    },
+    {
+      "id": "eval_met_002",
+      "type": "eval_methodology",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: Measuring sentiment from financial news is a central task in economics and finance, yet most existing indicators rely on dictionary-based approaches that infer sentiment from word counts and only partially capture context, negation, and semantic structure. This paper proposes a framework for constructing daily news mood indices using transformer-based language models and evaluates whether they better represent sentiment than dictionary-based alternatives. Using 143,755 financial news articles fr",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: Measuring Sentiment News with Transformer-Based Language Models. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "hard"
+    }
+  ]
+}

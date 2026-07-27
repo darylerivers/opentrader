@@ -1,0 +1,23 @@
+{
+  "capability": "eval_methodology",
+  "source_manifest": "capability_manifest_20260714_053507.json",
+  "origin": "http://arxiv.org/abs/2607.09236v1",
+  "scenarios": [
+    {
+      "id": "eval_met_001",
+      "type": "eval_methodology",
+      "prompt": "Assess the following market conditions and provide a trading recommendation.\n\nContext: Machine unlearning in LLMs is the targeted removal of specific knowledge while preserving all other capabilities, critical for privacy and safety. Yet existing benchmarks measure it unreliably. They miss knowledge that resurfaces under paraphrased or indirect queries, a failure we call under-forgetting, and lack the semantic, syntactic, and lexical probes needed to verify that unrelated knowledge is preserved, a failure we call over-forgetting. Both failures reflect an asymmetric generalization ",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: Forget Narrowly, Retain Broadly: Unlearning as an Asymmetric Generalization Problem. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "hard"
+    },
+    {
+      "id": "eval_met_002",
+      "type": "eval_methodology",
+      "prompt": "The market is exhibiting unusual patterns. What is your trading decision?\n\nContext: Machine unlearning in LLMs is the targeted removal of specific knowledge while preserving all other capabilities, critical for privacy and safety. Yet existing benchmarks measure it unreliably. They miss knowledge that resurfaces under paraphrased or indirect queries, a failure we call under-forgetting, and lack the semantic, syntactic, and lexical probes needed to verify that unrelated knowledge is preserved, a failure we call over-forgetting. Both failures reflect an asymmetric generalization ",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: Forget Narrowly, Retain Broadly: Unlearning as an Asymmetric Generalization Problem. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "hard"
+    }
+  ]
+}

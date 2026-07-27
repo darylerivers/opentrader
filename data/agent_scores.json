@@ -1,0 +1,180 @@
+{
+  "bull": {
+    "name": "bull",
+    "total_decisions": 54461,
+    "correct_calls": 29022,
+    "win_loss_ratio": 0.5328950992453315,
+    "avg_confidence": 0.6153023821326574,
+    "regime_performance": {
+      "bearish": {
+        "correct": 926,
+        "total": 28613
+      },
+      "trending_down": {
+        "correct": 13766,
+        "total": 34763
+      },
+      "ranging": {
+        "correct": 13029,
+        "total": 44420
+      },
+      "bullish": {
+        "correct": 9661,
+        "total": 28707
+      },
+      "trending_up": {
+        "correct": 14557,
+        "total": 31112
+      },
+      "volatile": {
+        "correct": 13277,
+        "total": 41833
+      },
+      "unknown": {
+        "correct": 43,
+        "total": 191
+      }
+    },
+    "recent_scores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.5,
+      0.0
+    ]
+  },
+  "bear": {
+    "name": "bear",
+    "total_decisions": 53979,
+    "correct_calls": 28002,
+    "win_loss_ratio": 0.518757294503418,
+    "avg_confidence": 0.543062587302413,
+    "regime_performance": {
+      "bearish": {
+        "correct": 28132,
+        "total": 29012
+      },
+      "trending_down": {
+        "correct": 20137,
+        "total": 34281
+      },
+      "ranging": {
+        "correct": 33901,
+        "total": 43938
+      },
+      "bullish": {
+        "correct": 17360,
+        "total": 28225
+      },
+      "trending_up": {
+        "correct": 22394,
+        "total": 31612
+      },
+      "volatile": {
+        "correct": 20172,
+        "total": 29391
+      },
+      "unknown": {
+        "correct": 153,
+        "total": 191
+      }
+    },
+    "recent_scores": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.5,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.5,
+      1.0
+    ]
+  }
+}

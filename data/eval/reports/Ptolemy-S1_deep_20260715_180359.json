@@ -1,0 +1,134 @@
+{
+  "version": "Ptolemy-S1",
+  "weighted_score": 0.7374,
+  "per_dim_scores": {
+    "signal_accuracy": 0.7585,
+    "reasoning_coherence": 0.5,
+    "confidence_calibration": 0.8918,
+    "adversarial_robustness": 0.5,
+    "debate_quality": 1.0,
+    "edge_detection": 0.8889,
+    "temporal_consistency": 1.0
+  },
+  "breakdown": {
+    "signal_accuracy": {
+      "correct": 52,
+      "total": 67,
+      "accuracy": 0.7761,
+      "avg_score": 0.7585,
+      "elapsed_s": 239.7
+    },
+    "reasoning_coherence": {
+      "scenarios": 62,
+      "avg_coherence": 0.5,
+      "elapsed_s": 243.4
+    },
+    "confidence_calibration": {
+      "ece": 0.1082,
+      "calibration_score": 0.8918,
+      "total_predictions": 67,
+      "bins": [
+        {
+          "bin": 0,
+          "count": 1,
+          "avg_conf": 0.05,
+          "accuracy": 1.0,
+          "bin_ece": 0.95
+        },
+        {
+          "bin": 1,
+          "count": 0,
+          "avg_conf": 0,
+          "accuracy": 0
+        },
+        {
+          "bin": 2,
+          "count": 4,
+          "avg_conf": 0.225,
+          "accuracy": 1.0,
+          "bin_ece": 0.775
+        },
+        {
+          "bin": 3,
+          "count": 0,
+          "avg_conf": 0,
+          "accuracy": 0
+        },
+        {
+          "bin": 4,
+          "count": 0,
+          "avg_conf": 0,
+          "accuracy": 0
+        },
+        {
+          "bin": 5,
+          "count": 4,
+          "avg_conf": 0.5,
+          "accuracy": 0.5,
+          "bin_ece": 0.0
+        },
+        {
+          "bin": 6,
+          "count": 35,
+          "avg_conf": 0.6071,
+          "accuracy": 0.6286,
+          "bin_ece": 0.0214
+        },
+        {
+          "bin": 7,
+          "count": 10,
+          "avg_conf": 0.75,
+          "accuracy": 0.9,
+          "bin_ece": 0.15
+        },
+        {
+          "bin": 8,
+          "count": 13,
+          "avg_conf": 0.85,
+          "accuracy": 0.9231,
+          "bin_ece": 0.0731
+        },
+        {
+          "bin": 9,
+          "count": 0,
+          "avg_conf": 0,
+          "accuracy": 0
+        }
+      ],
+      "elapsed_s": 244.9
+    },
+    "adversarial_robustness": {
+      "flip_rate": 0.0,
+      "flips": 0,
+      "total_compared": 0,
+      "avg_adv_score": 0.0,
+      "robustness": 0.5,
+      "elapsed_s": 71.4
+    },
+    "debate_quality": {
+      "bull_alignment": 1.0,
+      "bear_alignment": 1.0,
+      "bull_ok": 30,
+      "bear_ok": 30,
+      "total": 30,
+      "flags": [],
+      "elapsed_s": 227.9
+    },
+    "edge_detection": {
+      "true_HOLD_rate": 0.7778,
+      "true_ACTIVE_rate": 1.0,
+      "ranging_holds": 7,
+      "ranging_total": 9,
+      "trending_active": 28,
+      "trending_total": 28,
+      "elapsed_s": 111.2
+    },
+    "temporal_consistency": {
+      "agreement_rate": 1.0,
+      "total_compared": 7,
+      "elapsed_s": 46.7
+    }
+  },
+  "flags": [],
+  "timestamp": "2026-07-15T18:03:59.098086+00:00"
+}

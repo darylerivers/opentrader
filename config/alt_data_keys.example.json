@@ -1,0 +1,8 @@
+{
+  "_comment": "Copy this file to alt_data_keys.json and fill in your API keys.",
+  "_note": "alt_data_keys.json is gitignored — never commit it.",
+  "EIA_API_KEY": "YOUR_EIA_KEY",
+  "USDA_API_KEY": "YOUR_USDA_NASS_KEY",
+  "ALPACA_KEY": "YOUR_ALPACA_KEY_ID",
+  "ALPACA_SECRET": "YOUR_ALPACA_SECRET_KEY"
+}

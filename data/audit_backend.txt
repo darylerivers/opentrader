@@ -1,0 +1,421 @@
+# OPENTRADER BACKEND BUG AUDIT
+# Date: 2026-07-08 | Scope: harness, state, exchange, risk, mot, debate, coordinator
+# Categories: concurrency, state consistency, accounting, recovery, data integrity
+
+================================================================================
+
+## [CRITICAL] Finding 1 — NameError crash when training lock is active
+File: /home/mrc/opentrader/harness.py, line 1220
+
+What goes wrong:
+  The method call `self._check_sl_tp_guardrails()` references a non-existent
+  method. The actual method is named `_check_sl_tp()` (line 769). When the
+  training lock file exists, this AttributeError is unhandled — there is no
+  try/except around `self.run_cycle()` in the main loop (lines 1952-1957),
+  so the entire harness crashes.
+
+Quoted evidence:
+  Line 769:   def _check_sl_tp(self) -> List[dict]:
+  Line 1220:  self._check_sl_tp_guardrails()
+  
+  (No definition of _check_sl_tp_guardrails exists anywhere in the codebase.)
+
+Suggested fix:
+  Replace line 1220 with `self._check_sl_tp()`.
+
+================================================================================
+
+## [CRITICAL] Finding 2 — NameError on mtf_context before definition (silent data loss)
+File: /home/mrc/opentrader/harness.py, lines 1105–1110
+
+What goes wrong:
+  In `_debate_one_symbol()`, `mtf_context` is referenced on line 1105 inside a
+  try/except block, but the variable is not defined until line 1110. The
+  resulting NameError is swallowed by the bare `except Exception` on line 1107.
+  This means the arXiv-research context is ALWAYS silently discarded and never
+  appended to the multi-timeframe context feed. The agent never sees academic
+  research data.
+
+Quoted evidence:
+  Line 1103:   arxiv_ctx = format_arxiv_context(...)
+  Line 1105:       mtf_context = (mtf_context or "") + arxiv_ctx  # ← mtf_context UNDEFINED
+  Line 1107:   except Exception:
+  Line 1108:       ctx.news_json = json.dumps({"sources": {}})
+  ...
+  Line 1110:   mtf_context = ""  # ← defined HERE, AFTER it was used
+
+Suggested fix:
+  Move the `mtf_context = ""` initialization to line 1104, BEFORE the arxiv
+  context appending logic. Change the except handler to log the actual error
+  rather than silently dropping data:
+    except Exception as e:
+        logger.debug(f"News/arxiv context build error: {e}")
+        ctx.news_json = json.dumps({"sources": {}})
+
+================================================================================
+
+## [HIGH] Finding 3 — Concurrent dict mutation in _mtf_cache from parallel threads
+File: /home/mrc/opentrader/harness.py, lines 1122–1123
+
+What goes wrong:
+  In `_debate_one_symbol()`, the multi-timeframe cache is written to from
+  multiple `ThreadPoolExecutor` threads (spawned at line 1300-1305). The
+  assignment `self._mtf_cache[mtf_cache_key] = {"bars": bars, "ts": time.time()}`
+  can trigger a CPython dict resize (hash table reallocation) while another
+  thread is reading from the same dict at line 1115. Under the GIL, dict writes
+  are not fully atomic during resize — concurrent readers can observe
+  corrupted/inconsistent iteration state.
+
+Quoted evidence:
+  Line 1115:   mtf_entry = self._mtf_cache.get(mtf_cache_key, {})  # reader
+  Line 1123:   self._mtf_cache[mtf_cache_key] = {"bars": bars, "ts": time.time()}  # writer
+
+Suggested fix:
+  Wrap all reads and writes to `self._mtf_cache` in a `threading.Lock`:
+    with self._mtf_lock:
+        mtf_entry = self._mtf_cache.get(mtf_cache_key, {})
+  (Add `self._mtf_lock = threading.Lock()` to __init__.)
+
+================================================================================
+
+## [HIGH] Finding 4 — Data race on shared cache in parallel debate threads
+File: /home/mrc/opentrader/harness.py, lines 1089–1106
+
+What goes wrong:
+  Three instance-level caches (`_news_cache`, `_arxiv_cache`, `_econ_cache`)
+  are guarded by `if sym == self.symbols[0]` to ensure only one fetch per cycle.
+  However, in the parallel path (ThreadPoolExecutor at line 1300), ALL threads
+  check this guard simultaneously. Multiple threads can pass the check before
+  any of them writes. This causes redundant external API calls (fetch_all_news,
+  fetch_arxiv, get_economics) and a race on which thread's write persists.
+
+Quoted evidence:
+  Line 1089-1090:  if sym == self.symbols[0]:  # fetch once per cycle
+                       self._econ_cache = json.dumps(self.mcp.get_economics())
+  Line 1099-1101:  if sym == self.symbols[0]:
+                       self._news_cache = fetch_all_news()
+                       self._arxiv_cache = fetch_arxiv()
+
+Suggested fix:
+  Use a cycle-based flag instead of a symbol comparison:
+    if self._news_cache_cycle != self.cycle:
+        self._news_cache_cycle = self.cycle
+        self._news_cache = fetch_all_news()
+  Or use a threading.Lock to protect the fetch-once-per-cycle logic.
+
+================================================================================
+
+## [HIGH] Finding 5 — AgentScorer in-memory state race between record() and _save()
+File: /home/mrc/opentrader/mot/scoring.py, lines 68–113
+
+What goes wrong:
+  The `_lock` in AgentScorer only guards the file write (lines 76-79), not the
+  in-memory `self.records` dict. `_save()` prepares data by iterating
+  `self.records.items()` outside the lock (line 69-75), while `record()` mutates
+  the same dict (lines 88-102) from parallel debate threads. A thread context
+  switch during dict iteration while another thread mutates the dict can cause
+  `RuntimeError: dictionary changed size during iteration`.
+
+Quoted evidence:
+  Line 56-57:   self.records: Dict[str, AgentRecord] = self._load()
+                self._lock = threading.Lock()
+  Line 68-75:   # _save() reads self.records OUTSIDE the lock:
+                data = {k: {...} for k, v in self.records.items()}  # NO LOCK
+  Line 76:      with self._lock:  # lock only for file write
+  Line 82-113:  # record() mutates self.records with NO lock:
+  Line 89:      rec.total_decisions += 1
+  Line 100:     rec.recent_scores.append(score)
+
+Suggested fix:
+  Move the lock acquisition to cover both the dict read (data preparation in
+  _save) and the dict mutations in record():
+    def record(...):
+        with self._lock:
+            ...  # all mutations
+            self._save_locked()  # write without re-acquiring
+
+================================================================================
+
+## [HIGH] Finding 6 — State save failure logged at DEBUG level (invisible data loss)
+File: /home/mrc/opentrader/harness.py, lines 467–469
+
+What goes wrong:
+  `_save_agent_state()` catches all exceptions and logs at DEBUG level. At the
+  default INFO log level, a failure to persist agent state (positions, cash,
+  trade journal, signal history) produces NO visible output. If the disk is
+  full or the JSON serializer fails on a non-serializable object, the state is
+  silently lost with no alert. Since `_save_agent_state()` is called every cycle
+  (line 1706), a transient issue can go completely unnoticed.
+
+Quoted evidence:
+  Line 465-469:
+      path = self._agent_state_path()
+      with open(path, "w") as f:
+          json.dump(state, f, indent=2, default=str)
+  except Exception as e:
+      logger.debug(f"Could not save agent state: {e}")
+
+Suggested fix:
+  Change to `logger.error()` (or at minimum `logger.warning()`) to surface
+  state persistence failures in production logs. Also consider writing to a
+  temporary file and atomically renaming (as StateManager does at line 68-71),
+  so a partial write doesn't corrupt the previous state on disk.
+
+================================================================================
+
+## [HIGH] Finding 7 — Cost basis reconstructed incorrectly on portfolio restore
+File: /home/mrc/opentrader/harness.py, lines 528–535
+
+What goes wrong:
+  When restoring portfolio state from `paper_state.json`, the cost basis is
+  computed as `qty * entry_price` using a single entry price per position.
+  However, the live exchange accumulates cost basis as a running sum of all
+  buy fill costs (`self._cost_basis[sym] = self._cost_basis.get(sym, 0) + cost`
+  at live.py line 250). If a position was accumulated via multiple buys at
+  different prices, the restored cost basis will be wrong. The fills list IS
+  saved but is NOT used to rebuild cost basis.
+
+Quoted evidence:
+  Line 528-535:
+      restored_cost_basis = {}
+      for p in saved_positions:
+          ...
+          restored_cost_basis[sym] = qty * entry  # assumes single-entry
+  Compare with live.py line 250:
+      self._cost_basis[symbol] = self._cost_basis.get(symbol, 0) + cost
+
+Suggested fix:
+  Reconstruct cost basis from the saved fills list rather than recomputing from
+  positions. Sum all BUY fill costs per symbol:
+      for f in saved_fills:
+          if f["side"] == "BUY":
+              restored_cost_basis[sym] = restored_cost_basis.get(sym, 0) + f["cost"]
+
+================================================================================
+
+## [MEDIUM] Finding 8 — Trade journal records sell quantity from stored SL/TP qty, not actual filled qty
+File: /home/mrc/opentrader/harness.py, lines 864–873
+
+What goes wrong:
+  When a guardrail-triggered close happens in `_check_sl_tp()`, the trade
+  journal records `pos_qty = float(self._sl_tp_levels.get(sym, {}).get("qty", 0))`
+  (line 867) as the sold quantity. But the actual order (line 848) uses
+  `float(pos)` from the current balance, which may differ if a partial fill
+  occurred or if the position was previously partially closed by a manual SELL
+  that didn't clean up `_sl_tp_levels`. The journal quantity and the fill
+  quantity can diverge, leading to phantom P&L.
+
+Quoted evidence:
+  Line 848:   order = self.exchange.place_order(sym, "SELL", float(pos), "market")
+  Line 867:   pos_qty = float(self._sl_tp_levels.get(sym, {}).get("qty", 0)) or float(pos)
+  Line 871:   "quantity": round(pos_qty, 8),
+  Line 873:   "pnl_dollar": round(pnl_pct * (pos_qty * entry_price), 2),
+
+Suggested fix:
+  Use `order.quantity` (the actual filled quantity from the exchange) instead
+  of the stored `qty` from `_sl_tp_levels` for journal and P&L calculations.
+
+================================================================================
+
+## [MEDIUM] Finding 9 — mot_coordinator_should_promote() creates ephemeral MoTCoordinator with file race
+File: /home/mrc/opentrader/harness.py, lines 375–384
+
+What goes wrong:
+  This method instantiates a NEW `MoTCoordinator` every time it's called,
+  which re-reads `mot_state.json` from disk. Meanwhile, the actual
+  `self.mot_coordinator` may be writing to the same file (via `_save_state()`),
+  creating a read-write race. The method also passes no harness reference
+  (`harness=None`), so the new coordinator cannot access live data.
+
+Quoted evidence:
+  Line 378-382:
+      coord = MoTCoordinator(str(Path(self.state_dir)))
+      if coord.state.current_score < 0.3:
+          return True
+
+Suggested fix:
+  Instead of creating a new MoTCoordinator, reuse the existing instance:
+      if self.mot_coordinator and self.mot_coordinator.state.current_score < 0.3:
+          return True
+
+================================================================================
+
+## [MEDIUM] Finding 10 — Daily trade counter incremented unconditionally per risk check (non-idempotent)
+File: /home/mrc/opentrader/risk/manager.py, line 350
+
+What goes wrong:
+  `self._daily_trades += 1` is the LAST statement in `_check_inner()` before the
+  return. It is called only for approved trades (all checks pass), BUT it also
+  fires for BOTH the `pre_trade_check()` path AND the direct `check()` path.
+  If the same signal passes through both paths (e.g., `pre_trade_check` is
+  called first, then `check` is called separately), the daily counter
+  increments twice for one trade. There is no deduplication.
+
+Quoted evidence:
+  Line 350:   self._daily_trades += 1
+  Line 351-366: return RiskResult(approved=True, ...)
+
+  The harness calls risk.check() at line 1508, but the pre_trade_check()
+  method (line 196) also calls self.check() internally and the counter
+  would fire from both. (The harness uses `pre_trade_check()` indirectly
+  through the committee at line 1475-1478.)
+
+Suggested fix:
+  Add a `_checked_order_ids: Set[str]` to RiskManager and only increment the
+  counter if the signal's unique ID (or hash) hasn't been seen before.
+
+================================================================================
+
+## [MEDIUM] Finding 11 — Slippage applied symmetrically to filled quantity but cost uses effective_qty
+File: /home/mrc/opentrader/exchange/paper.py, lines 85–101
+
+What goes wrong:
+  When cash is insufficient for a BUY, the quantity is reduced to `affordable_qty`
+  (line 89). But the fill record at lines 125-129 still records the original
+  `order_id`, and the `cost` is computed as `fill_price * effective_qty` (line 100).
+  This is mathematically correct, BUT the cost recorded in the fill dict (line 128)
+  uses the post-adjustment `effective_qty`, while `cash_after` uses `self._cash`
+  which was decremented by `cost`. If multiple partial fills happen (slippage +
+  cash cap + partial fill), the fill dict's `quantity` vs `cost` vs `cash_after`
+  may not reconcile when audited later. This is a data integrity issue for
+  post-hoc trade reconstruction.
+
+Quoted evidence:
+  Line 78-82:   effective_qty = quantity; ... if partial_fill: effective_qty *= fill_ratio
+  Line 89:      affordable_qty = self._cash / fill_price
+  Line 98:      effective_qty = affordable_qty
+  Line 101:     self._cash -= cost
+  Line 128:     "cost": round(cost, 2), "cash_after": round(self._cash, 2),
+
+Suggested fix:
+  Store the original requested quantity in the fill dict so the adjustment
+  chain (requested → after-partial-fill → after-cash-cap → actual) is
+  traceable. Add fields `requested_quantity` and `fill_pct` to the fill dict
+  for auditability.
+
+================================================================================
+
+## [MEDIUM] Finding 12 — LiveExchange caches stale bars in get_bars but returns them immediately
+File: /home/mrc/opentrader/exchange/live.py, lines 130–131
+
+What goes wrong:
+  When `LiveExchange` is not connected (line 130: `if not self._connected or not self._ccxt`),
+  it returns the previous bar cache without any indication that the data is stale.
+  The caller cannot distinguish between "fresh bars" and "cached stale bars."
+  In backtest mode, this is acceptable. In live mode, it means the agent may
+  trade on outdated price data if the exchange connection drops mid-session,
+  with no error or warning.
+
+Quoted evidence:
+  Line 130-131:
+      if not self._connected or not self._ccxt:
+          return self._bar_cache.get(f"{symbol}:{timeframe}:{limit}", [])
+
+Suggested fix:
+  Log a warning on stale cache return in live mode, and/or raise a custom
+  exception so the harness can decide whether to halt or proceed with
+  stale data.
+
+================================================================================
+
+## [MEDIUM] Finding 13 — Harness main loop has no try/except around run_cycle()
+File: /home/mrc/opentrader/harness.py, lines 1952–1957
+
+What goes wrong:
+  Any unhandled exception in `run_cycle()` propagates directly to the caller,
+  killing the entire harness process. There is no retry, no graceful degrade,
+  no state save before crash. Since `run_cycle()` performs ~2000 lines of
+  orchestration (debate, risk, execution, state I/O, fine-tune subprocess),
+  a single transient error (e.g., disk full, network timeout, JSON parse
+  failure on LLM output) terminates the bot.
+
+Quoted evidence:
+  Line 1952-1957:
+      while self.running:
+          if self.max_cycles > 0 and self.cycle >= self.max_cycles:
+              ...
+          self.run_cycle()   # ← no try/except
+          ...
+
+Suggested fix:
+  Wrap `self.run_cycle()` in a try/except that logs the error, saves state,
+  and optionally continues after a backoff:
+      try:
+          self.run_cycle()
+      except Exception as e:
+          logger.error(f"Cycle {self.cycle} crashed: {e}", exc_info=True)
+          self._save_agent_state()  # emergency persist
+          time.sleep(5)
+
+================================================================================
+
+## [MEDIUM] Finding 14 — Order placed via _check_sl_tp modifies exchange state before journal/reflection
+File: /home/mrc/opentrader/harness.py, lines 847–908
+
+What goes wrong:
+  In `_check_sl_tp()`, `place_order()` is called at line 848, which mutates
+  `_cash`, `_positions`, and `_cost_basis` immediately. The trade journal and
+  reflection resolution happen afterwards (lines 859-898). If the journal
+  recording fails (e.g., KeyError on `self._sl_tp_levels.get(sym, {})`),
+  the exchange state has already been mutated but no journal entry exists,
+  creating a permanent accounting gap between the fills list and the trade
+  journal.
+
+Quoted evidence:
+  Line 848:   order = self.exchange.place_order(sym, "SELL", float(pos), "market")
+  Line 866-880:  # trade journal — AFTER place_order already happened
+  Line 868:      self._trade_journal.append({...})
+
+Suggested fix:
+  Either:
+  (a) Record the journal entry BEFORE calling place_order(), and remove it
+      if the order is rejected, OR
+  (b) Wrap the entire block (order + journal + reflection) in a try/except
+      that rolls back the place_order effect on failure.
+
+================================================================================
+
+## [LOW] Finding 15 — LiveExchange get_bars cache key collision across limit values
+File: /home/mrc/opentrader/exchange/live.py, lines 134–139
+
+What goes wrong:
+  The cache key format `f"{symbol}:{timeframe}:{limit}"` ties each specific
+  limit value to its own cache entry. But when `load_bars()` is called at
+  line 300-305, it writes to a different cache key format than `get_bars()`:
+  `cache_key = f"{symbol}:1h:{len(bars)}"` — hardcoded "1h" regardless of
+  the actual timeframe. If backtest data is loaded with 500 bars, then
+  `get_bars()` requests 80 bars, there's no cache hit. More critically, the
+  `_last_fetch` dict has independent TTL per cache key, so a stale entry
+  with limit=100 doesn't prevent a fresh fetch with limit=80. This causes
+  unnecessary API calls and cache fragmentation.
+
+Quoted evidence:
+  Line 134:   cache_key = f"{symbol}:{timeframe}:{limit}"    # get_bars cache key
+  Line 302:   cache_key = f"{symbol}:1h:{len(bars)}"          # load_bars cache key (hardcoded 1h)
+  Line 136-139:
+      if cache_key in self._bar_cache:
+          last_fetch = self._last_fetch.get(cache_key, 0)
+          if now - last_fetch < self._cache_ttl:
+              return self._bar_cache[cache_key]
+
+Suggested fix:
+  Pass the timeframe parameter to `load_bars()` so the cache key matches.
+  Better: use a two-level cache (symbol + timeframe → list of bars),
+  and slice bars[-limit:] on retrieval rather than keying by limit.
+
+================================================================================
+
+## Summary
+
+  CRITICAL: 2 findings (Findings 1-2) — guaranteed runtime crashes or silent data loss
+  HIGH:     5 findings (Findings 3-7) — concurrency races and state integrity bugs
+  MEDIUM:   7 findings (Findings 8-14) — accounting gaps and recovery hazards
+  LOW:      1 finding  (Finding 15) — cache inefficiency
+
+  Highest priority actions:
+    1. Fix Finding 1 (method name mismatch → crash when training lock active)
+    2. Fix Finding 2 (mtf_context NameError → arxiv data silently dropped every cycle)
+    3. Add threading.Lock to _mtf_cache (Finding 3) to prevent dict corruption
+    4. Add proper locking to AgentScorer (Finding 5) to prevent iteration-during-mutation errors
+    5. Elevate _save_agent_state() logging from debug to error (Finding 6)
+

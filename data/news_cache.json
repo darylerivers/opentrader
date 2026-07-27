@@ -1,0 +1,102 @@
+{
+  "fear_greed": {
+    "data": {
+      "value": 27,
+      "classification": "Fear",
+      "timestamp": "1784937600",
+      "time_until_update": "61182",
+      "yesterday_value": 28,
+      "yesterday_classification": "Fear",
+      "change": -1
+    },
+    "fetched_at": 1784962818.0851324
+  },
+  "coingecko_trending": {
+    "data": {
+      "top_trending": [
+        {
+          "name": "DeXe",
+          "symbol": "DEXE",
+          "market_cap_rank": 146,
+          "score": 0,
+          "thumb": "https://coin-images.coingecko.com/coins/images/12713/standard/DEXE_token_logo.png?1696512514"
+        },
+        {
+          "name": "Zama",
+          "symbol": "ZAMA",
+          "market_cap_rank": 210,
+          "score": 1,
+          "thumb": "https://coin-images.coingecko.com/coins/images/70921/standard/zama.png?1764591992"
+        },
+        {
+          "name": "Lorenzo Protocol",
+          "symbol": "BANK",
+          "market_cap_rank": 212,
+          "score": 2,
+          "thumb": "https://coin-images.coingecko.com/coins/images/55250/standard/lorenzo.jpg?1744963693"
+        },
+        {
+          "name": "Pudgy Penguins",
+          "symbol": "PENGU",
+          "market_cap_rank": 114,
+          "score": 3,
+          "thumb": "https://coin-images.coingecko.com/coins/images/52622/standard/PUDGY_PENGUINS_PENGU_PFP.png?1733809110"
+        },
+        {
+          "name": "Solana",
+          "symbol": "SOL",
+          "market_cap_rank": 7,
+          "score": 4,
+          "thumb": "https://coin-images.coingecko.com/coins/images/4128/standard/solana.png?1718769756"
+        },
+        {
+          "name": "Pi Network",
+          "symbol": "PI",
+          "market_cap_rank": 70,
+          "score": 5,
+          "thumb": "https://coin-images.coingecko.com/coins/images/54342/standard/pi_network.jpg?1739347576"
+        },
+        {
+          "name": "Bittensor",
+          "symbol": "TAO",
+          "market_cap_rank": 42,
+          "score": 6,
+          "thumb": "https://coin-images.coingecko.com/coins/images/28452/standard/ARUsPeNQ_400x400.jpeg?1696527447"
+        }
+      ],
+      "count": 7
+    },
+    "fetched_at": 1784962818.0851324
+  },
+  "coingecko_global": {
+    "data": {
+      "total_market_cap_usd": 2269057523672.615,
+      "total_volume_24h_usd": 60531764238.60307,
+      "btc_dominance_pct": 56.52186127413684,
+      "eth_dominance_pct": 9.867828643516123,
+      "active_cryptocurrencies": 17789,
+      "market_cap_change_24h_pct": -1.7372668488416583
+    },
+    "fetched_at": 1784963078.5626483
+  },
+  "btc_stats": {
+    "data": {
+      "price_usd": 63931,
+      "market_cap_usd": 1282510212973,
+      "market_cap_rank": 1,
+      "total_volume_usd": 24266202985,
+      "price_change_24h_pct": -2.26,
+      "price_change_7d_pct": 0.04,
+      "price_change_30d_pct": 3.89,
+      "ath_usd": 126080,
+      "ath_date": "2025-10-06",
+      "ath_change_pct": -49.3,
+      "atl_usd": 67.81,
+      "high_24h_usd": 65700,
+      "low_24h_usd": 63713,
+      "circulating_supply": 20060953.0,
+      "max_supply": 21000000.0
+    },
+    "fetched_at": 1784962818.0851324
+  }
+}

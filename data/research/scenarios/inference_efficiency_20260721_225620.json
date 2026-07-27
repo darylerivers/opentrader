@@ -1,0 +1,23 @@
+{
+  "capability": "inference_efficiency",
+  "source_manifest": "capability_manifest_20260721_225619.json",
+  "origin": "http://arxiv.org/abs/2607.15094v1",
+  "scenarios": [
+    {
+      "id": "inferenc_001",
+      "type": "inference_efficiency",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: Multimodal models such as CLIP learn a shared embedding space for cross-modal retrieval, but continual adaptation to sequentially arriving data can disrupt the cross-modal alignment acquired from earlier phases. Conventional continual-learning methods return a single checkpoint, which commits every retrieval direction to the same stability-plasticity trade-off. We propose AlphaWiSE, a post-hoc weight-space interpolation method that composes two frozen source checkpoints. For each aligned paramet",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: AlphaWiSE: Adaptive Weight Interpolation for Continual Multimodal Representation Learning. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "easy"
+    },
+    {
+      "id": "inferenc_002",
+      "type": "inference_efficiency",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: Multimodal models such as CLIP learn a shared embedding space for cross-modal retrieval, but continual adaptation to sequentially arriving data can disrupt the cross-modal alignment acquired from earlier phases. Conventional continual-learning methods return a single checkpoint, which commits every retrieval direction to the same stability-plasticity trade-off. We propose AlphaWiSE, a post-hoc weight-space interpolation method that composes two frozen source checkpoints. For each aligned paramet",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: AlphaWiSE: Adaptive Weight Interpolation for Continual Multimodal Representation Learning. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "easy"
+    }
+  ]
+}

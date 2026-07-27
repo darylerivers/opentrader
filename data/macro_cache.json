@@ -1,0 +1,49 @@
+{
+  "source": "simulated",
+  "generated_at": "2026-07-13T17:22:45.221867+00:00",
+  "regime": "Risk-On",
+  "indicators": [
+    {
+      "name": "Fed Funds Rate",
+      "value": 0.43,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "10Y Treasury",
+      "value": 2.5,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "2Y Treasury",
+      "value": 0.5,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "10Y-2Y Spread",
+      "value": 2.07,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "Unemployment",
+      "value": 3.4,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "CPI (YoY)",
+      "value": 1.6,
+      "unit": "%",
+      "date": "2026-07-13"
+    },
+    {
+      "name": "GDP Growth",
+      "value": 1.5,
+      "unit": "%",
+      "date": "2026-07-13"
+    }
+  ]
+}

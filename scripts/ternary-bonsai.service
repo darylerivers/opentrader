@@ -1,0 +1,23 @@
+[Unit]
+Description=Ternary Bonsai 27B LLM Server (RTX 3070 CUDA)
+After=network.target
+
+[Service]
+Type=simple
+User=mrc
+Environment=CUDA_VISIBLE_DEVICES=0
+Environment=CUDA_DEVICE_ORDER=PCI_BUS_ID
+ExecStart=/home/mrc/src/prismml-llama.cpp/build/bin/llama-server \
+    -m /home/mrc/models/ternary-bonsai-27b/Ternary-Bonsai-27B-Q2_0.gguf \
+    --host 127.0.0.1 --port 5802 \
+    --ctx-size 4096 \
+    -ngl 99 \
+    --cache-type-k q4_0 --cache-type-v q4_0 \
+    --temp 0.7 \
+    --parallel 1
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

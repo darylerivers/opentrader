@@ -1,0 +1,23 @@
+{
+  "capability": "inference_efficiency",
+  "source_manifest": "capability_manifest_20260716_061219.json",
+  "origin": "http://arxiv.org/abs/2607.10706v1",
+  "scenarios": [
+    {
+      "id": "inferenc_001",
+      "type": "inference_efficiency",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: The action space poses a major challenge in robot learning, since it is often high-dimensional, can span long time horizons, and frequently admits multi-modal optimal solutions. A good choice of action representation and loss function can help to address these concerns, but there are often trade offs. We propose Action Map Policy (AMP), which casts 3D closed-loop manipulation policy learning as a classification problem in image space. While classification has been an effective formulation in gen",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: Action Map Policy: Learning 3D Closed-loop Manipulation via Pixel Classification. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "easy"
+    },
+    {
+      "id": "inferenc_002",
+      "type": "inference_efficiency",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: The action space poses a major challenge in robot learning, since it is often high-dimensional, can span long time horizons, and frequently admits multi-modal optimal solutions. A good choice of action representation and loss function can help to address these concerns, but there are often trade offs. We propose Action Map Policy (AMP), which casts 3D closed-loop manipulation policy learning as a classification problem in image space. While classification has been an effective formulation in gen",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: Action Map Policy: Learning 3D Closed-loop Manipulation via Pixel Classification. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "easy"
+    }
+  ]
+}

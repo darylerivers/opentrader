@@ -1,0 +1,1 @@
+python3 harness.py --exchange alpaca-paper --stage 3 --cash 100 --llama-host http://127.0.0.1:8080 --max-cycles 0 --debate-mode adir --parallel-debate --interval 10

@@ -1,0 +1,20 @@
+# Systemd service for OpenTrader Trading Harness
+# Now connects to llama-swap on :8080 (managed qwythos-9b-mtp) instead of a
+# redundant direct llama-server on :5809. llama-swap handles model lifecycle.
+[Unit]
+Description=OpenTrader Trading Harness
+After=network.target
+Wants=llama-swap.service
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/rocm_venv/bin/python3 /home/mrc/opentrader/run_harness.py
+Restart=on-failure
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

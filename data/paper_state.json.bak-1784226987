@@ -1,0 +1,3457 @@
+{
+  "cycle": 121,
+  "timestamp": "2026-07-16T18:35:13.833409+00:00",
+  "initial_cash": 100.0,
+  "cash": 82.16,
+  "portfolio_value": 99.95,
+  "positions": [
+    {
+      "symbol": "MSFT",
+      "quantity": 0.00052991,
+      "current_price": 526.4,
+      "entry_price": 528.39,
+      "stop_loss": 501.97,
+      "take_profit": 581.23,
+      "highest_price": 531.8,
+      "cycle_opened": 1
+    },
+    {
+      "symbol": "TSLA",
+      "quantity": 0.01814644,
+      "current_price": 307.81,
+      "entry_price": 305.33,
+      "stop_loss": 290.06,
+      "take_profit": 335.86,
+      "highest_price": 308.33,
+      "cycle_opened": 46
+    },
+    {
+      "symbol": "AAPL",
+      "quantity": 0.00429799,
+      "current_price": 232.6,
+      "entry_price": 237.32,
+      "stop_loss": 225.45,
+      "take_profit": 261.05,
+      "highest_price": 237.9,
+      "cycle_opened": 2
+    },
+    {
+      "symbol": "NVDA",
+      "quantity": 0.03563184,
+      "current_price": 155.3,
+      "entry_price": 154.31,
+      "stop_loss": 146.59,
+      "take_profit": 169.74,
+      "highest_price": 155.3,
+      "cycle_opened": 41
+    },
+    {
+      "symbol": "META",
+      "quantity": 0.00871169,
+      "current_price": 619.96,
+      "entry_price": 631.02,
+      "stop_loss": 599.47,
+      "take_profit": 694.12,
+      "highest_price": 631.02,
+      "cycle_opened": 48
+    }
+  ],
+  "fills": [
+    {
+      "order_id": "paper_1",
+      "symbol": "NVDA",
+      "side": "BUY",
+      "quantity": 0.00375469,
+      "price": 151.81,
+      "cost": 0.57,
+      "cash_after": 99.43,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T16:25:57.869151+00:00"
+    },
+    {
+      "order_id": "paper_2",
+      "symbol": "MSFT",
+      "side": "BUY",
+      "quantity": 0.00052991,
+      "price": 528.39,
+      "cost": 0.28,
+      "cash_after": 99.15,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T16:25:57.869472+00:00"
+    },
+    {
+      "order_id": "paper_3",
+      "symbol": "META",
+      "side": "BUY",
+      "quantity": 0.00076707,
+      "price": 625.76,
+      "cost": 0.48,
+      "cash_after": 98.67,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T16:25:57.869649+00:00"
+    },
+    {
+      "order_id": "paper_4",
+      "symbol": "TSLA",
+      "side": "BUY",
+      "quantity": 0.00177727,
+      "price": 315.09,
+      "cost": 0.56,
+      "cash_after": 98.11,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T16:25:57.869810+00:00"
+    },
+    {
+      "order_id": "paper_5",
+      "symbol": "AAPL",
+      "side": "BUY",
+      "quantity": 0.00429799,
+      "price": 237.32,
+      "cost": 1.02,
+      "cash_after": 97.09,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T16:27:27.139528+00:00"
+    },
+    {
+      "order_id": "paper_6",
+      "symbol": "NVDA",
+      "side": "SELL",
+      "quantity": 0.00375469,
+      "price": 154.31,
+      "cost": 0.58,
+      "cash_after": 97.67,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T17:23:43.577503+00:00"
+    },
+    {
+      "order_id": "paper_7",
+      "symbol": "NVDA",
+      "side": "BUY",
+      "quantity": 0.03563184,
+      "price": 154.31,
+      "cost": 5.5,
+      "cash_after": 92.17,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T17:24:55.685101+00:00"
+    },
+    {
+      "order_id": "paper_8",
+      "symbol": "META",
+      "side": "SELL",
+      "quantity": 0.00076707,
+      "price": 625.14,
+      "cost": 0.48,
+      "cash_after": 92.65,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T17:31:28.966486+00:00"
+    },
+    {
+      "order_id": "paper_9",
+      "symbol": "TSLA",
+      "side": "BUY",
+      "quantity": 0.01636917,
+      "price": 305.33,
+      "cost": 5.0,
+      "cash_after": 87.65,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T17:32:56.894709+00:00"
+    },
+    {
+      "order_id": "paper_10",
+      "symbol": "META",
+      "side": "BUY",
+      "quantity": 0.00871169,
+      "price": 631.02,
+      "cost": 5.5,
+      "cash_after": 82.16,
+      "fill_pct": 1.0,
+      "timestamp": "2026-07-16T17:35:53.579030+00:00"
+    }
+  ],
+  "prices": {
+    "MSFT": 526.4,
+    "TSLA": 307.81,
+    "AAPL": 232.6,
+    "NVDA": 155.3,
+    "META": 619.96
+  },
+  "regime": {
+    "portfolio": {
+      "diversification_ratio": 0.0,
+      "portfolio_var": 0.0,
+      "total_exposure_pct": 0.0,
+      "correlation_matrix": {
+        "NVDA": {
+          "NVDA": 1.0,
+          "GOOGL": 0.279,
+          "TSLA": -0.004,
+          "AAPL": 0.145,
+          "MSFT": -0.153,
+          "META": 0.117
+        },
+        "GOOGL": {
+          "NVDA": 0.279,
+          "GOOGL": 1.0,
+          "TSLA": -0.215,
+          "AAPL": -0.02,
+          "MSFT": 0.003,
+          "META": 0.153
+        },
+        "TSLA": {
+          "NVDA": -0.004,
+          "GOOGL": -0.215,
+          "TSLA": 1.0,
+          "AAPL": 0.197,
+          "MSFT": -0.042,
+          "META": 0.212
+        },
+        "AAPL": {
+          "NVDA": 0.145,
+          "GOOGL": -0.02,
+          "TSLA": 0.197,
+          "AAPL": 1.0,
+          "MSFT": 0.218,
+          "META": -0.159
+        },
+        "MSFT": {
+          "NVDA": -0.153,
+          "GOOGL": 0.003,
+          "TSLA": -0.042,
+          "AAPL": 0.218,
+          "MSFT": 1.0,
+          "META": 0.092
+        },
+        "META": {
+          "NVDA": 0.117,
+          "GOOGL": 0.153,
+          "TSLA": 0.212,
+          "AAPL": -0.159,
+          "MSFT": 0.092,
+          "META": 1.0
+        }
+      },
+      "kelly_fractions": {
+        "NVDA": 0.0,
+        "GOOGL": 0.0,
+        "TSLA": 0.0,
+        "AAPL": 0.0,
+        "MSFT": 0.0,
+        "META": 0.0
+      },
+      "allocations": [
+        {
+          "symbol": "NVDA",
+          "side": "SELL",
+          "weight_pct": 0.0,
+          "quantity": 0.03563184,
+          "reason": "signal: SELL"
+        },
+        {
+          "symbol": "GOOGL",
+          "side": "HOLD",
+          "weight_pct": 0.0,
+          "quantity": 0,
+          "reason": "signal: SELL"
+        },
+        {
+          "symbol": "TSLA",
+          "side": "SELL",
+          "weight_pct": 0.0,
+          "quantity": 0.01814644,
+          "reason": "signal: SELL"
+        },
+        {
+          "symbol": "AAPL",
+          "side": "SELL",
+          "weight_pct": 0.0,
+          "quantity": 0.00429799,
+          "reason": "signal: SELL"
+        },
+        {
+          "symbol": "MSFT",
+          "side": "SELL",
+          "weight_pct": 0.0,
+          "quantity": 0.00052991,
+          "reason": "signal: SELL"
+        },
+        {
+          "symbol": "META",
+          "side": "SELL",
+          "weight_pct": 0.0,
+          "quantity": 0.00871169,
+          "reason": "signal: SELL"
+        }
+      ]
+    }
+  },
+  "signals": [
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(HOLD,70%,evq=0.85) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(BUY,27%)",
+      "position_pct": 0.1063,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.20) vs Bear(SELL,65%,evq=0.20) \u2192 RISK(SELL,10%)",
+      "position_pct": 0.0813,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.65) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(SELL,30%)",
+      "position_pct": 0.0406,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.45) vs Bear(SELL,55%,evq=0.35) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0773,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.57) vs Bear(SELL,50%,evq=0.33) \u2192 RISK(BUY,24%)",
+      "position_pct": 0.0792,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.65,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.65) vs Bear(SELL,15%,evq=0.65) \u2192 RISK(BUY,65%)",
+      "position_pct": 0.1625,
+      "timestamp": "2026-07-16T16:25:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.35) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0993,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(BUY,42%)",
+      "position_pct": 0.0735,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.62) vs Bear(SELL,60%,evq=0.72) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0806,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.45) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.0825,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.01) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(SELL,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.47) vs Bear(SELL,60%,evq=0.63) \u2192 RISK(SELL,21%)",
+      "position_pct": 0.0859,
+      "timestamp": "2026-07-16T16:27:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.49,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.14) vs Bear(SELL,60%,evq=0.62) \u2192 RISK(SELL,45%)",
+      "position_pct": 0.1224,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.62) vs Bear(SELL,60%,evq=0.62) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.62,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,55%,evq=0.45) \u2192 RISK(BUY,62%)",
+      "position_pct": 0.1562,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.35) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,34%)",
+      "position_pct": 0.1056,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.20) vs Bear(SELL,60%,evq=0.15) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.0714,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,40%,evq=0.55) \u2192 RISK(BUY,23%)",
+      "position_pct": 0.0542,
+      "timestamp": "2026-07-16T16:29:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(BUY,55%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0756,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.1179,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0956,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,5%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.088,
+      "timestamp": "2026-07-16T16:30:41+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.42) vs Bear(SELL,50%,evq=0.42) \u2192 RISK(BUY,45%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.61,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(SELL,61%)",
+      "position_pct": 0.1525,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.46) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0781,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(HOLD,50%,evq=0.15) \u2192 RISK(HOLD,50%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.50) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0882,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:32:12+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.45) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0886,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.25) vs Bear(SELL,67%,evq=0.25) \u2192 RISK(HOLD,50%)",
+      "position_pct": 0.0838,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.01,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.25) vs Bear(HOLD,10%,evq=0.15) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.61) vs Bear(SELL,60%,evq=0.61) \u2192 RISK(HOLD,21%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.35) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0947,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(HOLD,50%,evq=0.35) \u2192 RISK(HOLD,40%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:33:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.65) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0804,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(HOLD,50%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.088,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.50) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0786,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(HOLD,33%,evq=0.33) vs Bear(SELL,67%,evq=0.67) \u2192 RISK(HOLD,49%)",
+      "position_pct": 0.1122,
+      "timestamp": "2026-07-16T16:35:03+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,5%)",
+      "position_pct": 0.0783,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,45%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.67,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.33) vs Bear(SELL,33%,evq=0.33) \u2192 RISK(BUY,67%)",
+      "position_pct": 0.1675,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.35) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(SELL,22%)",
+      "position_pct": 0.0956,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.01,
+      "reason": "ADIR: Bull(SELL,50%,evq=0.01) vs Bear(SELL,50%,evq=0.01) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:36:34+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.45) \u2192 RISK(BUY,55%)",
+      "position_pct": 0.0857,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,76%,evq=0.76) \u2192 RISK(SELL,56%)",
+      "position_pct": 0.1504,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,10%,evq=0.40) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0941,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.45) vs Bear(SELL,65%,evq=0.75) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.1016,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.5,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,45%)",
+      "position_pct": 0.1243,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.65) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,15%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T16:37:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.35) vs Bear(SELL,60%,evq=0.45) \u2192 RISK(BUY,27%)",
+      "position_pct": 0.0844,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.05,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.01) vs Bear(SELL,50%,evq=0.01) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.0125,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,55%,evq=0.35) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0963,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.71,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.85) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,71%)",
+      "position_pct": 0.1775,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.59,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.31) vs Bear(SELL,85%,evq=0.69) \u2192 RISK(BUY,28%)",
+      "position_pct": 0.1466,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.30) vs Bear(SELL,65%,evq=0.70) \u2192 RISK(HOLD,34%)",
+      "position_pct": 0.1137,
+      "timestamp": "2026-07-16T16:39:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.01,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.25) vs Bear(HOLD,10%,evq=0.10) \u2192 RISK(BUY,12%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.45) vs Bear(SELL,60%,evq=0.15) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.1125,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.51,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(SELL,36%)",
+      "position_pct": 0.1275,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,65%,evq=0.15) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.0875,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(SELL,95%,evq=0.50) vs Bear(SELL,95%,evq=0.50) \u2192 RISK(HOLD,63%)",
+      "position_pct": 0.1187,
+      "timestamp": "2026-07-16T16:40:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.22) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(BUY,21%)",
+      "position_pct": 0.1135,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,42%)",
+      "position_pct": 0.0955,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.20) vs Bear(SELL,35%,evq=0.35) \u2192 RISK(BUY,55%)",
+      "position_pct": 0.0557,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.46) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,14%)",
+      "position_pct": 0.0849,
+      "timestamp": "2026-07-16T16:42:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.42) vs Bear(SELL,55%,evq=0.29) \u2192 RISK(BUY,31%)",
+      "position_pct": 0.0739,
+      "timestamp": "2026-07-16T16:43:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,40%,evq=0.75) vs Bear(SELL,60%,evq=0.90) \u2192 RISK(BUY,32%)",
+      "position_pct": 0.0818,
+      "timestamp": "2026-07-16T16:43:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.75) vs Bear(BUY,30%,evq=0.75) \u2192 RISK(BUY,66%)",
+      "position_pct": 0.0562,
+      "timestamp": "2026-07-16T16:43:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.59,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.01) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(HOLD,1%)",
+      "position_pct": 0.1471,
+      "timestamp": "2026-07-16T16:43:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.60) vs Bear(SELL,50%,evq=0.45) \u2192 RISK(BUY,42%)",
+      "position_pct": 0.0714,
+      "timestamp": "2026-07-16T16:43:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.14,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.15) vs Bear(HOLD,25%,evq=0.20) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0357,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.45) vs Bear(SELL,60%,evq=0.45) \u2192 RISK(HOLD,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.0875,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.40) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.09,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.40) vs Bear(SELL,60%,evq=0.25) \u2192 RISK(BUY,33%)",
+      "position_pct": 0.0769,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(BUY,5%,evq=0.15) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,15%)",
+      "position_pct": 0.1179,
+      "timestamp": "2026-07-16T16:45:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.53,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,50%)",
+      "position_pct": 0.132,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,50%,evq=0.15) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,50%,evq=0.50) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,40%,evq=0.20) vs Bear(HOLD,40%,evq=0.25) \u2192 RISK(HOLD,50%)",
+      "position_pct": 0.0556,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.57) vs Bear(SELL,60%,evq=0.43) \u2192 RISK(BUY,14%)",
+      "position_pct": 0.0855,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.54) vs Bear(SELL,60%,evq=0.66) \u2192 RISK(SELL,12%)",
+      "position_pct": 0.0825,
+      "timestamp": "2026-07-16T16:46:31+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,40%)",
+      "position_pct": 0.1179,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.35) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0882,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.85) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.085,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,50%,evq=0.15) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.73,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.57) vs Bear(SELL,60%,evq=0.57) \u2192 RISK(BUY,73%)",
+      "position_pct": 0.1825,
+      "timestamp": "2026-07-16T16:48:01+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,40%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0542,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.60) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0783,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.65) vs Bear(SELL,50%,evq=0.65) \u2192 RISK(BUY,53%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,44%)",
+      "position_pct": 0.0882,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.65,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(SELL,65%)",
+      "position_pct": 0.1625,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,65%,evq=0.35) \u2192 RISK(SELL,52%)",
+      "position_pct": 0.1137,
+      "timestamp": "2026-07-16T16:49:27+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(BUY,72%,evq=0.55) vs Bear(HOLD,50%,evq=0.45) \u2192 RISK(BUY,14%)",
+      "position_pct": 0.099,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.40) vs Bear(SELL,50%,evq=0.25) \u2192 RISK(BUY,27%)",
+      "position_pct": 0.0769,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.15) vs Bear(SELL,65%,evq=0.30) \u2192 RISK(BUY,45%)",
+      "position_pct": 0.1083,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0818,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.35) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.0917,
+      "timestamp": "2026-07-16T16:50:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.15) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,57%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,62%,evq=0.62) vs Bear(SELL,62%,evq=0.62) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0775,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.50) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(HOLD,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.50) vs Bear(SELL,55%,evq=0.40) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0764,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.46) vs Bear(SELL,50%,evq=0.46) \u2192 RISK(BUY,53%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.50) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,42%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T16:52:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.05,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(HOLD,10%,evq=0.15) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.0125,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.55) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.088,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.26,
+      "reason": "ADIR: Bull(BUY,52%,evq=0.52) vs Bear(HOLD,52%,evq=0.52) \u2192 RISK(BUY,26%)",
+      "position_pct": 0.065,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.25) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.1117,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.52,
+      "reason": "ADIR: Bull(HOLD,33%,evq=0.15) vs Bear(SELL,67%,evq=0.50) \u2192 RISK(SELL,32%)",
+      "position_pct": 0.1288,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,50%,evq=0.25) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0833,
+      "timestamp": "2026-07-16T16:53:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.45) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(BUY,59%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.50) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.45) vs Bear(SELL,50%,evq=0.45) \u2192 RISK(HOLD,45%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,5%)",
+      "position_pct": 0.0783,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.41) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(HOLD,28%)",
+      "position_pct": 0.0674,
+      "timestamp": "2026-07-16T16:55:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.54,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,65%,evq=0.75) \u2192 RISK(SELL,54%)",
+      "position_pct": 0.1354,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.65) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0813,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,45%,evq=0.45) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.0857,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,72%,evq=0.65) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(BUY,34%)",
+      "position_pct": 0.1017,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.46,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.20) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,45%)",
+      "position_pct": 0.1147,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.49,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.15) vs Bear(SELL,65%,evq=0.45) \u2192 RISK(BUY,34%)",
+      "position_pct": 0.1219,
+      "timestamp": "2026-07-16T16:56:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.33) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.0938,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.55) vs Bear(SELL,40%,evq=0.55) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.30) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0808,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.01,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.35) vs Bear(HOLD,10%,evq=0.15) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.40) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0929,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(BUY,65%,evq=0.55) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0993,
+      "timestamp": "2026-07-16T16:58:18+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(HOLD,21%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,65%,evq=0.38) vs Bear(SELL,60%,evq=0.25) \u2192 RISK(BUY,36%)",
+      "position_pct": 0.098,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.25) vs Bear(HOLD,45%,evq=0.25) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0563,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.45) vs Bear(SELL,50%,evq=0.10) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.1023,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,75%,evq=0.45) vs Bear(BUY,75%,evq=0.30) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0703,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T16:59:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.45) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,56%)",
+      "position_pct": 0.0703,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.12,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.15) vs Bear(HOLD,25%,evq=0.15) \u2192 RISK(HOLD,50%)",
+      "position_pct": 0.0312,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.75) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(BUY,28%)",
+      "position_pct": 0.0721,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(HOLD,30%,evq=0.15) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(HOLD,39%)",
+      "position_pct": 0.108,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(HOLD,50%,evq=0.35) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,62%,evq=0.44) vs Bear(SELL,62%,evq=0.44) \u2192 RISK(BUY,57%)",
+      "position_pct": 0.0775,
+      "timestamp": "2026-07-16T17:01:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,70%,evq=0.50) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,52%)",
+      "position_pct": 0.1029,
+      "timestamp": "2026-07-16T17:02:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,67%,evq=0.72) vs Bear(SELL,60%,evq=0.66) \u2192 RISK(BUY,7%)",
+      "position_pct": 0.0874,
+      "timestamp": "2026-07-16T17:02:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,59%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:02:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,65%,evq=0.30) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.1083,
+      "timestamp": "2026-07-16T17:02:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.25) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,29%)",
+      "position_pct": 0.1059,
+      "timestamp": "2026-07-16T17:02:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.45) vs Bear(SELL,55%,evq=0.30) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.0825,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.55,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,65%,evq=0.80) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.1368,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.65) vs Bear(SELL,55%,evq=0.65) \u2192 RISK(BUY,55%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.20) vs Bear(SELL,60%,evq=0.15) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.0857,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.35) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.1023,
+      "timestamp": "2026-07-16T17:04:02+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.52) vs Bear(SELL,50%,evq=0.42) \u2192 RISK(BUY,54%)",
+      "position_pct": 0.0691,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.75,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.65) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,75%)",
+      "position_pct": 0.1875,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(HOLD,40%,evq=0.35) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0917,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.48) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,49%)",
+      "position_pct": 0.0765,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,8%,evq=0.48) vs Bear(SELL,60%,evq=0.52) \u2192 RISK(SELL,50%)",
+      "position_pct": 0.078,
+      "timestamp": "2026-07-16T17:05:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.45) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0894,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,58%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.45) vs Bear(HOLD,40%,evq=0.45) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,10%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,55%,evq=0.25) \u2192 RISK(BUY,45%)",
+      "position_pct": 0.0859,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.63) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,21%)",
+      "position_pct": 0.0836,
+      "timestamp": "2026-07-16T17:06:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.35) vs Bear(SELL,30%,evq=0.20) \u2192 RISK(BUY,15%)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.75) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,20%,evq=0.35) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,56%)",
+      "position_pct": 0.1023,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.0947,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.58,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.01) vs Bear(SELL,60%,evq=0.25) \u2192 RISK(SELL,55%)",
+      "position_pct": 0.1442,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.25) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,29%)",
+      "position_pct": 0.1059,
+      "timestamp": "2026-07-16T17:08:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.65) vs Bear(SELL,55%,evq=0.65) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.25) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,52%)",
+      "position_pct": 0.1083,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,60%,evq=0.30) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.0673,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.85) vs Bear(SELL,55%,evq=0.70) \u2192 RISK(BUY,52%)",
+      "position_pct": 0.0823,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.75) vs Bear(SELL,50%,evq=0.75) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.51,
+      "reason": "ADIR: Bull(HOLD,30%,evq=0.20) vs Bear(SELL,65%,evq=0.75) \u2192 RISK(SELL,45%)",
+      "position_pct": 0.1283,
+      "timestamp": "2026-07-16T17:09:52+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.55) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.0865,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,67%,evq=0.76) vs Bear(SELL,67%,evq=0.61) \u2192 RISK(BUY,16%)",
+      "position_pct": 0.0929,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,76%,evq=0.55) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(HOLD,55%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.15) vs Bear(SELL,65%,evq=0.35) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.1137,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,50%,evq=0.30) \u2192 RISK(HOLD,40%)",
+      "position_pct": 0.0833,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.56) vs Bear(SELL,50%,evq=0.38) \u2192 RISK(BUY,29%)",
+      "position_pct": 0.0745,
+      "timestamp": "2026-07-16T17:11:26+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,20%,evq=0.35) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.1023,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0918,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.25) vs Bear(SELL,50%,evq=0.40) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.0769,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,10%,evq=0.25) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.1031,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0818,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.0786,
+      "timestamp": "2026-07-16T17:13:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(HOLD,40%,evq=0.40) vs Bear(HOLD,40%,evq=0.55) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0579,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.45) vs Bear(SELL,50%,evq=0.55) \u2192 RISK(BUY,34%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.46,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(HOLD,45%)",
+      "position_pct": 0.1147,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,50%,evq=0.50) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.35) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,49%)",
+      "position_pct": 0.1056,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.46,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.1161,
+      "timestamp": "2026-07-16T17:14:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0735,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,10%,evq=0.25) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.1059,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.33) vs Bear(HOLD,50%,evq=0.33) \u2192 RISK(HOLD,56%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.45) vs Bear(SELL,60%,evq=0.45) \u2192 RISK(SELL,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.07,
+      "reason": "ADIR: Bull(SELL,33%,evq=0.20) vs Bear(SELL,33%,evq=0.25) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.0186,
+      "timestamp": "2026-07-16T17:15:57+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.51,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(HOLD,27%)",
+      "position_pct": 0.1275,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.37) vs Bear(SELL,50%,evq=0.37) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.50) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.50) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(SELL,25%)",
+      "position_pct": 0.09,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.25) vs Bear(SELL,45%,evq=0.25) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0563,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.77,
+      "reason": "ADIR: Bull(HOLD,80%,evq=0.50) vs Bear(SELL,60%,evq=0.45) \u2192 RISK(BUY,77%)",
+      "position_pct": 0.1925,
+      "timestamp": "2026-07-16T17:17:21+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.55) vs Bear(SELL,55%,evq=0.45) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0756,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,40%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0542,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,50%,evq=0.30) \u2192 RISK(SELL,22%)",
+      "position_pct": 0.0833,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,5%,evq=0.50) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.0918,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.20) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0955,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,15%,evq=0.33) vs Bear(SELL,65%,evq=0.68) \u2192 RISK(SELL,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T17:18:49+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.65) vs Bear(SELL,55%,evq=0.55) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0677,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.46,
+      "reason": "ADIR: Bull(HOLD,33%,evq=0.15) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.1154,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,37%)",
+      "position_pct": 0.1179,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.35) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.1023,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(HOLD,50%,evq=0.15) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.0625,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.65) vs Bear(SELL,55%,evq=0.45) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T17:20:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(BUY,65%,evq=0.85) vs Bear(SELL,65%,evq=0.70) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0891,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.65,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,65%,evq=0.75) \u2192 RISK(SELL,65%)",
+      "position_pct": 0.1625,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.65) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.70) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(HOLD,30%)",
+      "position_pct": 0.0778,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,60%,evq=0.15) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.0875,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.60) vs Bear(SELL,55%,evq=0.65) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.0715,
+      "timestamp": "2026-07-16T17:21:58+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.45) vs Bear(SELL,65%,evq=0.35) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0703,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.20) vs Bear(SELL,60%,evq=0.10) \u2192 RISK(BUY,54%)",
+      "position_pct": 0.0833,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.45) vs Bear(SELL,60%,evq=0.70) \u2192 RISK(BUY,38%)",
+      "position_pct": 0.0913,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.65) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.085,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "ADIR: Bull(HOLD,30%,evq=0.55) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(BUY,55%)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-16T17:23:29+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.65) vs Bear(SELL,40%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.65) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,37%)",
+      "position_pct": 0.0804,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,30%,evq=0.35) vs Bear(HOLD,30%,evq=0.15) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0525,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.14,
+      "reason": "ADIR: Bull(SELL,50%,evq=0.35) vs Bear(SELL,50%,evq=0.20) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.0344,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.35) vs Bear(SELL,60%,evq=0.15) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,15%)",
+      "position_pct": 0.0918,
+      "timestamp": "2026-07-16T17:24:55+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.40) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.1006,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.65) vs Bear(SELL,35%,evq=0.65) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.60) vs Bear(SELL,55%,evq=0.75) \u2192 RISK(BUY,33%)",
+      "position_pct": 0.0764,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.01) vs Bear(SELL,50%,evq=0.15) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.1172,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.25) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.1059,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.20) vs Bear(SELL,50%,evq=0.30) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:26:23+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.49,
+      "reason": "ADIR: Bull(BUY,72%,evq=0.55) vs Bear(SELL,33%,evq=0.25) \u2192 RISK(BUY,45%)",
+      "position_pct": 0.1237,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.25) vs Bear(SELL,55%,evq=0.35) \u2192 RISK(BUY,60%)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,55%,evq=0.15) vs Bear(SELL,65%,evq=0.25) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.1016,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.25) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.1031,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.45) vs Bear(SELL,55%,evq=0.15) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.1031,
+      "timestamp": "2026-07-16T17:28:04+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.42) vs Bear(SELL,58%,evq=0.58) \u2192 RISK(BUY,16%)",
+      "position_pct": 0.0841,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,42%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.35) vs Bear(SELL,50%,evq=0.55) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.0764,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.35) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.1056,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.67,
+      "reason": "ADIR: Bull(HOLD,33%,evq=0.33) vs Bear(HOLD,33%,evq=0.33) \u2192 RISK(HOLD,67%)",
+      "position_pct": 0.1675,
+      "timestamp": "2026-07-16T17:29:37+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(BUY,72%,evq=0.72) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,12%)",
+      "position_pct": 0.0946,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,20%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.30) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,35%)",
+      "position_pct": 0.1026,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(BUY,32%,evq=0.32) vs Bear(SELL,32%,evq=0.28) \u2192 RISK(BUY,4%)",
+      "position_pct": 0.0427,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.55) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(SELL,5%)",
+      "position_pct": 0.0783,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.33) vs Bear(SELL,60%,evq=0.53) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0924,
+      "timestamp": "2026-07-16T17:31:15+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,28%)",
+      "position_pct": 0.0804,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.61,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,85%,evq=0.76) \u2192 RISK(SELL,61%)",
+      "position_pct": 0.1525,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,55%,evq=0.65) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0777,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,30%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.20) vs Bear(SELL,70%,evq=0.15) \u2192 RISK(BUY,26%)",
+      "position_pct": 0.0643,
+      "timestamp": "2026-07-16T17:32:56+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.75) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(BUY,56%)",
+      "position_pct": 0.0797,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,21%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.40) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.09,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(BUY,2%,evq=0.20) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.1184,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(HOLD,20%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T17:34:25+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,60%,evq=0.30) \u2192 RISK(BUY,46%)",
+      "position_pct": 0.1,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.50) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0818,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,15%)",
+      "position_pct": 0.0848,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.49,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.15) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,48%)",
+      "position_pct": 0.1219,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.25,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.55) vs Bear(SELL,55%,evq=0.45) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0619,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,54%,evq=0.77) vs Bear(SELL,54%,evq=0.59) \u2192 RISK(BUY,18%)",
+      "position_pct": 0.0764,
+      "timestamp": "2026-07-16T17:35:53+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.65) vs Bear(SELL,50%,evq=0.35) \u2192 RISK(BUY,54%)",
+      "position_pct": 0.0406,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.0,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.01) vs Bear(HOLD,1%,evq=0.01) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0804,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.7,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.65) vs Bear(SELL,65%,evq=0.45) \u2192 RISK(BUY,70%)",
+      "position_pct": 0.175,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.35) vs Bear(SELL,60%,evq=0.25) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0802,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,40%,evq=0.65) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-16T18:10:59+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.01,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(HOLD,10%,evq=0.01) \u2192 RISK(HOLD,15%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,33%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.35) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,56%)",
+      "position_pct": 0.0975,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "HOLD",
+      "confidence": 0.0,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.01) vs Bear(HOLD,1%,evq=0.01) \u2192 RISK(HOLD,0%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.5,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,60%,evq=0.75) \u2192 RISK(SELL,49%)",
+      "position_pct": 0.125,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.15,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.20) vs Bear(SELL,30%,evq=0.20) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-16T18:12:30+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.65) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,0%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(BUY,70%,evq=0.25) vs Bear(BUY,70%,evq=0.25) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.53,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.15) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,48%)",
+      "position_pct": 0.132,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,25%,evq=0.35) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0917,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.65) vs Bear(SELL,60%,evq=0.85) \u2192 RISK(BUY,59%)",
+      "position_pct": 0.085,
+      "timestamp": "2026-07-16T18:24:39+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.55) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0812,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.35) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,53%)",
+      "position_pct": 0.1056,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.45,
+      "reason": "ADIR: Bull(HOLD,33%,evq=0.20) vs Bear(SELL,65%,evq=0.45) \u2192 RISK(SELL,22%)",
+      "position_pct": 0.1125,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(BUY,58%,evq=0.75) vs Bear(BUY,58%,evq=0.55) \u2192 RISK(BUY,20%)",
+      "position_pct": 0.0943,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.41,
+      "reason": "ADIR: Bull(HOLD,70%,evq=0.35) vs Bear(SELL,70%,evq=0.50) \u2192 RISK(HOLD,25%)",
+      "position_pct": 0.1029,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.67,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.67) vs Bear(SELL,60%,evq=0.67) \u2192 RISK(BUY,67%)",
+      "position_pct": 0.1675,
+      "timestamp": "2026-07-16T18:26:05+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.45) vs Bear(SELL,40%,evq=0.20) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.0692,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(BUY,30%,evq=0.21) vs Bear(SELL,65%,evq=0.34) \u2192 RISK(BUY,12%)",
+      "position_pct": 0.1005,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.35) vs Bear(SELL,50%,evq=0.25) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.0729,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.35) vs Bear(SELL,35%,evq=0.35) \u2192 RISK(BUY,50%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.58) vs Bear(SELL,60%,evq=0.58) \u2192 RISK(HOLD,2%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.65) vs Bear(SELL,50%,evq=0.50) \u2192 RISK(BUY,49%)",
+      "position_pct": 0.0707,
+      "timestamp": "2026-07-16T18:27:32+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.38,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.55) vs Bear(SELL,65%,evq=0.75) \u2192 RISK(SELL,40%)",
+      "position_pct": 0.0938,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.35) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(SELL,44%)",
+      "position_pct": 0.0917,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,52%,evq=0.65) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,51%)",
+      "position_pct": 0.0813,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.60) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(BUY,30%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.85) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(BUY,44%)",
+      "position_pct": 0.0835,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.43,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.33) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(BUY,32%)",
+      "position_pct": 0.1078,
+      "timestamp": "2026-07-16T18:29:09+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.4,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.35) vs Bear(SELL,65%,evq=0.55) \u2192 RISK(SELL,20%)",
+      "position_pct": 0.0993,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.35) vs Bear(HOLD,60%,evq=0.25) \u2192 RISK(BUY,10%)",
+      "position_pct": 0.0875,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.0,
+      "reason": "ADIR: Bull(BUY,1%,evq=0.01) vs Bear(BUY,1%,evq=0.01) \u2192 RISK(BUY,1%)",
+      "position_pct": 0.01,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.81,
+      "reason": "ADIR: Bull(HOLD,60%,evq=0.69) vs Bear(SELL,60%,evq=0.69) \u2192 RISK(BUY,81%)",
+      "position_pct": 0.2025,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,5%,evq=0.45) vs Bear(SELL,65%,evq=0.60) \u2192 RISK(SELL,15%)",
+      "position_pct": 0.0929,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(BUY,35%,evq=0.65) vs Bear(SELL,65%,evq=0.50) \u2192 RISK(BUY,22%)",
+      "position_pct": 0.0495,
+      "timestamp": "2026-07-16T18:30:42+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.32,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,55%,evq=0.45) \u2192 RISK(BUY,58%)",
+      "position_pct": 0.0789,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.44,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.20) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,35%)",
+      "position_pct": 0.11,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.50) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(BUY,25%)",
+      "position_pct": 0.0882,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.39,
+      "reason": "ADIR: Bull(BUY,33%,evq=0.58) vs Bear(SELL,65%,evq=0.85) \u2192 RISK(SELL,27%)",
+      "position_pct": 0.0966,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,50%,evq=0.15) vs Bear(SELL,60%,evq=0.35) \u2192 RISK(SELL,53%)",
+      "position_pct": 0.105,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.47,
+      "reason": "ADIR: Bull(HOLD,45%,evq=0.45) vs Bear(SELL,75%,evq=0.75) \u2192 RISK(SELL,30%)",
+      "position_pct": 0.1172,
+      "timestamp": "2026-07-16T18:32:16+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.65,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.65) vs Bear(SELL,55%,evq=0.65) \u2192 RISK(BUY,65%)",
+      "position_pct": 0.1625,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(BUY,55%,evq=0.75) vs Bear(SELL,65%,evq=0.85) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0863,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.35,
+      "reason": "ADIR: Bull(HOLD,40%,evq=0.22) vs Bear(SELL,50%,evq=0.50) \u2192 RISK(SELL,32%)",
+      "position_pct": 0.0868,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.34,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.45) vs Bear(SELL,60%,evq=0.60) \u2192 RISK(SELL,31%)",
+      "position_pct": 0.0857,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.75) vs Bear(SELL,60%,evq=0.55) \u2192 RISK(BUY,34%)",
+      "position_pct": 0.0721,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.42,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.35) vs Bear(SELL,75%,evq=0.45) \u2192 RISK(SELL,23%)",
+      "position_pct": 0.1055,
+      "timestamp": "2026-07-16T18:33:45+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.37,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(SELL,65%,evq=0.65) \u2192 RISK(SELL,44%)",
+      "position_pct": 0.0918,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.52) vs Bear(SELL,60%,evq=0.52) \u2192 RISK(BUY,52%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.3,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.63) vs Bear(SELL,60%,evq=0.63) \u2192 RISK(BUY,59%)",
+      "position_pct": 0.075,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,40%,evq=0.62) vs Bear(SELL,60%,evq=0.65) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0765,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.28,
+      "reason": "ADIR: Bull(BUY,60%,evq=0.35) vs Bear(SELL,55%,evq=0.35) \u2192 RISK(BUY,56%)",
+      "position_pct": 0.0688,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    },
+    {
+      "symbol": "SONY",
+      "action": "SELL",
+      "confidence": 0.7,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.15) vs Bear(SELL,85%,evq=0.85) \u2192 RISK(SELL,70%)",
+      "position_pct": 0.175,
+      "timestamp": "2026-07-16T18:35:13+00:00"
+    }
+  ],
+  "models": {
+    "agent": "trading_agent",
+    "stage": 3,
+    "symbols": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "SOL/USDT",
+      "AAPL",
+      "NVDA",
+      "SONY"
+    ]
+  },
+  "metrics": {
+    "cycle_time_s": 79.382,
+    "total_cycles": 121,
+    "total_fills": 10,
+    "drawdown_pct": 0.06,
+    "peak_value": 100.01,
+    "stage": 3,
+    "symbol_count": 6,
+    "fear_greed": {
+      "value": 25,
+      "classification": "Extreme Fear"
+    },
+    "signal_accuracy": {
+      "overall_accuracy_pct": 50.0,
+      "total_predictions": 2,
+      "total_correct": 1,
+      "by_action": {
+        "BUY": {
+          "correct": 0,
+          "total": 1,
+          "accuracy_pct": 0.0
+        }
+      }
+    }
+  },
+  "portfolio_optimization": {
+    "diversification_ratio": 0.0,
+    "portfolio_var": 0.0,
+    "total_exposure_pct": 0.0,
+    "correlation_matrix": {
+      "NVDA": {
+        "NVDA": 1.0,
+        "GOOGL": 0.279,
+        "TSLA": -0.004,
+        "AAPL": 0.145,
+        "MSFT": -0.153,
+        "META": 0.117
+      },
+      "GOOGL": {
+        "NVDA": 0.279,
+        "GOOGL": 1.0,
+        "TSLA": -0.215,
+        "AAPL": -0.02,
+        "MSFT": 0.003,
+        "META": 0.153
+      },
+      "TSLA": {
+        "NVDA": -0.004,
+        "GOOGL": -0.215,
+        "TSLA": 1.0,
+        "AAPL": 0.197,
+        "MSFT": -0.042,
+        "META": 0.212
+      },
+      "AAPL": {
+        "NVDA": 0.145,
+        "GOOGL": -0.02,
+        "TSLA": 0.197,
+        "AAPL": 1.0,
+        "MSFT": 0.218,
+        "META": -0.159
+      },
+      "MSFT": {
+        "NVDA": -0.153,
+        "GOOGL": 0.003,
+        "TSLA": -0.042,
+        "AAPL": 0.218,
+        "MSFT": 1.0,
+        "META": 0.092
+      },
+      "META": {
+        "NVDA": 0.117,
+        "GOOGL": 0.153,
+        "TSLA": 0.212,
+        "AAPL": -0.159,
+        "MSFT": 0.092,
+        "META": 1.0
+      }
+    },
+    "kelly_fractions": {
+      "NVDA": 0.0,
+      "GOOGL": 0.0,
+      "TSLA": 0.0,
+      "AAPL": 0.0,
+      "MSFT": 0.0,
+      "META": 0.0
+    },
+    "allocations": [
+      {
+        "symbol": "NVDA",
+        "side": "SELL",
+        "weight_pct": 0.0,
+        "quantity": 0.03563184,
+        "reason": "signal: SELL"
+      },
+      {
+        "symbol": "GOOGL",
+        "side": "HOLD",
+        "weight_pct": 0.0,
+        "quantity": 0,
+        "reason": "signal: SELL"
+      },
+      {
+        "symbol": "TSLA",
+        "side": "SELL",
+        "weight_pct": 0.0,
+        "quantity": 0.01814644,
+        "reason": "signal: SELL"
+      },
+      {
+        "symbol": "AAPL",
+        "side": "SELL",
+        "weight_pct": 0.0,
+        "quantity": 0.00429799,
+        "reason": "signal: SELL"
+      },
+      {
+        "symbol": "MSFT",
+        "side": "SELL",
+        "weight_pct": 0.0,
+        "quantity": 0.00052991,
+        "reason": "signal: SELL"
+      },
+      {
+        "symbol": "META",
+        "side": "SELL",
+        "weight_pct": 0.0,
+        "quantity": 0.00871169,
+        "reason": "signal: SELL"
+      }
+    ]
+  },
+  "trades": [
+    {
+      "symbol": "NVDA",
+      "entry_price": 151.81,
+      "exit_price": 154.31,
+      "quantity": 0.00375469,
+      "pnl_pct": 0.0165,
+      "pnl_dollar": 0.01,
+      "entry_cycle": 1,
+      "exit_cycle": 41,
+      "duration_cycles": 40,
+      "timestamp": "2026-07-16T17:23:43.578539+00:00",
+      "exit_reason": "trailing-stop: $154.31 (2.0% below high $157.84)"
+    },
+    {
+      "symbol": "META",
+      "entry_price": 625.76,
+      "exit_price": 625.14,
+      "quantity": 0.00076707,
+      "pnl_pct": -0.001,
+      "pnl_dollar": -0.0,
+      "entry_cycle": 1,
+      "exit_cycle": 46,
+      "duration_cycles": 45,
+      "timestamp": "2026-07-16T17:31:28.967478+00:00",
+      "exit_reason": "trailing-stop: $625.14 (2.0% below high $638.43)"
+    }
+  ],
+  "alerts": [
+    {
+      "type": "guardrail",
+      "symbol": "NVDA",
+      "reason": "trailing-stop: $154.31 (2.0% below high $157.84)",
+      "pnl_pct": 0.0165,
+      "pnl_dollar": 0.01,
+      "cycle": 41,
+      "timestamp": "2026-07-16T17:23:43.578585+00:00"
+    },
+    {
+      "type": "guardrail",
+      "symbol": "META",
+      "reason": "trailing-stop: $625.14 (2.0% below high $638.43)",
+      "pnl_pct": -0.001,
+      "pnl_dollar": -0.0,
+      "cycle": 46,
+      "timestamp": "2026-07-16T17:31:28.967523+00:00"
+    }
+  ],
+  "hodl_benchmark": {
+    "enabled": true,
+    "value": 0,
+    "return_pct": 0,
+    "outperform_pct": -27.32,
+    "hodl_return_pct": 27.27,
+    "bot_return_pct": -0.05
+  },
+  "Committee": {
+    "accuracy": {
+      "NVDA:BUY": {
+        "correct": 1,
+        "total": 1,
+        "accuracy": 1.0
+      },
+      "META:BUY": {
+        "correct": 0,
+        "total": 1,
+        "accuracy": 0.0
+      }
+    },
+    "risk_limits": {
+      "max_position_pct": 0.2,
+      "max_total_exposure": 0.7
+    }
+  },
+  "symbol_regimes": {
+    "NVDA": {
+      "regime": "ranging",
+      "confidence": 0.7,
+      "thesis": "low volatility range (tight Bollinger bands), strong uptrend",
+      "symbol": "unknown",
+      "price": 155.3,
+      "indicators": {
+        "adx": 4.6,
+        "bb_width": 0.024,
+        "ma_slope": -5.7e-05,
+        "volume_ratio": 0.78,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0039,
+        "return_10d": 0.0028,
+        "return_20d": -0.0111,
+        "return_40d": 0.0182
+      }
+    },
+    "AAPL": {
+      "regime": "ranging",
+      "confidence": 0.7,
+      "thesis": "low volatility range (tight Bollinger bands), strong uptrend",
+      "symbol": "unknown",
+      "price": 232.6,
+      "indicators": {
+        "adx": 4.9,
+        "bb_width": 0.0128,
+        "ma_slope": -0.000238,
+        "volume_ratio": 1.01,
+        "structure": "strong_uptrend",
+        "return_5d": 0.002,
+        "return_10d": -0.0022,
+        "return_20d": -0.0051,
+        "return_40d": -0.0183
+      }
+    },
+    "GOOGL": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "strong uptrend",
+      "symbol": "unknown",
+      "price": 220.28,
+      "indicators": {
+        "adx": 1.9,
+        "bb_width": 0.042,
+        "ma_slope": -0.001474,
+        "volume_ratio": 0.9,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0003,
+        "return_10d": -0.0027,
+        "return_20d": -0.0294,
+        "return_40d": -0.0071
+      }
+    },
+    "MSFT": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "strong uptrend",
+      "symbol": "unknown",
+      "price": 526.4,
+      "indicators": {
+        "adx": 6.3,
+        "bb_width": 0.0399,
+        "ma_slope": 0.002035,
+        "volume_ratio": 0.71,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0042,
+        "return_10d": 0.0118,
+        "return_20d": 0.0156,
+        "return_40d": 0.0039
+      }
+    },
+    "META": {
+      "regime": "trending_down",
+      "confidence": 0.72,
+      "thesis": "downtrend (ADX=28, slope=-0.0010)",
+      "symbol": "unknown",
+      "price": 619.96,
+      "indicators": {
+        "adx": 27.5,
+        "bb_width": 0.0341,
+        "ma_slope": -0.001048,
+        "volume_ratio": 0.85,
+        "structure": "mixed",
+        "return_5d": -0.0053,
+        "return_10d": -0.0174,
+        "return_20d": -0.0289,
+        "return_40d": 0.0001
+      }
+    },
+    "TSLA": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "low volatility range (tight Bollinger bands)",
+      "symbol": "unknown",
+      "price": 307.81,
+      "indicators": {
+        "adx": 4.9,
+        "bb_width": 0.0193,
+        "ma_slope": -0.000114,
+        "volume_ratio": 1.1,
+        "structure": "mixed",
+        "return_5d": -0.0006,
+        "return_10d": 0.0106,
+        "return_20d": -0.0132,
+        "return_40d": -0.0109
+      }
+    },
+    "AMZN": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "strong uptrend",
+      "symbol": "unknown",
+      "price": 253.74,
+      "indicators": {
+        "adx": 15.1,
+        "bb_width": 0.017,
+        "ma_slope": 0.00072,
+        "volume_ratio": 0.94,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0016,
+        "return_10d": 0.0064,
+        "return_20d": 0.0051,
+        "return_40d": 0.01
+      }
+    },
+    "BTC/USDT": {
+      "regime": "trending_up",
+      "confidence": 0.85,
+      "thesis": "uptrend (ADX=94, slope=0.0013), volume confirming 1.3x avg",
+      "symbol": "unknown",
+      "price": 85235.81,
+      "indicators": {
+        "adx": 93.5,
+        "bb_width": 0.0351,
+        "ma_slope": 0.001298,
+        "volume_ratio": 1.34,
+        "structure": "mixed",
+        "return_5d": -0.0095,
+        "return_10d": -0.0166,
+        "return_20d": 0.0139,
+        "return_40d": 0.0078
+      }
+    },
+    "ETH/USDT": {
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
+      "symbol": "unknown",
+      "price": 4142.12,
+      "indicators": {
+        "adx": 62.8,
+        "bb_width": 0.0112,
+        "ma_slope": 0.000254,
+        "volume_ratio": 0.98,
+        "structure": "uptrend",
+        "return_5d": -0.0043,
+        "return_10d": -0.0041,
+        "return_20d": 0.0008,
+        "return_40d": -0.0051
+      }
+    },
+    "SUI/USDT": {
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
+      "symbol": "unknown",
+      "price": 2.26,
+      "indicators": {
+        "adx": 49.8,
+        "bb_width": 0.0136,
+        "ma_slope": 0.000464,
+        "volume_ratio": 0.76,
+        "structure": "mixed",
+        "return_5d": -0.0044,
+        "return_10d": 0.0,
+        "return_20d": -0.0044,
+        "return_40d": -0.0044
+      }
+    }
+  }
+}

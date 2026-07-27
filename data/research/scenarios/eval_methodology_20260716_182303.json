@@ -1,0 +1,23 @@
+{
+  "capability": "eval_methodology",
+  "source_manifest": "capability_manifest_20260716_182302.json",
+  "origin": "http://arxiv.org/abs/2607.13081v1",
+  "scenarios": [
+    {
+      "id": "eval_met_001",
+      "type": "eval_methodology",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: We present nsfaguard, a guardrail framework for securing agentic AI systems against operational threats, such as prompt injection, sensitive information extraction, malicious code requests, dangerous tool misuse, and resource exhaustion. We first introduce the NSFA taxonomy, which organizes 185 risk variants into a CIA-triad-grounded hierarchy and is cross-validated against three well-established OWASP guidelines. Based on this taxonomy, we construct a benchmark suite spanning 133 languages, com",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: SingGuard-NSFA: Extensible Guardrails for Agentic AI via Generative Reasoning and Real-Time Classification. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "hard"
+    },
+    {
+      "id": "eval_met_002",
+      "type": "eval_methodology",
+      "prompt": "Based on the current risk/reward profile, what action should be taken?\n\nContext: We present nsfaguard, a guardrail framework for securing agentic AI systems against operational threats, such as prompt injection, sensitive information extraction, malicious code requests, dangerous tool misuse, and resource exhaustion. We first introduce the NSFA taxonomy, which organizes 185 risk variants into a CIA-triad-grounded hierarchy and is cross-validated against three well-established OWASP guidelines. Based on this taxonomy, we construct a benchmark suite spanning 133 languages, com",
+      "expected_reasoning": "Apply eval methodology principles. Consider the key insight from: SingGuard-NSFA: Extensible Guardrails for Agentic AI via Generative Reasoning and Real-Time Classification. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "hard"
+    }
+  ]
+}

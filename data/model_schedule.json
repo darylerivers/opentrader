@@ -1,0 +1,42 @@
+{
+  "trading": {
+    "model": "ls:gemma-4-12B-agentic",
+    "start": 8,
+    "end": 12,
+    "vram": 10,
+    "_mot_version": "Alpha-1",
+    "_mot_score": 0.444
+  },
+  "student": {
+    "model": "ls:qwythos-9b-mtp",
+    "start": 12,
+    "end": 16,
+    "vram": 5.5,
+    "_mot_version": "Alpha-1",
+    "_mot_score": 0.444
+  },
+  "teacher": {
+    "model": "ls:gemma-4-12B-agentic",
+    "start": 16,
+    "end": 20,
+    "vram": 10,
+    "_mot_version": "Alpha-1",
+    "_mot_score": 0.444
+  },
+  "regime": {
+    "model": "ls:deckard-v2",
+    "start": 20,
+    "end": 24,
+    "vram": 2,
+    "_mot_version": "Alpha-1",
+    "_mot_score": 0.444
+  },
+  "code": {
+    "model": "ls:gemma4-v2-coder",
+    "start": 0,
+    "end": 4,
+    "vram": 8,
+    "_mot_version": "Alpha-1",
+    "_mot_score": 0.444
+  }
+}

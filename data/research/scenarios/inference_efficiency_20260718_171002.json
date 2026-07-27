@@ -1,0 +1,23 @@
+{
+  "capability": "inference_efficiency",
+  "source_manifest": "capability_manifest_20260718_171000.json",
+  "origin": "https://huggingface.co/Jean-Baptiste/roberta-large-financial-news-sentiment-en",
+  "scenarios": [
+    {
+      "id": "inferenc_001",
+      "type": "inference_efficiency",
+      "prompt": "The market is exhibiting unusual patterns. What is your trading decision?\n\nContext: Tags: transformers, pytorch, onnx, safetensors, roberta, text-classification, financial, stocks, sentiment, en. Downloads: 1506",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: Jean-Baptiste/roberta-large-financial-news-sentiment-en. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "SELL with stop_loss at -2%",
+      "difficulty": "easy"
+    },
+    {
+      "id": "inferenc_002",
+      "type": "inference_efficiency",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: Tags: transformers, pytorch, onnx, safetensors, roberta, text-classification, financial, stocks, sentiment, en. Downloads: 1506",
+      "expected_reasoning": "Apply inference efficiency principles. Consider the key insight from: Jean-Baptiste/roberta-large-financial-news-sentiment-en. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "easy"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "capability": "training_technique",
+  "source_manifest": "capability_manifest_20260714_053507.json",
+  "origin": "https://huggingface.co/Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL",
+  "scenarios": [
+    {
+      "id": "training_001",
+      "type": "training_technique",
+      "prompt": "Given the following market data, determine whether to BUY, SELL, or HOLD.\n\nContext: Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 19",
+      "expected_reasoning": "Apply training technique principles. Consider the key insight from: Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "HOLD",
+      "difficulty": "medium"
+    },
+    {
+      "id": "training_002",
+      "type": "training_technique",
+      "prompt": "Analyze the current market structure and recommend the best course of action.\n\nContext: Tags: transformers, safetensors, qwen2, text-generation, text-generation-inference, unsloth, trl, grpo, conversational, en. Downloads: 19",
+      "expected_reasoning": "Apply training technique principles. Consider the key insight from: Bharatdeep-H/portfolio-query-qwen-2.5-1.5b-v2-cot-RL. Analyze market structure, risk/reward, and directional bias.",
+      "expected_action": "BUY with 0.03 position_pct",
+      "difficulty": "medium"
+    }
+  ]
+}

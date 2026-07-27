@@ -1,0 +1,66 @@
+=== OpenTrader Overnight Report ===
+=============================================
+  OpenTrader Overnight Report
+  2026-07-06 00:30:04 CDT  (UTC+5: 05:30)
+=============================================
+
+── Process Health ──
+  🟢 harness.py (PID 3301819, 28MB)
+  🟢 llama-swap (PID 3185970, 1532MB)
+  🟢 dashboard.py (PID 2967397, 12MB)
+  🟢 ollama (PID 4076, 6MB)
+
+── GPU ──
+=================================== % time GPU is busy ===================================
+GPU[0]		: GPU use (%): 96
+GPU[0]		: VRAM Total Memory (B): 17163091968
+GPU[0]		: VRAM Total Used Memory (B): 10479788032
+
+── Portfolio (cycle 6759) ──
+Traceback (most recent call last):
+  File "<string>", line 10, in <module>
+    for k,v in pos.items():
+               ^^^^^^^^^
+AttributeError: 'list' object has no attribute 'items'
+  Total Value:  $99,779.30
+  Cash:         $59,979.92
+
+── Last 20 Log Lines ──
+2026-07-05 09:02:22,987 [opentrader.harness] INFO Portfolio: $99,980.06 (2 positions)
+2026-07-05 09:02:22,987 [opentrader.harness] INFO Signal Accuracy: 50% (2/4)
+2026-07-05 09:02:24,987 [opentrader.harness] INFO ── Cycle 1229 [Stage 2: 3 symbols] ──
+2026-07-05 09:02:33,673 [opentrader.harness] INFO   Signal[SOL/USDT]: BUY (conf=0.70, Composite: Bull(85%) vs Bear(40%) → Risk(BUY,70%))
+2026-07-05 09:02:36,788 [opentrader.harness] INFO   Signal[ETH/USDT]: BUY (conf=0.70, Composite: Bull(85%) vs Bear(35%) → Risk(BUY,70%))
+2026-07-05 09:02:40,768 [opentrader.harness] INFO   Signal[BTC/USDT]: BUY (conf=0.80, Composite: Bull(85%) vs Bear(20%) → Risk(BUY,80%))
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   Portfolio: 3 allocations, VaR=$169, div_ratio=1.15, exposure=33.5%
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   Rebalance[BTC/USDT]: target=11.0% current=1.2% drift=89%
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   Rebalance[ETH/USDT]: target=9.2% current=1.3% drift=86%
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   BTC/USDT: committee ↓ conf 80%→36% (×0.45)
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   BTC/USDT: risk rejected — daily trade limit (100) reached
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   ETH/USDT: risk rejected — daily trade limit (100) reached
+2026-07-05 09:02:40,769 [opentrader.harness] INFO   SOL/USDT: risk rejected — daily trade limit (100) reached
+2026-07-05 09:02:40,783 [opentrader.harness] INFO Cycle 1229 done in 15.80s
+2026-07-05 09:02:40,783 [opentrader.harness] INFO Portfolio: $99,980.06 (2 positions)
+2026-07-05 09:02:40,783 [opentrader.harness] INFO Signal Accuracy: 50% (2/4)
+2026-07-05 09:02:42,783 [opentrader.harness] INFO ── Cycle 1230 [Stage 2: 3 symbols] ──
+2026-07-05 09:02:49,712 [opentrader.harness] INFO   Signal[BTC/USDT]: BUY (conf=0.60, Composite: Bull(85%) vs Bear(30%) → Risk(BUY,60%))
+2026-07-05 09:02:51,509 [opentrader.harness] INFO   Signal[ETH/USDT]: BUY (conf=0.70, Composite: Bull(85%) vs Bear(45%) → Risk(BUY,70%))
+2026-07-05 09:02:52,204 [opentrader.harness] INFO Shutting down...
+
+── Errors ──
+  Total errors in log: 32
+  Last 5 errors:
+2026-07-05 08:19:43,233 [opentrader.harness] ERROR   BTC/USDT: debate error: timed out
+2026-07-05 08:26:33,034 [opentrader.harness] ERROR   SOL/USDT: debate error: timed out
+2026-07-05 08:28:06,689 [opentrader.harness] ERROR   SOL/USDT: debate error: timed out
+2026-07-05 08:28:06,822 [opentrader.harness] ERROR   ETH/USDT: debate error: timed out
+2026-07-05 08:28:06,948 [opentrader.harness] ERROR   BTC/USDT: debate error: timed out
+
+  Exposure:      39.9% ($39,799.38 invested)
+  Cash Reserve:  $59,979.92
+  Stage:         ?
+
+=============================================
+  Report complete
+=============================================
+
