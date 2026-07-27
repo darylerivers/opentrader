@@ -1,0 +1,50 @@
+# OpenTrader — .gitignore
+
+# Secrets & credentials
+config/alt_data_keys.json
+*.pem
+*.key
+.env
+data/connections.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Logs & runtime
+logs/
+*.log
+*.log.*
+*.jsonl
+
+# Model & large data (archived to ~/opentrader-data/)
+*.bin
+*.safetensors
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.gguf
+unsloth_compiled_cache/
+_unsloth_sentencepiece_temp/
+
+# IDE & tools
+.vscode/
+.idea/
+.ruff_cache/
+.codesage/
+.documents/
+
+# OpenCode / Claude / AI tooling
+.opencode/
+.claude/
+
+# OS noise
+.DS_Store
+Thumbs.db
