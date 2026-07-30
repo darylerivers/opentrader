@@ -28,6 +28,7 @@ from exchange.paper import PaperExchange
 from risk.manager import RiskManager, RiskConfig, RiskResult
 from state.manager import StateManager
 from mot.adapter_registry import AdapterRegistry
+from mot.dynamic_discovery import refresh_from_exchange, get_sector_list
 
 logger = logging.getLogger("opentrader.mcp")
 
@@ -596,6 +597,88 @@ def tool_research_idle_check() -> str:
         return json.dumps({"can_run": False, "error": str(e)})
 
 
+def tool_discover_symbols(exchange_name: str = None) -> str:
+    """Discover tradable symbols from the current exchange.
+
+    Args:
+        exchange_name: Optional exchange type (e.g. "binance", "kraken") to discover from.
+                       If omitted, uses the current exchange.
+
+    Returns:
+        JSON string with symbols list, count, and available sectors.
+    """
+    global _exchange
+    try:
+        universe = refresh_from_exchange(_exchange)
+        sectors = get_sector_list()
+        result = {
+            "symbols": universe,
+            "count": len(universe),
+            "sectors": sectors,
+            "exchange": _exchange.get_name() if _exchange else "none",
+        }
+        # If a specific exchange name was requested, also try to discover from it
+        if exchange_name and exchange_name != (_exchange.get_name() if _exchange else ""):
+            try:
+                alt = get_exchange(exchange_name.lower())
+                if alt:
+                    alt.connect()
+                    alt_symbols = alt.discover_symbols()
+                    result["alt_exchange"] = exchange_name
+                    result["alt_symbols"] = alt_symbols
+                    result["alt_count"] = len(alt_symbols)
+                    alt.disconnect()
+            except Exception as e:
+                result["alt_error"] = str(e)
+        return json.dumps(result)
+    except Exception as e:
+        return json.dumps({"error": str(e), "symbols": [], "count": 0, "sectors": "", "exchange": "error"})
+
+
+def _load_qmath():
+    try:
+        from tools import qmath
+        return qmath
+    except Exception:
+        import importlib.util as _ilu
+        import os as _os
+        _p = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "tools", "qmath.py")
+        _spec = _ilu.spec_from_file_location("qmath", _p)
+        _mod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        return _mod
+
+
+def tool_qmath(op: str, args: dict = None) -> str:
+    """Accurate math/quant/stat compute. LLMs are bad at arithmetic — call this
+    instead of computing by hand.
+
+    Args:
+        op: a qmath operation, e.g. "evaluate", "sharpe_ratio", "black_scholes",
+            "var_historical", "cvar", "percentile", "correlation", "beta",
+            "ols_regression", "irr", "max_drawdown", "kelly_fraction".
+        args: kwargs dict for the op, e.g. {"expr": "(110-100)/100*100"} or
+              {"returns": [...], "confidence": 0.95} or {"prices": [...]}.
+
+    Returns:
+        JSON: {"op": ..., "result": ...} or {"op": ..., "error": "..."}.
+    """
+    try:
+        qmath = _load_qmath()
+        return json.dumps(qmath.run(op, **(args or {})))
+    except Exception as e:
+        return json.dumps({"op": op, "error": str(e)})
+
+
+def tool_qmath_ops() -> str:
+    """List available qmath operations with their argument signatures."""
+    try:
+        qmath = _load_qmath()
+        return json.dumps({"ops": qmath.list_ops(), "capabilities": qmath.CAPABILITIES})
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+
 # =======================================================================
 # FastAPI App for REST API (harness-friendly)
 # =======================================================================
@@ -749,6 +832,12 @@ async def api_harness_resume():
 @rest_app.get("/api/research/idle_check")
 async def api_research_idle_check():
     return json.loads(tool_research_idle_check())
+
+
+@rest_app.get("/api/discover/symbols")
+async def api_discover_symbols(exchange: str = None):
+    """Discover tradable symbols from the exchange. Optionally also query a named exchange."""
+    return json.loads(tool_discover_symbols(exchange))
 
 
 @rest_app.get("/api/tools")
@@ -919,6 +1008,16 @@ async def api_tools():
                 "description": "Check if research-scout can run",
                 "parameters": {"type": "object", "properties": {}},
             },
+            {
+                "name": "discover_symbols",
+                "description": "Discover tradable symbols from the exchange. Optionally query a named exchange for broader universe.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "exchange_name": {"type": "string", "description": "Optional exchange name e.g. binance, kraken, alpaca"},
+                    },
+                },
+            },
         ],
     }
 
@@ -1047,6 +1146,24 @@ def harness_resume() -> str:
 def research_idle_check() -> str:
     """Check if research-scout can run."""
     return tool_research_idle_check()
+
+
+@mcp_server.tool()
+def discover_symbols(exchange_name: str = None) -> str:
+    """Discover tradable symbols from the current exchange."""
+    return tool_discover_symbols(exchange_name)
+
+
+@mcp_server.tool()
+def qmath(op: str, args: dict = None) -> str:
+    """Accurate math/quant/stat (evaluate, mean, std, percentile, returns, sharpe_ratio, sortino_ratio, max_drawdown, var_historical, cvar, kelly_fraction, correlation, beta, ols_regression, black_scholes, irr, npv, percent_change, ...). Use this instead of hand-arithmetic."""
+    return tool_qmath(op, args)
+
+
+@mcp_server.tool()
+def qmath_ops() -> str:
+    """List available qmath operations and their argument signatures."""
+    return tool_qmath_ops()
 
 
 # =======================================================================

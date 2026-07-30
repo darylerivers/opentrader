@@ -26,6 +26,9 @@ from .base import ExchangeBase, OHLCV, OrderResult, Balance, register_exchange
 
 logger = logging.getLogger("opentrader.finnhub")
 
+# Lazy-imported when use_realtime=True
+_RealtimeFeed: Optional[type] = None
+
 FINNHUB_BASE = "https://finnhub.io/api/v1"
 
 # Finnhub resolution string -> candlestick resolution code
@@ -82,6 +85,11 @@ class FinnhubExchange(ExchangeBase):
         self._last_api_call: float = 0.0
         self._rate_limit: float = float(config.get("rate_limit", DEFAULT_RATE_LIMIT))
 
+        # Realtime WebSocket feed (optional — free-tier friendly)
+        self._use_realtime: bool = bool(config.get("use_realtime", False))
+        self._watchlist: List[str] = config.get("watchlist", []) or []
+        self._realtime: Optional[Any] = None
+
     @staticmethod
     def _read_key_from_store() -> str:
         try:
@@ -101,6 +109,8 @@ class FinnhubExchange(ExchangeBase):
                 if "c" in data:
                     self._connected = True
                     logger.info("FinnhubExchange: connected (free tier, 60 calls/min)")
+                    if self._use_realtime:
+                        self._start_realtime()
                     return True
                 logger.error(f"Finnhub auth failed: {data}")
                 return False
@@ -113,6 +123,28 @@ class FinnhubExchange(ExchangeBase):
         if elapsed < self._rate_limit:
             time.sleep(self._rate_limit - elapsed)
         self._last_api_call = time.time()
+
+    def _start_realtime(self) -> None:
+        """Launch the WebSocket realtime feed (non-blocking)."""
+        try:
+            from .realtime_finnhub import FinnhubRealtimeFeed
+
+            self._realtime = FinnhubRealtimeFeed(
+                self, self._watchlist, self.config
+            )
+            self._realtime.start()
+            logger.info("FinnhubExchange: realtime feed started")
+        except ImportError:
+            logger.warning(
+                "FinnhubExchange: websocket-client not installed — "
+                "realtime feed disabled.  Install with: pip install websocket-client"
+            )
+            self._use_realtime = False
+        except Exception as exc:
+            logger.warning(
+                "FinnhubExchange: realtime feed failed to start: %s", exc
+            )
+            self._use_realtime = False
 
     def _api_get(self, path: str, params: dict = None) -> dict:
         """Call Finnhub REST API with rate limiting."""
@@ -242,9 +274,19 @@ class FinnhubExchange(ExchangeBase):
         return bars
 
     def get_current_price(self, symbol: str) -> Optional[float]:
+        # 1. WebSocket realtime (freshest; subscribe on first call)
+        if self._realtime:
+            self._realtime.subscribe([symbol])
+            price = self._realtime.get_price(symbol)
+            if price is not None:
+                self._price_cache[symbol] = price
+                return price
+
+        # 2. REST cache (from earlier API calls or get_bars)
         if symbol in self._price_cache:
             return self._price_cache[symbol]
 
+        # 3. REST API call
         try:
             data = self._api_get("/quote", {"symbol": symbol})
             price = data.get("c")
@@ -344,6 +386,9 @@ class FinnhubExchange(ExchangeBase):
             self._price_cache[symbol] = self._bar_cache[cache_key][-1].close
 
     def disconnect(self) -> None:
+        if self._realtime:
+            self._realtime.stop()
+            self._realtime = None
         self._connected = False
         logger.info("FinnhubExchange: disconnected")
 
@@ -353,6 +398,19 @@ class FinnhubExchange(ExchangeBase):
         self._cost_basis.clear()
         self._fills.clear()
         self._order_counter = 1
+
+    def discover_symbols(self) -> List[str]:
+        """Return US stock symbols from Finnhub."""
+        if not self._connected or not self._api_key:
+            return []
+        try:
+            data = self._api_get("/stock/symbol", {"exchange": "US", "mic": "XNYS"})
+            if data and isinstance(data, list):
+                return [item.get("symbol", "") for item in data if item.get("symbol")]
+            return []
+        except Exception as e:
+            logger.warning(f"Finnhub symbol discovery failed: {e}")
+            return []
 
 
 register_exchange("finnhub", FinnhubExchange)

@@ -88,9 +88,11 @@ class FlashTrainer:
         self.checkpoint = self._load_checkpoint()
         self._hold_streak = 0
         self._last_step_time = 0.0
+        self._last_rl_step_time = 0.0
         self._teacher: Optional[ProgrammaticTeacher] = None
         self._framework: Optional[TeacherStudentFramework] = None
         self._pattern_bank: Optional[ScenarioBank] = None
+        self._rl_trainer = None
 
     # ── Checkpoint Persistence ──────────────────────────────────
 
@@ -262,7 +264,7 @@ class FlashTrainer:
             return False
         if self._hold_streak < self.HOLD_STREAK_THRESHOLD:
             return False
-        if time.time() - self._last_rl_step_time < self.RL_MIN_CYCLE_GAP:
+        if time.time() - self._last_rl_step_time < self.MIN_CYCLE_GAP:
             return False
 
         rl = self._get_rl_trainer()

@@ -5,6 +5,7 @@ Merged from OpenTrader + ATLANTIS risk engines.
 Adds: Kelly criterion, correlation check, VaR, max-drawdown circuit breaker,
       daily trade limits, and multi-venue position tracking.
 """
+import json
 import logging
 import math
 import threading
@@ -21,7 +22,7 @@ class RiskConfig:
     # Per-position limits
     max_position_pct: float = 0.20        # Max single position as % of portfolio
     max_total_exposure: float = 0.60       # Max all positions combined
-    max_positions: int = 5                 # Max concurrent positions
+    max_positions: int = 50                # Max concurrent positions
     max_order_value: float = 50000         # Max $ per single order
 
     # Portfolio protection
@@ -461,6 +462,17 @@ class RiskManager:
         Returns PortfolioResult with allocations and portfolio metrics.
         """
         from risk.portfolio_optimizer import PortfolioOptimizer
+        import logging
+        _log = logging.getLogger(__name__)
+        _log.debug(
+            f"  MGR-ALLOCATE: signals={len(signals)} "
+            f"({', '.join(f'{s.symbol}={s.action}' for s in signals)}), "
+            f"prices={list(prices.keys())[:5]}, "
+            f"pos={list(portfolio.get('positions',{}).keys())[:5]}"
+            f"  max_pos_pct={self.config.max_position_pct}"
+            f"  kelly_frac={self.config.kelly_fraction}"
+            f"  max_exposure={self.config.max_total_exposure}"
+        )
         optimizer = PortfolioOptimizer(
             max_position_pct=self.config.max_position_pct,
             max_total_exposure=self.config.max_total_exposure,

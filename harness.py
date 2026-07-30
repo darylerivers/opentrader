@@ -32,7 +32,7 @@ from exchange.paper import PaperExchange
 from exchange.multi_router import MultiExchangeRouter
 from data.synthetic import generate_bars, generate_trending_bars
 from mot.tradable_universe import TRADABLE_UNIVERSE, DEFAULT_START_PRICES, SCOUT_PROMPT
-from mot.dynamic_discovery import resolve_discovery, get_sector_list, PRICE_ESTIMATES
+from mot.dynamic_discovery import resolve_discovery, get_sector_list, PRICE_ESTIMATES, refresh_from_exchange
 from mot.monitors import CommitteeChair
 from data.regime_classifier import classify_regime
 from risk.manager import RiskManager, RiskConfig
@@ -141,13 +141,19 @@ class OpenTraderHarness:
         mot_force: str = "auto",  # "auto"|"increase"|"reduce"|"maintain"
         max_daily_trades: int = 500,  # daily trade cap (resets at UTC midnight)
         reset_portfolio: bool = False,  # wipe positions + SL/TP on startup
+        sidecar: bool = False,  # offload exchange+risk to Rust sidecar
+        sidecar_binary: str = None,  # path to exchange-engine binary
+        stock_exchange: str = None,  # stock exchange for multi-asset mode (ibkr|finnhub|...+)
+        crypto_exchange: str = None,  # crypto exchange for multi-asset mode (kraken|coinbase|...)
     ):
         # Load centralized config — CLI args override config, config overrides code defaults
         cfg = self._load_config()
-        self.llama_host = llama_host or cfg.get("llama_host", "http://127.0.0.1:5802")
+        self.llama_host = llama_host or cfg.get("llama_host", "http://127.0.0.1:5801")
+        self.gpu0_host = cfg.get("gpu0_host", "http://127.0.0.1:5801")
         self.mcp_url = mcp_url or cfg.get("mcp_url", "http://127.0.0.1:8092")
         self.debate_model = model or cfg.get("debate_model", "ptolemy-s1")
         self.fast_model = fast_model or cfg.get("fast_model", "gemma-4-12b-agentic")
+        self.risk_model = cfg.get("risk_model", "qwen2.5-7b-instruct")
         if parallel_debate is None:
             parallel_debate = cfg.get("parallel_debate", False)
         if debate_mode is None:
@@ -161,6 +167,7 @@ class OpenTraderHarness:
         self.universe_mode = universe_mode
         self.universe_focus = universe_focus
         self._universe_loaded = False
+        self._tradable_universe: List[str] = [s for s in TRADABLE_UNIVERSE if "/" in s]
         self.symbol = symbol  # kept for backward compat
         self.symbols: List[str] = [symbol]  # active symbols for current stage
         self.timeframe = timeframe
@@ -185,6 +192,27 @@ class OpenTraderHarness:
             state_dir = str(Path(PROJECT) / "data")
         self.state_dir = state_dir
         os.makedirs(state_dir, exist_ok=True)
+
+        # Multi-asset exchange routing overrides
+        self._stock_exchange = stock_exchange
+        self._crypto_exchange = crypto_exchange
+
+        # ── Sidecar mode: use Rust exchange-engine ──
+        self.sidecar_enabled = sidecar
+        self._sidecar_client = None
+        if sidecar:
+            from exchange_engine.python.sidecar import SidecarClient
+
+            self._sidecar_client = SidecarClient(
+                binary_path=sidecar_binary,
+            )
+            self._sidecar_client.start()
+            logger.info(
+                f"Sidecar exchange-engine started"
+                + (f" ({sidecar_binary})" if sidecar_binary else "")
+            )
+            if reset_portfolio:
+                self._sidecar_client.reset(float(initial_cash))
 
         # Use fast model for faster inference if specified
         effective_model = fast_model or model
@@ -212,13 +240,28 @@ class OpenTraderHarness:
         _needs_router = _has_stocks and _has_crypto
 
         if exchange == "paper":
-            self.exchange: ExchangeBase = PaperExchange(
-                config={"initial_cash": initial_cash}
-            )
-            if _has_stocks:
-                logger.info(
-                    "Paper mode with stock symbols: OK (PaperExchange is format-agnostic)"
+            if sidecar:
+                from exchange.sidecar_adapter import ExchangeSidecarAdapter
+
+                self.exchange: ExchangeBase = ExchangeSidecarAdapter(
+                    name="sidecar",
+                    config={"initial_cash": initial_cash},
                 )
+                self.exchange._sidecar = self._sidecar_client
+                self.exchange._connected = True
+                if _has_stocks:
+                    logger.info(
+                        "Sidecar mode with stock symbols: "
+                        "ExchangeSidecarAdapter is format-agnostic"
+                    )
+            else:
+                self.exchange: ExchangeBase = PaperExchange(
+                    config={"initial_cash": initial_cash}
+                )
+                if _has_stocks:
+                    logger.info(
+                        "Paper mode with stock symbols: OK (PaperExchange is format-agnostic)"
+                    )
         elif exchange == "alpaca-paper":
             from exchange.alpaca_paper import AlpacaPaperExchange
 
@@ -228,17 +271,23 @@ class OpenTraderHarness:
             )
         elif _needs_router:
             # Mixed crypto+stock: route through MultiExchangeRouter
+            crypto_ex = self._crypto_exchange or (
+                "kraken" if exchange == "finnhub" else exchange
+            )
+            stock_ex = self._stock_exchange or (
+                "finnhub" if exchange == "kraken" else exchange
+            )
             self.live_mode = True
             self.exchange = MultiExchangeRouter(
                 config={
                     "initial_cash": initial_cash,
-                    "crypto_exchange": "kraken" if exchange == "finnhub" else exchange,
-                    "stock_exchange": "finnhub" if exchange == "kraken" else exchange,
+                    "crypto_exchange": crypto_ex,
+                    "stock_exchange": stock_ex,
                 }
             )
             logger.info(
                 f"Multi-asset mode: crypto+stocks via MultiExchangeRouter "
-                f"(crypto=kraken, stock=finnhub)"
+                f"(crypto={crypto_ex}, stock={stock_ex})"
             )
         else:
             # Single asset class — use exchange directly
@@ -263,8 +312,14 @@ class OpenTraderHarness:
         if synthetic_data and exchange in ("paper", "alpaca-paper"):
             load_symbols = list(self.symbols)
             if universe_mode:
-                load_symbols = TRADABLE_UNIVERSE
+                load_symbols = refresh_from_exchange(self.exchange, TRADABLE_UNIVERSE)
+                self._tradable_universe = load_symbols
                 self._universe_loaded = True
+                if self.live_mode and load_symbols != TRADABLE_UNIVERSE:
+                    logger.info(
+                        f"Universe: discovered {len(load_symbols)} symbols from "
+                        f"live exchange (vs {len(TRADABLE_UNIVERSE)} hardcoded)"
+                    )
             for sym in load_symbols:
                 bars = generate_bars(
                     symbol=sym,
@@ -277,6 +332,16 @@ class OpenTraderHarness:
             logger.info(f"Loaded synthetic bars for {len(load_symbols)} symbols")
             if universe_mode:
                 logger.info("Universe mode: agent will pick focus symbols each cycle")
+
+        # When universe_mode is enabled with a live (non-synthetic) exchange,
+        # mark the universe as loaded. The scout will fetch prices from the
+        # exchange directly rather than relying on pre-loaded synthetic bars.
+        if self.universe_mode and not self._universe_loaded:
+            self._universe_loaded = True
+            self._tradable_universe = list(TRADABLE_UNIVERSE)
+            logger.info(
+                f"Universe mode: {len(self._tradable_universe)} symbols available for scout"
+            )
 
         # Load backtest data
         if backtest:
@@ -294,16 +359,21 @@ class OpenTraderHarness:
 
         # Init risk manager
         opt = self._optimal_params
-        self.risk = RiskManager(
-            RiskConfig(
-                max_position_pct=opt.get("max_position_pct", 0.18),
-                max_daily_trades=max_daily_trades,
-                kelly_fraction=opt.get("kelly_fraction", 0.35),
-                stop_loss_pct=opt.get("stop_loss_pct", 0.05),
-                take_profit_pct=opt.get("take_profit_pct", 0.10),
-                max_total_exposure=opt.get("max_total_exposure", 0.60),
-            )
+        risk_cfg = RiskConfig(
+            max_position_pct=opt.get("max_position_pct", 0.18),
+            max_daily_trades=max_daily_trades,
+            kelly_fraction=opt.get("kelly_fraction", 0.35),
+            stop_loss_pct=opt.get("stop_loss_pct", 0.05),
+            take_profit_pct=opt.get("take_profit_pct", 0.10),
+            max_total_exposure=opt.get("max_total_exposure", 0.60),
         )
+        if sidecar:
+            from risk.sidecar_adapter import RiskSidecarAdapter
+
+            self.risk = RiskSidecarAdapter(config=risk_cfg)
+            self.risk.set_sidecar(self._sidecar_client)
+        else:
+            self.risk = RiskManager(risk_cfg)
         self.risk.set_initial(initial_cash)
 
         # Init state manager
@@ -313,8 +383,7 @@ class OpenTraderHarness:
         self.mcp = MCPClient(base_url=self.mcp_url)
 
         # Check llama-swap before creating agent
-        self._llama_available = self._check_llama()
-        llama_available = self._check_llama(host=llama_host)
+        self._llama_available = self._check_llama(host=llama_host)
 
         # Init agent
         self.agent: BaseAgent = TradingAgent(
@@ -323,7 +392,7 @@ class OpenTraderHarness:
                 "mcp_url": self.mcp_url,
                 "model": effective_model,
                 "llama_host": self.llama_host,
-                "use_model": use_model and llama_available,
+                "use_model": use_model and self._llama_available,
                 "initial_cash": initial_cash,
                 "max_tool_calls": 5,
             },
@@ -367,6 +436,8 @@ class OpenTraderHarness:
         self._signal_scores: Dict[
             str, dict
         ] = {}  # model accuracy: symbol_action -> {correct, total}
+        self._accuracy_total: int = 0  # running total predictions
+        self._accuracy_correct: int = 0  # running correct predictions
         self.committee = CommitteeChair(
             max_position_pct=0.20, max_total_exposure=0.70, min_accuracy_samples=10
         )
@@ -429,28 +500,34 @@ class OpenTraderHarness:
                 if self.debate_mode == "adir":
                     from mot.agents.adir_debate import AdirDebateEngine
 
-                    # ADIR connects directly to llama-server (not llama-swap) to avoid
-                    # the proxy's 502s under concurrent load. llama-swap adds unnecessary
-                    # latency and rate-limiting for 6+ parallel agent calls.
-                    ADIR_LLAMA_HOST = self.llama_host
-                    ADIR_ENSEMBLE_HOST = None  # ensemble disabled (no server on 5810)
+                    # Debate routing (dual-GPU balanced — both GPUs work every cycle):
+                    # Bull  → llama_host (ollama qwen27-trader on GPU1)
+                    # Bear  → gpu0_host  (qwen2.5-coder-7b on GPU0 :5803)
+                    # Risk  → gpu0_host  (qwen2.5-coder-7b on GPU0 :5803)
                     self.debate = AdirDebateEngine(
-                        llama_host=ADIR_LLAMA_HOST,
-                        ensemble_host=ADIR_ENSEMBLE_HOST,
+                        llama_host=self.llama_host,
+                        bull_host=self.llama_host,
+                        bear_host=self.gpu0_host,
+                        risk_host=self.gpu0_host,
+                        bull_model=self.debate_model,
+                        bear_model=self.risk_model,
+                        risk_model=self.risk_model,
+                    )
+                    parent = DebateEngine(llama_host=self.llama_host)
+                    self.debate.set_parent_engine(parent)
+                    logger.info(
+                        f"Debate engine — ADIR dual-GPU (bull={self.debate_model}@GPU1, bear={self.risk_model}@GPU0)"
+                    )
+                else:
+                    self.debate = DebateEngine(
+                        llama_host=llama_host,
                         bull_model=self.debate_model,
                         bear_model=self.debate_model,
                         risk_model=self.debate_model,
                     )
-                    # Set parent engine so ADIR can reuse build_context and LLM routing
-                    parent = DebateEngine(llama_host=ADIR_LLAMA_HOST)
-                    self.debate.set_parent_engine(parent)
                     logger.info(
-                        f"Debate engine enabled — ADIR (host={ADIR_LLAMA_HOST})"
-                    )
-                else:
-                    self.debate = DebateEngine(llama_host=llama_host)
-                    logger.info(
-                        "Debate engine enabled — fast composite (Bull/Bear/Risk)"
+                        "Debate engine enabled — fast composite (Bull/Bear/Risk) "
+                        f"model={self.debate_model}"
                     )
                 self.scorer = AgentScorer(state_dir)
                 self.reflection = ReflectionLog(state_dir)
@@ -720,10 +797,15 @@ class OpenTraderHarness:
             state["_stage"] = self.stage
             state["_stage_start"] = self.stage_start
             state["_initial_cash"] = self.initial_cash
+            self._trade_journal = self._trade_journal[-500:]
+            self._alerts = self._alerts[-200:]
             state["_trade_journal"] = self._trade_journal
             state["_signal_history"] = self.signal_history
             state["_committee"] = self.committee.summary()
             state["_signal_scores"] = self._signal_scores
+            state["_accuracy_total"] = self._accuracy_total
+            state["_accuracy_correct"] = self._accuracy_correct
+            state["_sl_tp_levels"] = self._sl_tp_levels
             state["_symbol_regimes"] = self._symbol_regimes
             if self.backtest:
                 state["_backtest_bar_index"] = self._backtest_bar_index
@@ -761,7 +843,7 @@ class OpenTraderHarness:
             self.symbols = list(STAGES[self.stage]["symbols"])
             # Only restore _initial_cash if matching the CLI arg (prevent $100K overwriting --cash 100)
             saved_cash = state.get("_initial_cash")
-            if saved_cash and abs(saved_cash - self.initial_cash) < 1.0:
+            if saved_cash and abs(saved_cash - self.initial_cash) / max(abs(self.initial_cash), 1) < 0.05:
                 self.initial_cash = saved_cash
             if self.backtest and "_backtest_bar_index" in state:
                 self._backtest_bar_index = state["_backtest_bar_index"]
@@ -773,6 +855,12 @@ class OpenTraderHarness:
                 self._symbol_regimes = state["_symbol_regimes"]
             if "_signal_scores" in state:
                 self._signal_scores = state["_signal_scores"]
+            if "_accuracy_total" in state:
+                self._accuracy_total = state["_accuracy_total"]
+            if "_accuracy_correct" in state:
+                self._accuracy_correct = state["_accuracy_correct"]
+            if "_sl_tp_levels" in state and state["_sl_tp_levels"]:
+                self._sl_tp_levels = state["_sl_tp_levels"]
             if "_committee" in state and state["_committee"]:
                 self.committee.restore(state["_committee"])
             if self.cycle > 0:
@@ -845,8 +933,13 @@ class OpenTraderHarness:
 
             # Update initial_cash and risk manager baseline
             if saved_initial and saved_initial > 0:
-                self.initial_cash = saved_initial
-                self.risk.set_initial(saved_initial)
+                if abs(saved_initial - self.initial_cash) / max(abs(self.initial_cash), 1) < 0.05:
+                    self.initial_cash = saved_initial
+                    self.risk.set_initial(saved_initial)
+                else:
+                    logger.warning(
+                        f"paper_state initial_cash ${saved_initial:,.2f} differs significantly from config ${self.initial_cash:,.2f} — using config value"
+                    )
                 # Reconcile risk._peak_value with the restored high-water mark.
                 # set_initial() resets _peak_value to saved_initial; if the portfolio
                 # had grown past initial before the restart, the circuit breaker would
@@ -913,12 +1006,15 @@ class OpenTraderHarness:
             key, {"correct": 0, "total": 0, "symbol": symbol, "action": action}
         )
         e["total"] += 1
-        if (
+        self._accuracy_total += 1
+        is_correct = (
             (action == "BUY" and pnl > 0)
             or (action == "SELL" and pnl > 0)
             or (action == "HOLD" and abs(pnl) < 0.005)
-        ):
+        )
+        if is_correct:
             e["correct"] += 1
+            self._accuracy_correct += 1
 
     def _get_fear_greed(self) -> dict:
         """Extract Fear & Greed index from news cache."""
@@ -937,8 +1033,7 @@ class OpenTraderHarness:
         return default
 
     def _signal_accuracy_summary(self) -> dict:
-        """Model accuracy stats for dashboard."""
-        total, total_correct = 0, 0
+        """Model accuracy stats for dashboard. Uses running counters for O(1) overall, rebuilds by_action on demand."""
         by_action = {}
         for v in self._signal_scores.values():
             acc = round(v["correct"] / max(v["total"], 1) * 100, 1)
@@ -947,12 +1042,12 @@ class OpenTraderHarness:
                 "total": v["total"],
                 "accuracy_pct": acc,
             }
-            total += v["total"]
-            total_correct += v["correct"]
         return {
-            "overall_accuracy_pct": round(total_correct / max(total, 1) * 100, 1),
-            "total_predictions": total,
-            "total_correct": total_correct,
+            "overall_accuracy_pct": round(
+                self._accuracy_correct / max(self._accuracy_total, 1) * 100, 1
+            ),
+            "total_predictions": self._accuracy_total,
+            "total_correct": self._accuracy_correct,
             "by_action": by_action,
         }
 
@@ -1606,23 +1701,27 @@ class OpenTraderHarness:
         except Exception as e:
             ctx.ohlcv_json = f"{sym} price unavailable ({e})"
 
+        # Typed OHLCV bars for heuristic fallback (no JSON round-trip)
+        ctx.ohlcv_bars = bars_raw
+
         # Portfolio context (shared balance snapshot)
         try:
             # Build entry prices from SL/TP tracker
             entry_prices = {}
             for sym_pos, levels in self._sl_tp_levels.items():
                 entry_prices[sym_pos] = levels.get("entry_price", 0)
-            ctx.portfolio_json = json.dumps(
-                {
-                    "cash": bal.cash,
-                    "total_value": bal.total_value,
-                    "positions": bal.positions or {},
-                    "entry_price": entry_prices.get(sym, 0),
-                    "position_count": len(bal.positions),
-                }
-            )
+            portfolio_dict = {
+                "cash": bal.cash,
+                "total_value": bal.total_value,
+                "positions": bal.positions or {},
+                "entry_price": entry_prices.get(sym, 0),
+                "position_count": len(bal.positions),
+            }
+            ctx.portfolio_json = json.dumps(portfolio_dict)
+            ctx.portfolio_dict = portfolio_dict
         except Exception as e:
             ctx.portfolio_json = json.dumps({"error": str(e)})
+            ctx.portfolio_dict = {"error": str(e)}
 
         # Regime (per symbol) — reuse bars_raw from OHLCV fetch above
         try:
@@ -1639,26 +1738,28 @@ class OpenTraderHarness:
                 ]
                 rg = classify_regime(bar_dicts)
                 ctx.regime_json = json.dumps(rg)
+                ctx.regime_dict = rg
             else:
-                ctx.regime_json = json.dumps(
-                    {
-                        "regime": "unknown",
-                        "confidence": 0,
-                        "thesis": "insufficient data",
-                    }
-                )
+                unknown_regime = {
+                    "regime": "unknown",
+                    "confidence": 0,
+                    "thesis": "insufficient data",
+                }
+                ctx.regime_json = json.dumps(unknown_regime)
+                ctx.regime_dict = unknown_regime
         except Exception:
             try:
                 rg = self.mcp.get_regime(sym)
                 ctx.regime_json = json.dumps(rg)
+                ctx.regime_dict = rg
             except Exception as e:
-                ctx.regime_json = json.dumps(
-                    {
-                        "regime": "unknown",
-                        "confidence": 0,
-                        "thesis": f"unavailable: {e}",
-                    }
-                )
+                err_regime = {
+                    "regime": "unknown",
+                    "confidence": 0,
+                    "thesis": f"unavailable: {e}",
+                }
+                ctx.regime_json = json.dumps(err_regime)
+                ctx.regime_dict = err_regime
 
         # Economics (shared — cache per cycle to avoid 3 identical MCP calls)
         try:
@@ -1691,15 +1792,15 @@ class OpenTraderHarness:
             # Social sentiment context
             if hasattr(self, "_social_cache") and self._social_cache:
                 social_lines = ["\nSOCIAL SENTIMENT:"]
-                for sym, data in self._social_cache.items():
+                for social_sym, data in self._social_cache.items():
                     if data.get("mentions", 0) > 0:
                         social_lines.append(
-                            f"  {sym}: {data['sentiment']} (score={data['score']:.2f}, "
+                            f"  {social_sym}: {data['sentiment']} (score={data['score']:.2f}, "
                             f"{data['mentions']} mentions, src={data['source']})"
                         )
                     else:
                         social_lines.append(
-                            f"  {sym}: {data['sentiment']} (score={data['score']:.2f}, "
+                            f"  {social_sym}: {data['sentiment']} (score={data['score']:.2f}, "
                             f"src={data['source']})"
                         )
                 social_ctx = "\n".join(social_lines) + "\n"
@@ -1719,6 +1820,26 @@ class OpenTraderHarness:
                 mtf_context = feature_ctx + "\n\n" + (mtf_context or "")
         except Exception as e:
             logger.debug(f"Feature integrator error: {e}")
+
+        # ── Fundamentals & Valuation (SEC EDGAR) ─────────────────
+        fund_ctx = val_ctx = ""
+        try:
+            from data.fundamentals import compute_fundamentals, fundamentals_to_context
+            from data.valuation import compute_valuation_summary, valuation_to_context
+
+            fund = compute_fundamentals(sym, price=cur if cur else None)
+            if fund:
+                fund_ctx = fundamentals_to_context(fund)
+                ctx.fundamentals_json = fund_ctx
+                val = compute_valuation_summary(fund, price=cur if cur else None)
+                if val:
+                    val_ctx = valuation_to_context(val)
+                    ctx.valuation_json = val_ctx
+                    mtf_context = fund_ctx + "\n" + val_ctx + "\n\n" + (mtf_context or "")
+                else:
+                    mtf_context = fund_ctx + "\n\n" + (mtf_context or "")
+        except Exception as e:
+            logger.debug(f"Fundamentals/valuation skipped for {sym}: {e}")
 
         # ── Multi-timeframe context (4h + primary) ──
         mtf_signal_bias = 0.0  # weighted composite: 1h×0.5 + 4h×0.3 = bias adjustment
@@ -2027,8 +2148,9 @@ class OpenTraderHarness:
         import json as _json, re
         from urllib.request import Request, urlopen
 
+        universe = self._tradable_universe
         lines = []
-        for sym in TRADABLE_UNIVERSE:
+        for sym in universe:
             try:
                 price = self.exchange.get_current_price(sym)
             except Exception:
@@ -2050,12 +2172,12 @@ class OpenTraderHarness:
             picks = self._llm_json_array(prompt, key="symbol", max_n=focus, min_score=5)
             if picks:
                 return [
-                    p["symbol"] for p in picks if p.get("symbol") in TRADABLE_UNIVERSE
+                    p["symbol"] for p in picks if p.get("symbol") in universe
                 ]
         except Exception:
             pass
         scored = []
-        for sym in TRADABLE_UNIVERSE:
+        for sym in universe:
             bars = self.exchange.get_bars(sym, limit=20)
             if len(bars) >= 5:
                 cp = [b.close for b in bars[-5:]]
@@ -2078,6 +2200,14 @@ class OpenTraderHarness:
         prices = {}
         self._cycle_debates = {}
         cycle_start = time.time()
+
+        # ── Push new bars for price movement ─────────────────
+        if self.synthetic_data and self.exchange and self.exchange.name in ("paper",):
+            for sym in list(self.symbols):
+                try:
+                    self._push_new_bar(sym)
+                except Exception as e:
+                    logger.debug(f"Failed to push bar for {sym}: {e}")
 
         # ── Training lock: yield to scheduler ────────────────
         from pathlib import Path as _Path
@@ -2185,170 +2315,136 @@ class OpenTraderHarness:
                     "reason": "circuit_breaker",
                 }
 
+        # ── SL/TP guardrails every cycle (audit F1: previously only enforced
+        #    while training.lock was held — stops/trims never fired in live trading) ──
+        self._check_sl_tp()
+
         # ═══════════════════════════════════════════════════════
         from agent.base import AgentContext
 
         all_signals: List[Signal] = []
         signal_contexts: Dict[str, AgentContext] = {}
 
-        if len(active_symbols) > 1:
-            # ── Smart debate: skip stale HOLD symbols without positions ──
-            last_sigs = getattr(self, "_last_debated_signals", {})
-            current_qty = {
-                sym: float(bal.positions.get(sym, 0)) for sym in active_symbols
-            }
-            debate_syms = []
-            for sym in active_symbols:
-                # Force debate for symbols with NO positions — we have nothing to optimize
-                if current_qty.get(sym, 0) == 0:
-                    debate_syms.append(sym)
-                    continue
-                # Position exists — debate to check for reversals/adjustments
-                if last_sigs.get(sym, {}).get("action") != "HOLD":
-                    debate_syms.append(sym)  # re-debate prior non-HOLDs
-                elif self.cycle - last_sigs.get(sym, {}).get("cycle", 0) >= 5:
-                    debate_syms.append(sym)  # refresh stale (>5 cycles)
-                else:
-                    # Reuse cached HOLD
-                    all_signals.append(
-                        Signal(
-                            action="HOLD",
-                            symbol=sym,
-                            confidence=0.01,
-                            reason="cached hold",
-                        )
+        # ── Debate all symbols (cached-HOLD optimization disabled per multi-GPU refactor) ──
+        debate_syms = list(active_symbols)
+
+        results: Dict[str, Tuple[Signal, AgentContext, Optional[dict]]] = {}
+        # Seed results with cached HOLDs from smart debate skip
+        for sig in all_signals:
+            if sig.symbol not in results:
+                results[sig.symbol] = (sig, "", {})
+
+        def _debate_wrapper(sym):
+            try:
+                _, signal, ctx, regime_dict, debate_result = (
+                    self._debate_one_symbol(
+                        sym,
+                        self.cycle,
+                        self.timeframe,
+                        bal,
                     )
-            skipped = len(active_symbols) - len(debate_syms)
-            if skipped:
-                logger.info(
-                    f"  [DBG-PAR] debating {len(debate_syms)}/{len(active_symbols)} symbols (skipped {skipped} stale HOLDs)"
                 )
-
-            results: Dict[str, Tuple[Signal, AgentContext, Optional[dict]]] = {}
-            # Seed results with cached HOLDs from smart debate skip
-            for sig in all_signals:
-                if sig.symbol not in results:
-                    results[sig.symbol] = (sig, "", {})
-
-            def _debate_wrapper(sym):
-                try:
-                    _, signal, ctx, regime_dict, debate_result = (
-                        self._debate_one_symbol(
-                            sym,
-                            self.cycle,
-                            self.timeframe,
-                            bal,
-                        )
-                    )
-                    self._cycle_debates[sym] = {
-                        "bull": {
-                            "action": debate_result.bull_vote.action,
-                            "conf": debate_result.bull_vote.confidence,
-                            "evq": getattr(debate_result.bull_vote, "evq", None),
-                        },
-                        "bear": {
-                            "action": debate_result.bear_vote.action,
-                            "conf": debate_result.bear_vote.confidence,
-                            "evq": getattr(debate_result.bear_vote, "evq", None),
-                        },
-                        "risk": {
-                            "action": debate_result.action,
-                            "conf": debate_result.confidence,
-                            "evq": None,
-                        },
-                    }
-                    return (sym, signal, ctx, regime_dict)
-                except Exception as e:
-                    signal = Signal(
-                        action="HOLD",
-                        symbol=sym,
-                        confidence=0.0,
-                        reason=f"debate error: {e}",
-                    )
-                    self._cycle_debates[sym] = {
-                        "bull": {"action": "HOLD", "conf": 0, "evq": None},
-                        "bear": {"action": "HOLD", "conf": 0, "evq": None},
-                        "risk": {"action": "HOLD", "conf": 0, "evq": None},
-                    }
-                    return (sym, signal, "", {})
-
-            # Run debates in parallel — only for symbols that need it
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=max(1, len(debate_syms))
-            ) as executor:
-                futures = {
-                    executor.submit(_debate_wrapper, sym): sym for sym in debate_syms
+                self._cycle_debates[sym] = {
+                    "bull": {
+                        "action": debate_result.bull_vote.action,
+                        "conf": debate_result.bull_vote.confidence,
+                        "evq": getattr(debate_result.bull_vote, "evq", None),
+                    },
+                    "bear": {
+                        "action": debate_result.bear_vote.action,
+                        "conf": debate_result.bear_vote.confidence,
+                        "evq": getattr(debate_result.bear_vote, "evq", None),
+                    },
+                    "risk": {
+                        "action": debate_result.action,
+                        "conf": debate_result.confidence,
+                        "evq": None,
+                    },
                 }
-                for future in concurrent.futures.as_completed(futures):
-                    sym, signal, ctx, regime_dict = future.result()
-                    results[sym] = (signal, ctx, regime_dict)
-                    logger.info(
-                        f"  Signal[{sym}]: {signal.action} "
-                        f"(conf={signal.confidence:.2f}, pos_pct={signal.position_pct:.3f}, {signal.reason[:80]})"
-                    )
-
-            # Store debate signals for next cycle's smart debate filter
-            if not hasattr(self, "_last_debated_signals"):
-                self._last_debated_signals = {}
-            for sym in active_symbols:
-                if sym in results:
-                    sig = results[sym][0]
-                    self._last_debated_signals[sym] = {
-                        "action": sig.action,
-                        "conf": sig.confidence,
-                        "cycle": self.cycle,
-                    }
-
-            # Preserve symbol order + collect per-symbol risk overrides
-            symbol_risk_overrides: Dict[str, Dict[str, float]] = {}
-            for sym in active_symbols:
-                result_entry = results.get(sym)
-                if result_entry is None:
-                    signal = Signal(
-                        action="HOLD",
-                        symbol=sym,
-                        confidence=0.0,
-                        reason="debate unavailable",
-                    )
-                    ctx = ""
-                    regime_dict = {}
-                else:
-                    signal, ctx, regime_dict = result_entry
-                all_signals.append(signal)
-                signal_contexts[sym] = ctx
-                # Store per-symbol regime overrides (applied per-check, not globally)
-                if regime_dict:
-                    ov = get_regime_risk_overrides(regime_dict)
-                    if ov:
-                        symbol_risk_overrides[sym] = ov
-                        logger.debug(
-                            f"  Regime override[{sym}]: {regime_dict.get('regime', '?')} "
-                            f"→ {', '.join(f'{k}={v}' for k, v in list(ov.items())[:3])}"
-                        )
-                    self._symbol_regimes[sym] = regime_dict
-        else:
-            # Single symbol: no thread overhead needed
-            symbol_risk_overrides: Dict[str, Dict[str, float]] = {}
-            for sym in active_symbols:
-                _, signal, ctx, regime_dict, _dr = self._debate_one_symbol(
-                    sym,
-                    self.cycle,
-                    self.timeframe,
-                    bal,
+                return (sym, signal, ctx, regime_dict)
+            except Exception as e:
+                signal = Signal(
+                    action="HOLD",
+                    symbol=sym,
+                    confidence=0.0,
+                    reason=f"debate error: {e}",
                 )
+                self._cycle_debates[sym] = {
+                    "bull": {"action": "HOLD", "conf": 0, "evq": None},
+                    "bear": {"action": "HOLD", "conf": 0, "evq": None},
+                    "risk": {"action": "HOLD", "conf": 0, "evq": None},
+                }
+                return (sym, signal, "", {})
+
+        # Run debates in parallel — only for symbols that need it
+        # Cap at 4 workers: _API_SEMAPHORE(2) limits actual concurrency, but
+        # extra workers handle non-API prep (news, bars, context building).
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(len(debate_syms), 4)
+        ) as executor:
+            futures = {
+                executor.submit(_debate_wrapper, sym): sym for sym in debate_syms
+            }
+            for future in concurrent.futures.as_completed(futures):
+                sym, signal, ctx, regime_dict = future.result()
+                results[sym] = (signal, ctx, regime_dict)
                 logger.info(
                     f"  Signal[{sym}]: {signal.action} "
                     f"(conf={signal.confidence:.2f}, pos_pct={signal.position_pct:.3f}, {signal.reason[:80]})"
                 )
-                all_signals.append(signal)
-                signal_contexts[sym] = ctx
-                if regime_dict:
-                    ov = get_regime_risk_overrides(regime_dict)
-                    if ov:
-                        symbol_risk_overrides[sym] = ov
-                    self._symbol_regimes[sym] = regime_dict
+
+        # Store debate signals for next cycle's smart debate filter
+        if not hasattr(self, "_last_debated_signals"):
+            self._last_debated_signals = {}
+        for sym in active_symbols:
+            if sym in results:
+                sig = results[sym][0]
+                self._last_debated_signals[sym] = {
+                    "action": sig.action,
+                    "conf": sig.confidence,
+                    "cycle": self.cycle,
+                }
+
+        # Preserve symbol order + collect per-symbol risk overrides
+        symbol_risk_overrides: Dict[str, Dict[str, float]] = {}
+        for sym in active_symbols:
+            result_entry = results.get(sym)
+            if result_entry is None:
+                signal = Signal(
+                    action="HOLD",
+                    symbol=sym,
+                    confidence=0.0,
+                    reason="debate unavailable",
+                )
+                ctx = ""
+                regime_dict = {}
+            else:
+                signal, ctx, regime_dict = result_entry
+            all_signals.append(signal)
+            signal_contexts[sym] = ctx
+            logger.debug(f"  DBG-FOR-APPEND: {sym}={signal.action}({signal.confidence:.2f}) → all_signals len={len(all_signals)}")
+            # Store per-symbol regime overrides (applied per-check, not globally)
+            if regime_dict:
+                ov = get_regime_risk_overrides(regime_dict)
+                if ov:
+                    symbol_risk_overrides[sym] = ov
+                    logger.debug(
+                        f"  Regime override[{sym}]: {regime_dict.get('regime', '?')} "
+                        f"→ {', '.join(f'{k}={v}' for k, v in list(ov.items())[:3])}"
+                    )
+                self._symbol_regimes[sym] = regime_dict
+
+        # Prune regime ratings for symbols no longer in the (crypto) universe —
+        # stops the dashboard showing stale stock convictions (JPM/MA/etc.).
+        _universe = set(self._tradable_universe) | set(active_symbols)
+        self._symbol_regimes = {
+            s: r for s, r in self._symbol_regimes.items() if s in _universe
+        }
 
         # ── Merge per-symbol optimized params into risk overrides ──
+        # audit F2: removed the `for/else` block that re-ran the serial debate
+        # path every cycle (it had no `break`, so `else` always fired and
+        # duplicated every Bull/Bear/Risk LLM call + clobbered risk overrides).
         for sym in active_symbols:
             opt_ov = self.risk.get_symbol_overrides(sym)
             if opt_ov:
@@ -2377,6 +2473,10 @@ class OpenTraderHarness:
         # Cap history at 500 entries
         if len(self.signal_history) > 500:
             self.signal_history = self.signal_history[-500:]
+
+        logger.debug(
+            f"  DBG-POST-DEBATE: all_signals={[f'{s.symbol}={s.action}({s.confidence:.2f})' for s in all_signals]}"
+        )
 
         # ═══════════════════════════════════════════════════════
         # Phase 1.6: Asset Class Allocation (multi-asset stages)
@@ -2436,9 +2536,18 @@ class OpenTraderHarness:
         portfolio_result = None
         # Build signal map keyed by signal's own symbol (preserves debate-order attribution)
         _sig_map = {}
+        logger.debug(f"  DBG-PRE-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}' for s in all_signals]}")
         for sig in all_signals:
             _sig_map.setdefault(sig.symbol, sig)
         all_signals = list(_sig_map.values())
+        logger.debug(f"  DBG-POST-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}({s.confidence:.2f})' for s in all_signals]}")
+        # DBG: log all signals pre-optimizer
+        _dbg_signals = ", ".join(
+            f"{s.symbol}={s.action}({s.confidence:.2f})" for s in all_signals
+        )
+        logger.info(
+            f"  PRE-OPTIMIZER: {len(all_signals)} signals → {_dbg_signals}"
+        )
 
         if (
             multi_symbol
@@ -2583,7 +2692,7 @@ class OpenTraderHarness:
                     risk_data = debate.get("risk", {})
                     risk_action = risk_data.get("action", "")
                     risk_conf = risk_data.get("conf", 0)
-                    if bear_conf >= 0.6 or (risk_action == "SELL" and risk_conf >= 0.5):
+                    if bear_conf >= 0.40 or (risk_action == "SELL" and risk_conf >= 0.4):
                         logger.info(
                             f"  {sym}: high-conviction SELL override "
                             f"(bear={bear_conf:.2f}, risk={risk_conf:.2f}) — clearing SL/TP"
@@ -2760,11 +2869,24 @@ class OpenTraderHarness:
                                     else:
                                         sl_atr = risk_result.adjusted_stop
                                         tp_atr = risk_result.adjusted_tp
+                                    existing = self._sl_tp_levels.get(sym, {})
+                                    old_qty = existing.get("qty", 0)
+                                    old_entry = existing.get("entry_price", 0)
+                                    if old_qty > 0 and old_entry > 0:
+                                        new_qty = old_qty + order.quantity
+                                        avg_price = (old_entry * old_qty + price * order.quantity) / new_qty
+                                        entry_price_val = avg_price
+                                        if atr > 0:
+                                            sl_atr = avg_price - (atr * atr_mult)
+                                            tp_atr = avg_price + (atr * atr_mult * 2)
+                                    else:
+                                        new_qty = order.quantity
+                                        entry_price_val = price
                                     self._sl_tp_levels[sym] = {
                                         "stop_loss": sl_atr,
                                         "take_profit": tp_atr,
-                                        "entry_price": price,
-                                        "qty": order.quantity,
+                                        "entry_price": entry_price_val,
+                                        "qty": new_qty,
                                         "highest_price": price,
                                         "cycle_opened": self.cycle,
                                         "trailing_stop_pct": risk_cfg.trailing_stop_pct,
@@ -2880,7 +3002,9 @@ class OpenTraderHarness:
                                                 f"  Reflection resolved: BUY on {sym} → {pnl_pct:+.4%}"
                                             )
                                     if sym in self._sl_tp_levels:
-                                        del self._sl_tp_levels[sym]
+                                        pos = self.exchange.get_balance().positions.get(sym, 0)
+                                        if float(pos) <= 0:
+                                            del self._sl_tp_levels[sym]
                 except Exception as e:
                     logger.error(f"  {sym}: order error: {e}", exc_info=True)
                     order_result = {"status": "error", "error": str(e)}
@@ -3326,13 +3450,14 @@ class OpenTraderHarness:
         signal.signal(signal.SIGINT, _shutdown)
         signal.signal(signal.SIGTERM, _shutdown)
 
-        try:
-            while self.running:
+        while self.running:
+            try:
                 if self.max_cycles > 0 and self.cycle >= self.max_cycles:
                     logger.info(f"Reached max cycles ({self.max_cycles})")
                     break
 
                 self.run_cycle()
+                self._consecutive_crashes = 0
 
                 if self.running and self.cycle_interval > 0:
                     time.sleep(self.cycle_interval)
@@ -3357,7 +3482,6 @@ class OpenTraderHarness:
                                     f"  Coach recommends retraining: "
                                     f"{self.coach.get_training_focus()}"
                                 )
-                            # ── Write to TRADER.md ─────────────────
                             for etype, content, conf in distill_coach_report(
                                 report, self.cycle
                             ):
@@ -3365,24 +3489,26 @@ class OpenTraderHarness:
                                     etype, self.cycle, content, conf, source="coach"
                                 )
                     except Exception as e:
-                        logger.debug(f"Coach review skipped: {e}")
+                        logger.warning(f"Coach review failed (continuing): {e}")
 
                     self._coach_cycle_counter = 0
 
                 # ── ATDL lifecycle step ──────────────────────────
                 if hasattr(self, "atdl") and self.atdl:
-                    action = self.atdl.step(self.cycle)
-                    if action:
-                        logger.info(
-                            f"ATDL action: {json.dumps(action, default=str)[:200]}"
-                        )
-                        # ── Write to TRADER.md ─────────────────
-                        for etype, content, conf in distill_atdl_action(
-                            action, self.cycle
-                        ):
-                            self.trader_md.add_entry(
-                                etype, self.cycle, content, conf, source="atdl"
+                    try:
+                        action = self.atdl.step(self.cycle)
+                        if action:
+                            logger.info(
+                                f"ATDL action: {json.dumps(action, default=str)[:200]}"
                             )
+                            for etype, content, conf in distill_atdl_action(
+                                action, self.cycle
+                            ):
+                                self.trader_md.add_entry(
+                                    etype, self.cycle, content, conf, source="atdl"
+                                )
+                    except Exception as e:
+                        logger.warning(f"ATDL step failed (continuing): {e}")
 
                 # ── Auto fine-tune check (every N cycles) ────
                 self._check_auto_finetune()
@@ -3392,14 +3518,22 @@ class OpenTraderHarness:
                 if self._adapter_check_cycle % 10 == 0:
                     self._check_adapter_lifecycle()
 
-        except KeyboardInterrupt:
-            logger.info("Interrupted by user")
-        except Exception as e:
-            logger.error(f"Cycle {self.cycle} crashed: {e}", exc_info=True)
-            self._save_agent_state()  # emergency persist
-            time.sleep(5)
-        finally:
-            self._summary()
+            except KeyboardInterrupt:
+                logger.info("Interrupted by user")
+                break
+            except Exception as e:
+                self._consecutive_crashes = getattr(self, "_consecutive_crashes", 0) + 1
+                logger.error(
+                    f"Cycle {self.cycle} crashed ({self._consecutive_crashes} consecutive): {e}",
+                    exc_info=True,
+                )
+                self._save_agent_state()
+                if self._consecutive_crashes >= 10:
+                    logger.error("10 consecutive in-process crashes — exiting so run_harness watchdog can act.")
+                    break
+                time.sleep(5)
+
+        self._summary()
 
     def _summary(self):
         """Print trading summary."""
@@ -3451,7 +3585,17 @@ def main():
     parser.add_argument(
         "--exchange",
         default="paper",
-        help="Exchange backend (paper|alpaca-paper|kraken|finnhub|coinbase)",
+        help="Exchange backend (paper|alpaca-paper|kraken|finnhub|coinbase|ibkr)",
+    )
+    parser.add_argument(
+        "--stock-exchange",
+        default=None,
+        help="Stock exchange for multi-asset mode (ibkr|finnhub|alpaca-paper|paper). Overrides auto-detection.",
+    )
+    parser.add_argument(
+        "--crypto-exchange",
+        default=None,
+        help="Crypto exchange for multi-asset mode (kraken|coinbase|paper). Overrides auto-detection.",
     )
     parser.add_argument(
         "--live",
@@ -3487,8 +3631,8 @@ def main():
     )
     parser.add_argument(
         "--llama-host",
-        default="http://127.0.0.1:5802",
-        help="llama-server direct URL (default: :5802)",
+        default="http://127.0.0.1:8080",
+        help="llama-server direct URL (default: :8080)",
     )
     parser.add_argument(
         "--no-model", action="store_true", help="Disable model, use heuristic"
@@ -3550,6 +3694,16 @@ def main():
     )
     parser.add_argument("--log-level", default="INFO", help="Log level")
     parser.add_argument(
+        "--sidecar",
+        action="store_true",
+        help="Offload exchange and risk compute to Rust sidecar process",
+    )
+    parser.add_argument(
+        "--sidecar-binary",
+        default=None,
+        help="Path to exchange-engine binary (auto-detected if not set)",
+    )
+    parser.add_argument(
         "--reset-portfolio",
         action="store_true",
         help="Wipe positions and SL/TP levels on startup",
@@ -3570,15 +3724,15 @@ def main():
         format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
     )
 
-    # Override stage 1 symbols if --symbols provided (respects flag for initial set,
-    # but progression will naturally add/remove symbols as stages advance)
+    # Override stage symbols if --symbols provided
     _custom_symbols = False
     if args.symbols:
         custom_syms = [s.strip() for s in args.symbols.split(",")]
-        STAGES[1]["symbols"] = custom_syms
+        for stage_num in STAGES:
+            STAGES[stage_num]["symbols"] = custom_syms
         _custom_symbols = True
         logger.info(
-            f"Custom initial symbols: {custom_syms} (progression will gate additions)"
+            f"Custom symbols override all stages: {custom_syms}"
         )
 
     # ── Live mode: shortcut for real prices + paper settlement ──
@@ -3647,6 +3801,10 @@ def main():
         debate_mode=args.debate_mode,
         universe_mode=args.universe_mode,
         universe_focus=args.universe_focus,
+        sidecar=args.sidecar,
+        sidecar_binary=args.sidecar_binary,
+        stock_exchange=args.stock_exchange,
+        crypto_exchange=args.crypto_exchange,
     )
 
     if _onchain_wallet:
@@ -3654,6 +3812,10 @@ def main():
         logger.info("Onchain swap routing enabled for BUY signals")
 
     harness.run()
+
+    if harness.sidecar_enabled and harness._sidecar_client:
+        harness._sidecar_client.stop()
+        logger.info("Sidecar process stopped")
 
 
 if __name__ == "__main__":

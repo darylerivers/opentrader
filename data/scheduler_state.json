@@ -1,9 +1,9 @@
 {
   "last_dpo_check": null,
-  "last_scout_sweep": "2026-07-24T16:40:13.886756+00:00",
-  "last_distill": "2026-07-24T16:40:13.887163+00:00",
+  "last_scout_sweep": "2026-07-30T10:40:02.183827+00:00",
+  "last_distill": "2026-07-30T10:40:02.184470+00:00",
   "last_research_model_check": "2026-07-14T17:10:02.194893+00:00",
-  "last_atdl_trigger": "2026-07-23T16:30:37.453025+00:00",
+  "last_atdl_trigger": "2026-07-29T22:35:08.852434+00:00",
   "dpo_triggered": true,
   "research_model_triggered": false,
   "first_full_cycle_triggered": true

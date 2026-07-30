@@ -193,13 +193,13 @@ class CommitteeChair:
             parts.append("warmup")
 
         # Veto if adjusted confidence too low
-        if adj_conf < 0.20:  # lowered from 0.30 — let more trades through to accumulate data
+        if adj_conf < 0.10:  # lowered from 0.30→0.20→0.10 — let signals through during warmup
             return CommitteeResult(
                 approved=False,
                 adjusted_confidence=adj_conf,
                 adjusted_position_pct=risk_pct * acc_mult,
                 committee_multiplier=acc_mult,
-                notes=f"veto: adj_conf={adj_conf:.0%} < 20% ; {'; '.join(parts)}",
+                notes=f"veto: adj_conf={adj_conf:.0%} < 10% ; {'; '.join(parts)}",
             )
 
         return CommitteeResult(

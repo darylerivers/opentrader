@@ -123,6 +123,35 @@ class LiveExchange(ExchangeBase):
                     return market_id
         return symbol
 
+    def discover_symbols(self, max_symbols: int = 20) -> List[str]:
+        """Return top tradable USDT pairs sorted by 24h volume.
+        
+        Fetches markets, filters to USDT-quoted pairs, sorts by 24h volume
+        descending, and returns the top N symbols.
+        """
+        if not self._connected or not self._ccxt:
+            return []
+        try:
+            self._rate_limit_wait()
+            markets = self._ccxt.load_markets(reload=False)
+            candidates = []
+            for sym, meta in markets.items():
+                if not sym.endswith("/USDT"):
+                    continue
+                if not meta.get("active", True):
+                    continue
+                vol = meta.get("info", {}).get("volume") or meta.get("info", {}).get("vol") or meta.get("info", {}).get("baseVolume", 0)
+                try:
+                    vol = float(vol)
+                except (ValueError, TypeError):
+                    vol = 0.0
+                candidates.append((vol, sym))
+            candidates.sort(key=lambda x: x[0], reverse=True)
+            return [sym for _, sym in candidates[:max_symbols]]
+        except Exception as e:
+            logger.warning(f"Failed to discover symbols from {self._ccxt_exchange_id}: {e}")
+            return []
+
     def get_bars(self, symbol: str = "BTC/USDT", timeframe: str = "1h",
                  limit: int = 100) -> List[OHLCV]:
         """Fetch OHLCV bars from exchange (with cache)."""

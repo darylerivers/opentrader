@@ -161,8 +161,12 @@ class StateManager:
 
     def read(self) -> dict:
         if self.state_path.exists():
-            with open(self.state_path) as f:
-                return json.load(f)
+            try:
+                with open(self.state_path) as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, OSError) as e:
+                logger.warning(f"State file corrupt or unreadable: {e}")
+                return {}
         return {}
 
     def read_high_level(self) -> dict:

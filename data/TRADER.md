@@ -4,8 +4,8 @@
 > ATDL lifecycle events capture lessons. It is injected into every debate cycle
 > as institutional memory. Pruned and consolidated automatically.
 
-Last updated: 2026-07-16T12:18:39Z
-Total entries: 14
+Last updated: 2026-07-30T06:03:01Z
+Total entries: 19
 
 ## Patterns — reproducible market behaviors
 - **[PATTERN]** (c259, conf=70%): Portfolio earned grade B with 60% win rate at cycle 259. Strategy is working — preserve current risk parameters and debate configuration.  _2026-07-16T04:16:24_
@@ -17,6 +17,8 @@ Total entries: 14
 - **[PATTERN]** (c66935, conf=54%): Portfolio earned grade B with 44% win rate at cycle 66935. Strategy is working — preserve current risk parameters and debate configuration.  _2026-07-14T19:24:54_
 
 - **[PATTERN]** (c66936, conf=54%): Portfolio earned grade B with 44% win rate at cycle 66936. Strategy is working — preserve current risk parameters and debate configuration.  _2026-07-14T22:42:50_
+
+- **[PATTERN]** (c3854, conf=23%): Portfolio earned grade B with 13% win rate at cycle 3854. Strategy is working — preserve current risk parameters and debate configuration.  _2026-07-30T02:44:08_
 
 
 ## Rules — hard-won risk management principles
@@ -35,6 +37,14 @@ Total entries: 14
 - **[LESSON]** (c66932, conf=85%): Portfolio earned failing grade F with 44% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-14T17:32:44_
 
 - **[LESSON]** (c1059, conf=85%): Portfolio earned failing grade D with 54% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-16T08:40:56_
+
+- **[LESSON]** (c135, conf=85%): Portfolio earned failing grade F with 0% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-28T06:16:34_
+
+- **[LESSON]** (c3838, conf=85%): Portfolio earned failing grade F with 7% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-30T02:25:05_
+
+- **[LESSON]** (c3913, conf=85%): Portfolio earned failing grade F with 25% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-30T05:21:06_
+
+- **[LESSON]** (c3931, conf=85%): Portfolio earned failing grade D with 25% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-30T06:03:01_
 
 - **[LESSON]** (c1700, conf=70%): ADIR risk agent sometimes fails HTTP calls to llama-server (oversized prompts). Heuristic synthesis fallback provides adequate risk voting when this occurs.  _2026-07-13T02:14:58_
 

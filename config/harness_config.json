@@ -1,7 +1,9 @@
 {
-  "debate_model": "gemma-4-12B-agentic",
-  "fast_model": "gemma-4-12B-agentic",
-  "llama_host": "http://127.0.0.1:5802",
+  "debate_model": "qwen27-trader",
+  "fast_model": "qwen2.5-coder-7b",
+  "risk_model": "qwen2.5-coder-7b",
+  "llama_host": "http://127.0.0.1:11434",
+  "gpu0_host": "http://127.0.0.1:5803",
   "mcp_url": "http://127.0.0.1:8092",
   "default_exchange": "paper",
   "default_cash": 100000,

@@ -160,3 +160,22 @@ def resolve_discovery(discovery_request: dict) -> List[str]:
 
 def get_sector_list() -> str:
     return ", ".join(sorted(SECTOR_MAP.keys()))
+
+
+def refresh_from_exchange(exchange, fallback_universe: Optional[List[str]] = None) -> List[str]:
+    """Discover tradable symbols from the exchange, falling back to a hardcoded list.
+
+    Returns a deduplicated, sorted list of symbol strings.
+    """
+    try:
+        live = exchange.discover_symbols()
+        if live:
+            logger.info(f"Discovered {len(live)} symbols from exchange")
+            return sorted(set(live))
+    except Exception as e:
+        logger.warning(f"Exchange symbol discovery failed: {e}")
+
+    if fallback_universe:
+        logger.info(f"Using fallback universe ({len(fallback_universe)} symbols)")
+        return sorted(set(fallback_universe))
+    return []

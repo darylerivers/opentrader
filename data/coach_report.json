@@ -1,48 +1,38 @@
 {
-  "grade": "C",
-  "grade_reason": "Mixed results in a noisy market. Winning 75% on BTC/USDT but losing 20% on SOL/USDT.",
+  "grade": "D",
+  "grade_reason": "Single-symbol concentration with only 25% win rate and no regime detection capability.",
   "winning_patterns": [
-    "trailing-stop in trending market (BTC/USDT)",
-    "low volatility environment with tight ranges (ETH/USDT)",
-    "breakout entry at 1.6x avg vol (BTC/USDT)"
+    "Quick scalps in tight $1-3 range on SOL/USDT when Bull signal >80%",
+    "Exiting before Bear consensus reaches 75%+ confidence",
+    "Holding through ADIR HOLD signals with evq < 0.45"
   ],
   "failure_patterns": [
-    "false breakout (SOL/USDT)",
-    "overextended move getting caught on the wrong side (BTC/USDT)",
-    "choppy market with low signal quality (SOL/USDT)"
+    "Entering trades without regime context (all 20 labeled 'unknown')",
+    "Over-concentration on single symbol SOL/USDT creating correlation risk",
+    "Manual exits dominating suggests signal confidence thresholds too low for automation"
   ],
   "symbol_advice": {
+    "SOL/USDT": "neutral",
     "BTC/USDT": "hot",
-    "ETH/USDT": "neutral",
-    "SOL/USDT": "cold"
+    "ETH/USDT": "hot"
   },
-  "position_sizing": "increase",
-  "retrain_recommended": false,
-  "retrain_focus": "",
-  "data_curation_advice": "focus on trending markets, avoid choppy ranges",
-  "confidence": 0.7,
-  "cycle": 2459,
-  "trades_reviewed": 11,
-  "win_rate": 54.5,
+  "position_sizing": "decrease - reduce by 50% until win rate exceeds 40% and regime detection is functional",
+  "retrain_recommended": true,
+  "retrain_focus": "Prioritize regime classification training with crypto market state labels (trending/ranging/volatile), then diversify signal generation across BTC/ETH/SOL to reduce single-asset bias.",
+  "data_curation_advice": "Include: failed entries that were gate-skipped for analysis, trades during high volatility periods. Exclude: manual override trades from training set as they represent human judgment not model learning",
+  "confidence": 0.72,
+  "cycle": 5809,
+  "trades_reviewed": 20,
+  "win_rate": 25.0,
   "symbol_stats": {
-    "BTC/USDT": {
-      "pnl": -0.23000000000000004,
-      "wins": 3,
-      "count": 4
-    },
-    "ETH/USDT": {
-      "pnl": 0.48,
-      "wins": 2,
-      "count": 2
-    },
     "SOL/USDT": {
-      "pnl": -2.3499999999999996,
-      "wins": 1,
-      "count": 5
+      "pnl": 42.18000000000001,
+      "wins": 5,
+      "count": 20
     }
   },
   "regime_counts": {
-    "unknown": 11
+    "unknown": 20
   },
-  "timestamp": "2026-07-16T12:35:24.406895"
+  "timestamp": "2026-07-30T18:01:27.663115"
 }

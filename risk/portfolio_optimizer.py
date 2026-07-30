@@ -65,7 +65,7 @@ class PortfolioOptimizer:
         self,
         max_position_pct: float = 0.20,
         max_total_exposure: float = 0.60,
-        max_positions: int = 5,
+        max_positions: int = 50,
         max_correlation: float = 0.80,
         kelly_fraction: float = 0.35,
         min_cash_reserve: float = 5000.0,
@@ -291,6 +291,11 @@ class PortfolioOptimizer:
         # Step 2: Compute raw Kelly fractions per signal
         kelly_weights: Dict[str, float] = {}
         signal_map: Dict[str, Any] = {}
+        logger.debug(
+            f"  OPTIMIZE-IN: {len(signals)} signals: "
+            + ", ".join(f"{s.symbol}={s.action}({s.confidence:.2f})" for s in signals)
+            + f" | portfolio=${total_value:,.0f} cash=${cash:,.0f} pos={positions}"
+        )
         for sig in signals:
             sym = sig.symbol
             signal_map[sym] = sig
@@ -300,11 +305,12 @@ class PortfolioOptimizer:
                 # Cap by max position pct
                 kw = min(kw, self.max_position_pct)
                 kelly_weights[sym] = kw
-                logger.debug(
-                    f"  Kelly[{sym}]: conf={sig.confidence:.2f} → kw={kw:.4f} (max={self.max_position_pct})"
+                logger.info(
+                    f"  Kelly[{sym}]: BUY conf={sig.confidence:.2f} → kw={kw:.4f} (max={self.max_position_pct})"
                 )
             elif sig.action.upper() == "SELL":
                 kelly_weights[sym] = 0.0  # Exit, not enter
+                logger.info(f"  Kelly[{sym}]: SELL → kw=0.0")
             else:
                 # HOLD: maintain existing position weight
                 pos_qty = positions.get(sym, 0)
@@ -312,6 +318,7 @@ class PortfolioOptimizer:
                 pos_value = pos_qty * pos_price
                 current_weight = pos_value / max(total_value, 1)
                 kelly_weights[sym] = current_weight
+                logger.info(f"  Kelly[{sym}]: HOLD → kw={current_weight:.4f}")
 
         # Step 3: Apply correlation penalty
         if price_hist:
@@ -332,14 +339,19 @@ class PortfolioOptimizer:
             and signal_map[sym].action.upper() == "BUY"
         }
         sorted_buys = sorted(buy_signals.items(), key=lambda x: -x[1])
-        max_new = self.max_positions - sum(1 for q in positions.values() if q > 0)
+        existing_pos_count = sum(1 for q in positions.values() if q > 0)
+        max_new = self.max_positions - existing_pos_count
+        logger.info(
+            f"  MAX-POS-FILTER: max_positions={self.max_positions} existing={existing_pos_count} max_new={max_new} buy_signals={len(buy_signals)} ({', '.join(f'{s}={w:.4f}' for s,w in sorted_buys)})"
+        )
         if max_new < len(sorted_buys):
             # Keep only the top `max_new` buy signals
             kept = set(s for s, _ in sorted_buys[:max_new])
             for s, _ in sorted_buys[max_new:]:
+                logger.info(f"  MAX-POS-FILTER: dropping {s}")
                 kelly_weights[s] = 0.0
-        logger.debug(
-            f"  After max pos filter (max_new={max_new}): {', '.join(f'{s}={w:.4f}' for s, w in kelly_weights.items())}"
+        logger.info(
+            f"  AFTER-FILTER: {', '.join(f'{s}={w:.4f}' for s, w in kelly_weights.items())}"
         )
 
         # Step 5: Normalize weights to respect max_total_exposure
@@ -395,13 +407,16 @@ class PortfolioOptimizer:
         div_ratio = weighted_vol_sum / portfolio_vol if portfolio_vol > 0 else 1.0
 
         allocations: List[Allocation] = []
+        logger.info(f"  ALLOC-LOOP: {len(kelly_weights)} weights, prices={list(prices.keys())}, signal_map={list(signal_map.keys())}")
         for sym, weight in kelly_weights.items():
             sig = signal_map.get(sym)
             if sig is None:
+                logger.info(f"  ALLOC-DROP[{sym}]: no signal in signal_map")
                 continue
 
             price = prices.get(sym, 0)
             if price <= 0:
+                logger.info(f"  ALLOC-DROP[{sym}]: price={price} <= 0 (prices has {sym}: {sym in prices})")
                 continue
 
             # Determine side
@@ -444,13 +459,11 @@ class PortfolioOptimizer:
                     reason = "holding"
                     alloc_conf = 0.5
 
-            # FIX (allocation_mutation_bug): Skip HOLD allocations entirely.
-            # HOLD entries pollute the returned list and get post-processed by the
-            # harness (lines 2147-2153) which mutates the mutable @dataclass
-            # objects. By filtering here, we prevent the "ALLOC-BUY → HOLD" bug.
-            if side == "HOLD":
-                continue
-
+            logger.info(
+                f"  ALLOC-SIDE[{sym}]: action={sig.action} side={side} qty={qty:.8f} "
+                f"target_qty={target_qty:.8f} pos_qty={pos_qty:.8f} price={price:.2f} "
+                f"weight={weight:.4f}"
+            )
             if side != "HOLD" and qty > 0:
                 # Respect max order value
                 order_value = qty * price
@@ -460,14 +473,24 @@ class PortfolioOptimizer:
                 # Respect min cash reserve (for BUY)
                 if side == "BUY":
                     cost = qty * price
+                    logger.info(
+                        f"  ALLOC-CASH[{sym}]: cost={cost:.2f} cash={cash:.2f} "
+                        f"min_reserve={self.min_cash_reserve:.2f} buffer={cash - self.min_cash_reserve:.2f}"
+                    )
                     if cost > cash - self.min_cash_reserve:
                         affordable = max(0, cash - self.min_cash_reserve) / price
+                        logger.info(f"  ALLOC-CASH[{sym}]: OVER BUDGET, affordable_qty={affordable:.8f}")
                         if affordable <= 0:
                             side = "HOLD"
                             qty = 0
                             reason = "insufficient cash"
                         else:
                             qty = affordable
+
+            # Skip HOLD allocations — filter AFTER cash check so BUY→HOLD mutations don't leak
+            if side == "HOLD" or qty <= 0:
+                logger.info(f"  ALLOC-DROP[{sym}]: final side={side} qty={qty:.8f} → skipped")
+                continue
 
             # SL/TP from signal
             sl = sig.stop_loss if sig and hasattr(sig, "stop_loss") else None
@@ -487,6 +510,13 @@ class PortfolioOptimizer:
                 )
             )
 
+        logger.debug(
+            f"  OPTIMIZE-OUT: {len(allocations)} allocations: "
+            + ", ".join(
+                f"{a.symbol}/{a.side}(wt={a.weight_pct:.4f} qty={a.quantity:.6f} {a.reason})"
+                for a in allocations
+            )
+        )
         # Defensive copy — allocations are mutable and can be corrupted
         # by post-processing in the caller if shared by reference.
         return PortfolioResult(

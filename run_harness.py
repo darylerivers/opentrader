@@ -3,7 +3,7 @@
 
 Clears __pycache__ on each restart to prevent stale bytecode bugs.
 """
-import subprocess, sys, os, signal, time, argparse, shutil
+import subprocess, sys, os, signal, time, argparse, shutil, threading, queue
 from pathlib import Path
 
 HARNESS_DIR = Path(__file__).resolve().parent
@@ -51,14 +51,14 @@ def main():
     args, unknown = parser.parse_known_args()
 
     harness_args = unknown if unknown else [
-        "--exchange", "paper",
+        "--exchange", "ibkr",
         "--stage", "2",
         "--cash", "100000",
         "--max-cycles", "0",
         "--mot-force", "increase",
         "--max-daily-trades", "500",
         "--debate-mode", "adir",
-        "--llama-host", "http://127.0.0.1:5802",
+        "--llama-host", "http://127.0.0.1:5801",
         "--parallel-debate",
         "--interval", "10",
     ]
@@ -102,7 +102,7 @@ def main():
         print(f"🚀 Starting: {' '.join(cmd)}")
         print(f"{'='*50}\n")
         os.environ["WATCHFILES_RUNNING"] = "1"
-        proc = subprocess.Popen(cmd, env=os.environ, preexec_fn=os.setsid)
+        proc = subprocess.Popen(cmd, env=os.environ)
 
     max_seconds = args.max_hours * 3600 if args.max_hours > 0 else 0
     if max_seconds > 0:
@@ -115,33 +115,78 @@ def main():
     start_harness()
     last_restart = time.time()
 
+    # ── File-watcher thread + main poll loop ──────────────────
+    change_queue: queue.Queue = queue.Queue()
+    stop_event = threading.Event()
+
+    def _watcher():
+        """Run watchfiles in a daemon thread, push changes to queue."""
+        try:
+            for changes in watch(*WATCH_PATHS, debounce=args.cooldown * 1000,
+                                 stop_event=stop_event):
+                if stop_event.is_set():
+                    break
+                py_changes = []
+                for _, path_str in changes:
+                    if not path_str.endswith(".py"):
+                        continue
+                    path_lower = path_str.lower()
+                    if any(ex in path_lower for ex in EXCLUDED):
+                        continue
+                    py_changes.append(path_str)
+                if py_changes:
+                    change_queue.put(py_changes)
+        except Exception as e:
+            print(f"  ⚠️  Watcher thread error: {e}")
+
+    watcher_thread = threading.Thread(target=_watcher, daemon=True)
+    watcher_thread.start()
+
+    crash_count = 0
+    MAX_CRASH_RESTARTS = 20  # safety valve
+
     try:
-        for changes in watch(*WATCH_PATHS, debounce=args.cooldown * 1000):
-            py_changes = []
-            for _, path_str in changes:
-                if not path_str.endswith(".py"):
-                    continue
-                path_lower = path_str.lower()
-                if any(ex in path_lower for ex in EXCLUDED):
-                    continue
-                py_changes.append(path_str)
-
-            if not py_changes:
-                continue
-
+        while not stop_event.is_set():
             now = time.time()
+
+            # ── Wall-clock timeout ──
+            if max_seconds > 0 and (now - start_time) >= max_seconds:
+                print(f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down.")
+                stop_event.set()
+                break
+
+            # ── Crash detection: restart dead process ──
+            if proc and proc.poll() is not None:
+                exit_code = proc.returncode
+                crash_count += 1
+                if crash_count > MAX_CRASH_RESTARTS:
+                    print(f"\n❌ {MAX_CRASH_RESTARTS} consecutive crashes — giving up.")
+                    stop_event.set()
+                    break
+                print(f"\n💥 Harness exited (code={exit_code}, crash #{crash_count}). "
+                      f"Restarting in {args.cooldown}s...")
+                time.sleep(args.cooldown)
+                start_harness()
+                last_restart = time.time()
+
+            # ── File-change restart (with debounce) ──
+            try:
+                py_changes = change_queue.get(timeout=1.0)
+            except queue.Empty:
+                continue  # nothing happened, loop back
+
             if now - last_restart < args.cooldown + 3:
-                continue
+                continue  # debounce
 
             rel_paths = [os.path.relpath(p, str(HARNESS_DIR)) for p in py_changes[:5]]
             print(f"\n🔄 {len(py_changes)} file(s) changed: {', '.join(rel_paths)}")
             print(f"  ⏳ Debouncing {args.cooldown}s...")
             time.sleep(args.cooldown)
 
-            # Check wall-clock timeout
+            now = time.time()
             if max_seconds > 0 and (now - start_time) >= max_seconds:
                 print(f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down.")
-                kill_harness()
+                stop_event.set()
                 break
 
             print(f"  🔄 Restarting...")
@@ -149,15 +194,16 @@ def main():
             time.sleep(1)
             start_harness()
             last_restart = time.time()
+            crash_count = 0  # reset on successful file-change restart
 
     except KeyboardInterrupt:
         print("\n👋 Shutting down...")
-        kill_harness()
+        stop_event.set()
 
     finally:
-        if max_seconds > 0 and (time.time() - start_time) >= max_seconds:
-            print(f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down.")
-            kill_harness()
+        stop_event.set()
+        kill_harness()
+        watcher_thread.join(timeout=5)
 
 
 if __name__ == "__main__":

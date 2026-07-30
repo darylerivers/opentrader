@@ -14,6 +14,7 @@ API exposed to dashboard:
   POST /api/models/download      → download from HF
   GET  /api/models/status        → running model + VRAM info
 """
+
 import json
 import logging
 import os
@@ -40,33 +41,59 @@ LLAMA_SWAP_URL = "http://127.0.0.1:8080"
 # ── Model Role definitions ─────────────────────────────────────
 
 ROLES = {
-    "trading":  {"name": "Trading Signal",  "desc": "Models for live trading decisions",
-                 "icon": "📊"},
-    "student":  {"name": "Student Trainer", "desc": "Fast models for teacher/student training",
-                 "icon": "🧠"},
-    "teacher":  {"name": "Teacher/Scorer",  "desc": "Deep reasoning models for scenario generation",
-                 "icon": "🎓"},
-    "regime":   {"name": "Regime Classifier","desc": "Models for market regime detection",
-                 "icon": "🌡️"},
-    "code":     {"name": "Development",     "desc": "Coding/development models",
-                 "icon": "💻"},
+    "trading": {
+        "name": "Trading Signal",
+        "desc": "Models for live trading decisions",
+        "icon": "📊",
+    },
+    "student": {
+        "name": "Student Trainer",
+        "desc": "Fast models for teacher/student training",
+        "icon": "🧠",
+    },
+    "teacher": {
+        "name": "Teacher/Scorer",
+        "desc": "Deep reasoning models for scenario generation",
+        "icon": "🎓",
+    },
+    "regime": {
+        "name": "Regime Classifier",
+        "desc": "Models for market regime detection",
+        "icon": "🌡️",
+    },
+    "code": {"name": "Development", "desc": "Coding/development models", "icon": "💻"},
 }
 
-# Known model → role assignments (by name substring match, case-insensitive)
-ROLE_RULES = [
-    # (keyword, role, priority)
-    ("deckard",       ["trading"],            100),
-    ("gemma-4-e4b",   ["trading", "student"],  90),
-    ("agentic",       ["trading", "teacher"],  80),
-    ("hermes",        ["trading", "student"],  70),
-    ("qwen",          ["trading", "teacher"],  70),
-    ("coder",         ["code", "student"],     60),
-    ("sushi-coder",   ["code"],                60),
-    ("neo-code",      ["code", "teacher"],     50),
-    ("v2-coder",      ["code", "student"],     60),
-]
 
-DEFAULT_ROLES = ["trading"]
+# Known model → role assignments (by name substring match, case-insensitive)
+# Load from config/model_roles.json; fall back to defaults below if missing.
+def _load_role_rules() -> tuple:
+    """Load role rules from config file, falling back to hardcoded defaults."""
+    config_path = Path(PROJECT) / "config" / "model_roles.json"
+    if config_path.exists():
+        try:
+            data = json.loads(config_path.read_text())
+            rules = data.get("rules", [])
+            default = data.get("default_roles", ["trading"])
+            return rules, default
+        except Exception:
+            pass
+    # Hardcoded fallback
+    fallback_rules = [
+        ("deckard", ["trading"], 100),
+        ("gemma-4-e4b", ["trading", "student"], 90),
+        ("agentic", ["trading", "teacher"], 80),
+        ("hermes", ["trading", "student"], 70),
+        ("qwen", ["trading", "teacher"], 70),
+        ("coder", ["code", "student"], 60),
+        ("sushi-coder", ["code"], 60),
+        ("neo-code", ["code", "teacher"], 50),
+        ("v2-coder", ["code", "student"], 60),
+    ]
+    return fallback_rules, ["trading"]
+
+
+ROLE_RULES, DEFAULT_ROLES = _load_role_rules()
 
 # ── Ensure model directories exist ────────────────────────────
 
@@ -75,14 +102,17 @@ for d in [MODELS_DIR, TRAINED_DIR, HF_DIR]:
 
 # ── Data structures ───────────────────────────────────────────
 
+
 @dataclass
 class ModelInfo:
     id: str
-    origin: str          # "llama-swap", "huggingface", "trained"
+    origin: str  # "llama-swap", "huggingface", "trained"
     name: str
-    category: str = ""   # organizational category (for HF models: "base", "coding", etc.)
+    category: str = (
+        ""  # organizational category (for HF models: "base", "coding", etc.)
+    )
     description: str = ""
-    path: str = ""       # local filesystem path
+    path: str = ""  # local filesystem path
     size_gb: float = 0.0
     loaded: bool = False
     versions: List[str] = field(default_factory=list)
@@ -99,6 +129,7 @@ class ModelVersion:
 
 # ── Model Manager ─────────────────────────────────────────────
 
+
 class ModelManager:
     """Discovers, launches, and manages models."""
 
@@ -110,11 +141,17 @@ class ModelManager:
         self.schedule = self._load_schedule()
         # Estimated VRAM per model (GB)
         self.model_vram: Dict[str, float] = {
-            "deckard-v2": 2.0, "gemma-4-e4b": 4.0, "gemma-4-12B-agentic": 10.0,
-            "gemma-4-12B-agentic-ngram": 10.0, "gemma4-v2-coder": 8.0,
-            "qwen3.6-35b-a3b": 16.0, "qwythos-9b-mtp": 5.5,
-            "hermes-3-llama-3.1-8b": 6.0, "gemma-4-e4b-2b": 2.0,
-            "deepseek-r1-7b": 6.0, "qwen2.5-7b": 6.0,
+            "deckard-v2": 2.0,
+            "gemma-4-e4b": 4.0,
+            "gemma-4-12B-agentic": 10.0,
+            "gemma-4-12B-agentic-ngram": 10.0,
+            "gemma4-v2-coder": 8.0,
+            "qwen3.6-35b-a3b": 16.0,
+            "qwythos-9b-mtp": 5.5,
+            "hermes-3-llama-3.1-8b": 6.0,
+            "gemma-4-e4b-2b": 2.0,
+            "deepseek-r1-7b": 6.0,
+            "qwen2.5-7b": 6.0,
         }
 
     # ── Data directory ──────────────────────────────────────────
@@ -139,8 +176,8 @@ class ModelManager:
         "trading": {"model": "ls:qwythos-9b-mtp", "start": 0, "end": 24, "vram": 5.5},
         "student": {"model": "ls:qwythos-9b-mtp", "start": 0, "end": 24, "vram": 5.5},
         "teacher": {"model": "ls:qwythos-9b-mtp", "start": 0, "end": 24, "vram": 5.5},
-        "regime":  {"model": "ls:deckard-v2",           "start": 0, "end": 24, "vram": 2.0},
-        "code":    {"model": "ls:gemma4-v2-coder",      "start": 0, "end": 24, "vram": 8.0},
+        "regime": {"model": "ls:deckard-v2", "start": 0, "end": 24, "vram": 2.0},
+        "code": {"model": "ls:gemma4-v2-coder", "start": 0, "end": 24, "vram": 8.0},
     }
 
     def _load_schedule(self) -> dict:
@@ -165,6 +202,13 @@ class ModelManager:
         except Exception as e:
             logger.warning(f"Failed to save schedule: {e}")
 
+    def _total_vram(self) -> float:
+        """Authoritative total VRAM (GB), falling back to 16 if undeterminable."""
+        try:
+            return float(self.get_status().get("vram_total_gb", 16.0))
+        except Exception:
+            return 16.0
+
     def get_schedule(self) -> dict:
         """Return the schedule with VRAM usage per hour."""
         # Calculate VRAM at each hour
@@ -180,7 +224,7 @@ class ModelManager:
         return {
             "schedule": self.schedule,
             "hourly_vram": [round(v, 1) for v in hourly_vram],
-            "total_vram": 16.0,
+            "total_vram": self._total_vram(),
         }
 
     def set_schedule(self, role: str, slot: dict) -> dict:
@@ -190,10 +234,11 @@ class ModelManager:
         result = self.get_schedule()
 
         # Check for VRAM overflow
+        total = self._total_vram()
         warnings = []
         for h, vram in enumerate(result["hourly_vram"]):
-            if vram > 16.0:
-                warnings.append(f"Hour {h}: {vram}G exceeds 16G limit")
+            if vram > total:
+                warnings.append(f"Hour {h}: {vram}G exceeds {total:.0f}G limit")
         if warnings:
             result["warnings"] = warnings
         return result
@@ -218,12 +263,21 @@ class ModelManager:
     def get_origins(self) -> List[dict]:
         """Return available model origin types."""
         return [
-            {"id": "llama-swap", "name": "Local (llama-swap)",
-             "description": "Models registered in llama-swap"},
-            {"id": "huggingface", "name": "HuggingFace",
-             "description": "Download models from HuggingFace"},
-            {"id": "trained", "name": "Base / Locally Trained",
-             "description": "Base models or locally fine-tuned checkpoints"},
+            {
+                "id": "llama-swap",
+                "name": "Local (llama-swap)",
+                "description": "Models registered in llama-swap",
+            },
+            {
+                "id": "huggingface",
+                "name": "HuggingFace",
+                "description": "Download models from HuggingFace",
+            },
+            {
+                "id": "trained",
+                "name": "Base / Locally Trained",
+                "description": "Base models or locally fine-tuned checkpoints",
+            },
         ]
 
     def get_roles(self) -> List[dict]:
@@ -257,16 +311,18 @@ class ModelManager:
                 mid = m["id"]
                 loaded = self._check_loaded(mid)
                 roles = self._infer_role(mid)
-                models.append({
-                    "id": f"ls:{mid}",
-                    "origin": "llama-swap",
-                    "name": mid,
-                    "description": f"llama-swap model: {mid}",
-                    "roles": roles,
-                    "loaded": loaded,
-                    "size_gb": 0,
-                    "versions": [],
-                })
+                models.append(
+                    {
+                        "id": f"ls:{mid}",
+                        "origin": "llama-swap",
+                        "name": mid,
+                        "description": f"llama-swap model: {mid}",
+                        "roles": roles,
+                        "loaded": loaded,
+                        "size_gb": 0,
+                        "versions": [],
+                    }
+                )
             return models
         except Exception as e:
             logger.warning(f"Could not fetch llama-swap models: {e}")
@@ -287,18 +343,20 @@ class ModelManager:
                 name = model_dir.name
                 size_gb = self._dir_size_gb(model_dir)
                 roles = self._infer_role(name)
-                models.append({
-                    "id": f"hf:{category}/{name}",
-                    "origin": "huggingface",
-                    "name": name,
-                    "category": category,
-                    "description": f"HF model: {category}/{name}",
-                    "path": str(model_dir),
-                    "roles": roles,
-                    "size_gb": round(size_gb, 2),
-                    "loaded": False,
-                    "versions": [],
-                })
+                models.append(
+                    {
+                        "id": f"hf:{category}/{name}",
+                        "origin": "huggingface",
+                        "name": name,
+                        "category": category,
+                        "description": f"HF model: {category}/{name}",
+                        "path": str(model_dir),
+                        "roles": roles,
+                        "size_gb": round(size_gb, 2),
+                        "loaded": False,
+                        "versions": [],
+                    }
+                )
         return models
 
     def _list_trained_models(self) -> List[dict]:
@@ -322,17 +380,20 @@ class ModelManager:
 
             size_gb = self._dir_size_gb(model_dir)
             roles = self._infer_role(name)
-            info = models.get(name, {
-                "id": f"trained:{name}",
-                "origin": "trained",
-                "name": name,
-                "description": f"Locally trained model: {name}",
-                "path": str(model_dir),
-                "roles": roles,
-                "size_gb": 0,
-                "loaded": False,
-                "versions": [],
-            })
+            info = models.get(
+                name,
+                {
+                    "id": f"trained:{name}",
+                    "origin": "trained",
+                    "name": name,
+                    "description": f"Locally trained model: {name}",
+                    "path": str(model_dir),
+                    "roles": roles,
+                    "size_gb": 0,
+                    "loaded": False,
+                    "versions": [],
+                },
+            )
             info["size_gb"] = round(size_gb, 2)
             for v in versions:
                 if v not in info["versions"]:
@@ -365,16 +426,22 @@ class ModelManager:
         # Also scan subdirectories
         existing_versions = {v["version"] for v in versions}
         for sub in sorted(model_dir.iterdir()):
-            if sub.is_dir() and re.match(r"^v?\d", sub.name) and sub.name not in existing_versions:
-                versions.append({
-                    "version": sub.name,
-                    "created": datetime.fromtimestamp(
-                        sub.stat().st_mtime, tz=timezone.utc
-                    ).isoformat(),
-                    "note": "",
-                    "path": str(sub),
-                    "score": 0.0,
-                })
+            if (
+                sub.is_dir()
+                and re.match(r"^v?\d", sub.name)
+                and sub.name not in existing_versions
+            ):
+                versions.append(
+                    {
+                        "version": sub.name,
+                        "created": datetime.fromtimestamp(
+                            sub.stat().st_mtime, tz=timezone.utc
+                        ).isoformat(),
+                        "note": "",
+                        "path": str(sub),
+                        "score": 0.0,
+                    }
+                )
         versions.sort(key=lambda v: v.get("created", ""), reverse=True)
         return versions
 
@@ -400,7 +467,9 @@ class ModelManager:
         try:
             result = subprocess.run(
                 ["rocm-smi", "--showmeminfo", "vram"],
-                capture_output=True, text=True, timeout=5
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             vram_used = vram_total = None
             for line in result.stdout.split("\n"):
@@ -408,12 +477,14 @@ class ModelManager:
                     parts = line.split(":")
                     try:
                         vram_total = int(parts[-1].strip())
-                    except: pass
+                    except:
+                        pass
                 elif "VRAM Total Used Memory (B)" in line:
                     parts = line.split(":")
                     try:
                         vram_used = int(parts[-1].strip())
-                    except: pass
+                    except:
+                        pass
         except Exception:
             vram_used = None
             vram_total = None
@@ -421,8 +492,16 @@ class ModelManager:
         # Simplified VRAM from /sys (fallback)
         if vram_used is None or vram_total is None:
             try:
-                used = int(open("/sys/class/drm/card0/device/mem_info_vram_used").read().strip())
-                total = int(open("/sys/class/drm/card0/device/mem_info_vram_total").read().strip())
+                used = int(
+                    open("/sys/class/drm/card0/device/mem_info_vram_used")
+                    .read()
+                    .strip()
+                )
+                total = int(
+                    open("/sys/class/drm/card0/device/mem_info_vram_total")
+                    .read()
+                    .strip()
+                )
                 vram_used = used
                 vram_total = total
             except Exception:
@@ -431,7 +510,9 @@ class ModelManager:
         return {
             "vram_used_gb": round(vram_used / (1024**3), 1) if vram_used else 0,
             "vram_total_gb": round(vram_total / (1024**3), 1) if vram_total else 16,
-            "vram_pct": round(vram_used / vram_total * 100, 1) if vram_used and vram_total else 0,
+            "vram_pct": round(vram_used / vram_total * 100, 1)
+            if vram_used and vram_total
+            else 0,
             "loaded_models": list(self.running_pids.keys()),
         }
 
@@ -443,12 +524,14 @@ class ModelManager:
             # Build the payload for llama-swap completion to trigger loading
             req = urllib.request.Request(
                 f"{self.llama_swap_url}/v1/chat/completions",
-                data=json.dumps({
-                    "model": name,
-                    "messages": [{"role": "user", "content": "ping"}],
-                    "max_tokens": 1,
-                    "stream": False,
-                }).encode(),
+                data=json.dumps(
+                    {
+                        "model": name,
+                        "messages": [{"role": "user", "content": "ping"}],
+                        "max_tokens": 1,
+                        "stream": False,
+                    }
+                ).encode(),
                 headers={"Content-Type": "application/json"},
             )
             with urllib.request.urlopen(req, timeout=300) as resp:
@@ -473,7 +556,7 @@ class ModelManager:
         except ImportError:
             return {
                 "success": False,
-                "error": "huggingface_hub not installed. Run: pip install huggingface_hub"
+                "error": "huggingface_hub not installed. Run: pip install huggingface_hub",
             }
 
         try:
@@ -481,7 +564,7 @@ class ModelManager:
             if target_dir.exists():
                 return {
                     "success": False,
-                    "error": f"Model already exists at {target_dir}"
+                    "error": f"Model already exists at {target_dir}",
                 }
 
             logger.info(f"Downloading {repo_id} to {target_dir}...")
@@ -492,7 +575,10 @@ class ModelManager:
                 local_dir=str(target_dir),
                 local_dir_use_symlinks=False,
                 resume_download=True,
-                ignore_patterns=["*.safetensors", "*.bin"],  # skip full weights, get config+tokenizer
+                ignore_patterns=[
+                    "*.safetensors",
+                    "*.bin",
+                ],  # skip full weights, get config+tokenizer
             )
 
             return {
@@ -504,8 +590,9 @@ class ModelManager:
             logger.error(f"HF download failed: {e}")
             return {"success": False, "error": str(e)}
 
-    def save_trained_version(self, model_name: str, version: str,
-                              note: str = "", score: float = 0.0) -> dict:
+    def save_trained_version(
+        self, model_name: str, version: str, note: str = "", score: float = 0.0
+    ) -> dict:
         """Register a trained model version."""
         model_dir = TRAINED_DIR / model_name
         model_dir.mkdir(parents=True, exist_ok=True)
@@ -526,13 +613,15 @@ class ModelManager:
                 v["created"] = datetime.now(timezone.utc).isoformat()
                 break
         else:
-            versions.append({
-                "version": version,
-                "created": datetime.now(timezone.utc).isoformat(),
-                "note": note,
-                "path": str(model_dir / version),
-                "score": score,
-            })
+            versions.append(
+                {
+                    "version": version,
+                    "created": datetime.now(timezone.utc).isoformat(),
+                    "note": note,
+                    "path": str(model_dir / version),
+                    "score": score,
+                }
+            )
 
         vi_path.write_text(json.dumps(versions, indent=2))
         return {"success": True, "version": version}
@@ -554,6 +643,7 @@ class ModelManager:
 
 _manager: Optional[ModelManager] = None
 
+
 def get_manager() -> ModelManager:
     global _manager
     if _manager is None:
@@ -563,10 +653,14 @@ def get_manager() -> ModelManager:
 
 # ── CLI ──────────────────────────────────────────────────────
 
+
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="OpenTrader Model Manager")
-    parser.add_argument("--action", default="list", choices=["list", "status", "launch"])
+    parser.add_argument(
+        "--action", default="list", choices=["list", "status", "launch"]
+    )
     parser.add_argument("--origin", default=None)
     parser.add_argument("--model", default=None)
     args = parser.parse_args()
@@ -583,14 +677,18 @@ def main():
         print("-" * 94)
         for m in models:
             loaded = "✓" if m.get("loaded") else " "
-            size = f"{m.get('size_gb', 0):.1f}G" if m.get('size_gb') else "-"
+            size = f"{m.get('size_gb', 0):.1f}G" if m.get("size_gb") else "-"
             roles = ", ".join(m.get("roles", [])) if m.get("roles") else ""
-            print(f"{m['name']:<40} {m['origin']:<14} {roles:<24} {loaded:<8} {size:<8}")
+            print(
+                f"{m['name']:<40} {m['origin']:<14} {roles:<24} {loaded:<8} {size:<8}"
+            )
 
     elif args.action == "status":
         st = mgr.get_status()
-        print(f"VRAM: {st['vram_used_gb']}G / {st['vram_total_gb']}G ({st['vram_pct']}%)")
-        if st['loaded_models']:
+        print(
+            f"VRAM: {st['vram_used_gb']}G / {st['vram_total_gb']}G ({st['vram_pct']}%)"
+        )
+        if st["loaded_models"]:
             print(f"Loaded: {', '.join(st['loaded_models'])}")
 
     elif args.action == "launch":

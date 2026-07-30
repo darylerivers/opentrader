@@ -315,7 +315,17 @@ TOOL_SCHEMA_JSON = json.dumps(
             "name": "get_economics",
             "description": "Fetch economic indicators",
             "params": {},
-    
+        },
+        {
+            "name": "qmath",
+            "description": "Accurate math/quant/stat. CALL THIS instead of hand-arithmetic. ops: evaluate, mean, median, std, percentile, iqr, skew, kurtosis, simple_returns, log_returns, total_return, annualized_return, annualized_volatility, max_drawdown, sharpe_ratio, sortino_ratio, calmar_ratio, var_historical, var_parametric, cvar, kelly_fraction, position_size_kelly, covariance, correlation, correlation_matrix, beta, ols_regression, black_scholes, future_value, present_value, npv, irr, compound_annual_growth_rate, percent_change, percent_of",
+            "params": {
+                "op": "str (the operation name, e.g. 'sharpe_ratio')",
+                "args": "dict (kwargs for the op, e.g. {\"returns\":[0.01,-0.02,...],\"confidence\":0.95} or {\"expr\":\"(110-100)/100*100\"} or {\"prices\":[...]} or {\"x\":[...],\"y\":[...]})",
+            },
+        },
+    ]
+)
 
 SYSTEM_PROMPT = '''Your task: analyze the provided market data, portfolio state, and regime, then output a single trading decision.
 
@@ -366,6 +376,7 @@ RULES:
 - If data is insufficient, output HOLD with low confidence.
 - Be conservative: protect capital first, seek opportunities second.
 - Track progress toward the hardware goal and mention it in your reasoning.
+'''
 
 
 
@@ -382,7 +393,7 @@ def call_llama_swap(
     timeout: float = 90.0,
 ) -> Optional[str]:
     """Call a model via llama-swap\'s OpenAI-compatible API."""
-    url = f"{host.rstrip(\'/\')}/v1/chat/completions"
+    url = f"{host.rstrip('/')}/v1/chat/completions"
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
@@ -498,7 +509,7 @@ class TradingAgent(BaseAgent):
             config.get("model", "opentrader-agent") if config else "opentrader-agent"
         )
         self.llama_host = (
-            config.get("llama_host", "http://127.0.0.1:5802")
+            config.get("llama_host", "http://127.0.0.1:5801")
             if config
             else "http://127.0.0.1:5802"
         )
@@ -524,7 +535,87 @@ class TradingAgent(BaseAgent):
         )
         return signal
 
-    def _model_loop(self, ctx: AgentContext) -> Signal:        """Single-shot model reasoning: we provide all data, model outputs SIGNAL."""        if not self.use_model:            return self._fallback(ctx)        initial_cash = self.config.get("initial_cash", 100_000)        # Build context block with all available data        context_block = (            f"## Market Data ({ctx.symbol} / {ctx.timeframe})"            f"OHLCV: {self._trunc(ctx.ohlcv_json, 2500)}"            f"## Portfolio{self._trunc(ctx.portfolio_json, 1000)}"            f"## Regime{self._trunc(ctx.regime_json, 500)}"            f"## Economics{self._trunc(ctx.economics_json, 500)}"            f"## Cycle{ctx.cycle}"        )        system = SYSTEM_PROMPT.format(            tool_schemas=TOOL_SCHEMA_JSON,            initial_cash=initial_cash,            cycle=ctx.cycle,        )        prompt = (            context_block            + "Based on the data above, analyze the market and output your trading decision."            + "Output **only** a SIGNAL line with JSON. Do NOT call any tools or functions."        )        model_output = call_llama_swap(            prompt,            system_prompt=system,            model=self.model,            host=self.llama_host,        )        if not model_output:            logger.info("Model unavailable, heuristic fallback")            return self._fallback(ctx)        # Extract thinking first        thinking = _extract_thinking(model_output)        # If model output contains tool calls despite instructions,        # execute them and try one more round        tool_calls = _extract_tool_calls(model_output)        if tool_calls:            logger.info(f"Model called {len(tool_calls)} tool(s), executing...")            results = []            for tc in tool_calls[:3]:                result = self._execute_tool(tc.get("tool"), tc.get("params", {}))                results.append(result)            prompt = (                f"Tool results:{json.dumps(results, indent=2)[:2000]}"                f"Now output SIGNAL with your trading decision."            )            model_output = call_llama_swap(                prompt,                system_prompt=system,                model=self.model,                host=self.llama_host,            )        # Extract signal        signal = _extract_signal(model_output)        if signal:            # Store thinking with signal history            history_entry = {                "cycle": ctx.cycle,                "symbol": ctx.symbol,                "signal": {                    "action": signal.action,                    "confidence": signal.confidence,                    "reason": signal.reason,                },                "thinking": thinking,                "timestamp": datetime.now(timezone.utc).isoformat(),            }            self._history.append(history_entry)            return signal        # Try tool call parsing on final output as well        final_tc = _extract_tool_calls(model_output or "")        if not final_tc:            # No signal and no tools -- try one more direct ask            prompt = \'Output SIGNAL: {"action":"HOLD","confidence":0.3,"reason":"Analysis complete, no clear trade"}\'            model_output = call_llama_swap(                prompt,                system_prompt=system,                model=self.model,                host=self.llama_host,            )            signal = _extract_signal(model_output)            if signal:                return signal        logger.info("No clear signal from model, heuristic fallback")        return self._fallback(ctx)    def _fallback(self, ctx: AgentContext) -> Signal:
+    def _model_loop(self, ctx: AgentContext) -> Signal:
+        """Single-shot model reasoning: we provide all data, model outputs SIGNAL."""
+        if not self.use_model:
+            return self._fallback(ctx)
+        initial_cash = self.config.get("initial_cash", 100_000)
+        context_block = (
+            f"## Market Data ({ctx.symbol} / {ctx.timeframe})"
+            f"OHLCV: {self._trunc(ctx.ohlcv_json, 2500)}"
+            f"## Portfolio{self._trunc(ctx.portfolio_json, 1000)}"
+            f"## Regime{self._trunc(ctx.regime_json, 500)}"
+            f"## Economics{self._trunc(ctx.economics_json, 500)}"
+            f"## Cycle{ctx.cycle}"
+        )
+        system = SYSTEM_PROMPT.format(
+            tool_schemas=TOOL_SCHEMA_JSON,
+            initial_cash=initial_cash,
+            cycle=ctx.cycle,
+        )
+        prompt = (
+            context_block
+            + "Based on the data above, analyze the market and output your trading decision."
+            + "Output **only** a SIGNAL line with JSON. Do NOT call any tools or functions."
+        )
+        model_output = call_llama_swap(
+            prompt,
+            system_prompt=system,
+            model=self.model,
+            host=self.llama_host,
+        )
+        if not model_output:
+            logger.info("Model unavailable, heuristic fallback")
+            return self._fallback(ctx)
+        thinking = _extract_thinking(model_output)
+        tool_calls = _extract_tool_calls(model_output)
+        if tool_calls:
+            logger.info(f"Model called {len(tool_calls)} tool(s), executing...")
+            results = []
+            for tc in tool_calls[:3]:
+                result = self._execute_tool(tc.get("tool"), tc.get("params", {}))
+                results.append(result)
+            prompt = (
+                f"Tool results:{json.dumps(results, indent=2)[:2000]}"
+                f"Now output SIGNAL with your trading decision."
+            )
+            model_output = call_llama_swap(
+                prompt,
+                system_prompt=system,
+                model=self.model,
+                host=self.llama_host,
+            )
+        signal = _extract_signal(model_output)
+        if signal:
+            history_entry = {
+                "cycle": ctx.cycle,
+                "symbol": ctx.symbol,
+                "signal": {
+                    "action": signal.action,
+                    "confidence": signal.confidence,
+                    "reason": signal.reason,
+                },
+                "thinking": thinking,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+            self._history.append(history_entry)
+            return signal
+        final_tc = _extract_tool_calls(model_output or "")
+        if not final_tc:
+            prompt = 'Output SIGNAL: {"action":"HOLD","confidence":0.3,"reason":"Analysis complete, no clear trade"}'
+            model_output = call_llama_swap(
+                prompt,
+                system_prompt=system,
+                model=self.model,
+                host=self.llama_host,
+            )
+            signal = _extract_signal(model_output)
+            if signal:
+                return signal
+        logger.info("No clear signal from model, heuristic fallback")
+        return self._fallback(ctx)
+
+    def _fallback(self, ctx: AgentContext) -> Signal:
         """Heuristic fallback using context data."""
         return _heuristic_signal(
             json.loads(ctx.ohlcv_json or "{}"),
@@ -565,7 +656,25 @@ class TradingAgent(BaseAgent):
             return s
         return s[:max_len] + f"\n... [truncated, {len(s) - max_len} more chars]"
 
-def get_state(self) -> dict:        thinking_history = []        for h in self._history[-50:]:            if h.get("thinking"):                thinking_history.append({                    "cycle": h["cycle"],                    "symbol": h["symbol"],                    "thinking": h.get("thinking", []),                    "action": h.get("signal", {}).get("action", "N/A"),                })        return {            "name": self.name,            "cycle_count": self._cycle_count,            "history": self._history[-50:],            "thinking_history": thinking_history,            "config": {k: v for k, v in self.config.items() if k != "mcp_url"},        }    def load_state(self, state: dict) -> None:
+    def get_state(self) -> dict:
+        thinking_history = []
+        for h in self._history[-50:]:
+            if h.get("thinking"):
+                thinking_history.append({
+                    "cycle": h["cycle"],
+                    "symbol": h["symbol"],
+                    "thinking": h.get("thinking", []),
+                    "action": h.get("signal", {}).get("action", "N/A"),
+                })
+        return {
+            "name": self.name,
+            "cycle_count": self._cycle_count,
+            "history": self._history[-50:],
+            "thinking_history": thinking_history,
+            "config": {k: v for k, v in self.config.items() if k != "mcp_url"},
+        }
+
+    def load_state(self, state: dict) -> None:
         self._cycle_count = state.get("cycle_count", 0)
         self._history = state.get("history", [])
 
@@ -594,6 +703,6 @@ register_agent(
             ),
         },
     ),
-)'''
+)
 
 

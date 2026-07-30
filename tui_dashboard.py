@@ -232,48 +232,31 @@ def thinking_panel(s):
     
     if not thinking_entries:
         return Panel(
-            _d("[Kimi K3] No thinking steps yet -- waiting for agent reasoning...
-
-"
-               "Once the agent completes a full analysis cycle, it will output:
-"
-               "<|thinking_start|>  (structured reasoning steps)
-"
-               "  Thought: [step 1]
-"
-               "  Thought: [step 2]
-"
-               "  Thought: [step 3]
-"
-               "  Thought: [step 4]
-"
-               "  Thought: [step 5]
-"
-               "<|thinking_end|>
-"
-               "
-Then the final SIGNAL:"),
+            _d("[Kimi K3] No thinking steps yet -- waiting for agent reasoning...\n\n"
+               "Once the agent completes a full analysis cycle, it will output:\n"
+               "<|thinking_start|>  (structured reasoning steps)\n"
+               "  Thought: [step 1]\n"
+               "  Thought: [step 2]\n"
+               "  Thought: [step 3]\n"
+               "  Thought: [step 4]\n"
+               "  Thought: [step 5]\n"
+               "<|thinking_end|>\n"
+               "\nThen the final SIGNAL:"),
             title="Thinking (Kimi K3)",
             box=ROUNDED,
         )
     
     t = Text()
-    t.append("[bold]Thinking History (last 5 cycles with reasoning):[/]
-
-")
+    t.append("[bold]Thinking History (last 5 cycles with reasoning):[/]\n\n")
     for entry in thinking_entries[-5:]:
         action = entry.get("action", "HOLD")
         color = "green" if action == "BUY" else "red" if action == "SELL" else "dim"
-        t.append(f"[bold]{entry['symbol']}[/] ({action}) -- confidence: {entry.get('confidence', 0):.2f}
-")
+        t.append(f"[bold]{entry['symbol']}[/] ({action}) -- confidence: {entry.get('confidence', 0):.2f}\n")
         reasoning = entry.get("reasoning", "")
         if len(reasoning) > 120:
             reasoning = reasoning[:120] + "..."
-        t.append(f"  Reasoning: {reasoning}
-")
-        t.append(f"  Cycle: {entry['cycle']}
-
-")
+        t.append(f"  Reasoning: {reasoning}\n")
+        t.append(f"  Cycle: {entry['cycle']}\n\n")
     
     return Panel(Align(t, "left"), title="Thinking (Kimi K3)", box=ROUNDED, padding=(0, 1))
 def status_panel():
@@ -503,9 +486,10 @@ def build_overview(s):
     )
     l["left"].split_column(
         Layout(positions_panel(s), name="positions", ratio=1),
-        Layout(signals_panel(s), name="signals", ratio=1)
-            Layout(thinking_panel(s), name="thinking", ratio=0.5),,
+        Layout(signals_panel(s), name="signals", ratio=1),
+        Layout(thinking_panel(s), name="thinking", ratio=0.5),
     )
+
     l["right"].split_column(
         Layout(status_panel(), name="status"),
         Layout(training_panel(), name="training"),

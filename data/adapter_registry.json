@@ -89,10 +89,10 @@
     "deactivated_at": null,
     "rollback_reason": "",
     "performance": {
-      "win_rate": null,
-      "avg_return": null,
-      "cycles_completed": 118482,
-      "avg_confidence": 0.023571787275838214
+      "win_rate": 8.268289456277286e-06,
+      "avg_return": 5.7878026193941e-08,
+      "cycles_completed": 120950,
+      "avg_confidence": 0.032502294336634006
     }
   }
 }

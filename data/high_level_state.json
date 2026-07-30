@@ -1,10 +1,22 @@
 {
-  "regime": "HOLD",
-  "confidence": 0.01,
-  "thesis": "cached hold",
+  "regime": "SELL",
+  "confidence": 0.83,
+  "thesis": "ADIR: Bull(HOLD,15%,evq=0.22) vs Bear(SELL,75%,evq=0.80) \u2192 RISK(SELL,82%)",
   "posture": "defensive",
   "available": true,
-  "updated": "2026-07-25T17:46:00.615219+00:00",
+  "updated": "2026-07-30T20:44:38.159933+00:00",
   "models": {},
-  "portfolio": {}
+  "portfolio": {
+    "diversification_ratio": 1.0,
+    "portfolio_var": 7.22,
+    "total_exposure_pct": 0.0153,
+    "kelly_fractions": {
+      "XRP/USDT": 0.0,
+      "ETH/USDT": 0,
+      "SOL/USDT": 0,
+      "BTC/USDT": 0.0153,
+      "SUI/USDT": 0.0,
+      "ATOM/USDT": 0.0
+    }
+  }
 }

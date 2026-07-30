@@ -96,7 +96,7 @@ class AdirConfig:
 
     # Confidence gate: skip full debate when independent Bull/Bear agree
     # AND both confidence scores exceed this threshold.
-    confidence_gate_threshold: float = 0.35
+    confidence_gate_threshold: float = 0.25
 
     # Temperature diversity (epistemic diversity, arXiv:2604.26561)
     bull_temperature: float = 0.5  # Lower = more precise/confident BUYs (was 0.7)
@@ -346,12 +346,15 @@ class AdirDebateEngine:
 
     def __init__(
         self,
-        llama_host: str = "http://127.0.0.1:5802",
+        llama_host: str = "http://127.0.0.1:5801",
         bull_model: str = "ptolemy-s1",
         bear_model: str = "ptolemy-s1",
         risk_model: str = "ptolemy-s1",
         config: AdirConfig = None,
         ensemble_host: str = None,
+        bull_host: str = None,
+        bear_host: str = None,
+        risk_host: str = None,
     ):
         self.llama_host = llama_host.rstrip("/")
         self.ensemble_host = ensemble_host.rstrip("/") if ensemble_host else None
@@ -359,6 +362,16 @@ class AdirDebateEngine:
         self.config = config or AdirConfig()
         self._parent_engine = None  # set via set_parent_engine()
         self._finetuned_backend = None
+        self.hosts = {
+            "bull": (bull_host or self.llama_host).rstrip("/"),
+            "bear": (bear_host or self.llama_host).rstrip("/"),
+            "risk": (risk_host or self.llama_host).rstrip("/"),
+        }
+        if self.hosts["bull"] != self.llama_host or self.hosts["bear"] != self.llama_host or self.hosts["risk"] != self.llama_host:
+            logger.info(
+                "ADIR dual-host routing: bull=%s bear=%s risk=%s",
+                self.hosts["bull"], self.hosts["bear"], self.hosts["risk"],
+            )
 
     def set_parent_engine(self, engine: Any) -> None:
         """Reuse the parent DebateEngine for context building and LLM calls."""
@@ -570,6 +583,7 @@ class AdirDebateEngine:
                 self.models["bull"],
                 temperature=cfg.bull_temperature,
                 max_tokens=cfg.bull_max_tokens,
+                host=self.hosts["bull"],
             )
             return raw
 
@@ -580,7 +594,7 @@ class AdirDebateEngine:
                 self.models["bear"],
                 temperature=cfg.bear_temperature,
                 max_tokens=cfg.bear_max_tokens,
-                host=self.ensemble_host,
+                host=self.hosts["bear"],
             )
             return raw
 
@@ -636,6 +650,7 @@ class AdirDebateEngine:
                 self.models["bear"],
                 temperature=cfg.bear_temperature,
                 max_tokens=cfg.bear_max_tokens,
+                host=self.hosts["bear"],
             )
             if raw:
                 bear = self._parse_vote(raw, "bear", "HOLD")
@@ -701,75 +716,38 @@ class AdirDebateEngine:
             parse_toulmin(bear.reasoning) if cfg.enable_toulmin_parsing else None
         )
 
-        # Run Risk agent synthesis
-        risk_prompt = (
-            f"Market Context:\n{context[:500]}\n\n"
-            f"BULL argument (confidence: {bull.confidence:.0%}):\n"
-            f"  Action: {bull.action}\n"
-            f"  Reasoning: {bull.reasoning[:200]}\n\n"
-            f"BEAR argument (confidence: {bear.confidence:.0%}):\n"
-            f"  Action: {bear.action}\n"
-            f"  Reasoning: {bear.reasoning[:200]}\n\n"
-            f"Score each side on evidence quality and produce verdict."
-        )
-
-        risk_raw = self._call_agent(
-            RISK_SYSTEM_ADIR,
-            risk_prompt,
-            self.models["risk"],
-            temperature=cfg.risk_temperature,
-            max_tokens=cfg.risk_max_tokens,
-        )
-
-        # Parse risk verdict
-        if risk_raw:
+        # Heuristic synthesis (replaces Risk LLM agent call)
+        # The Risk LLM agent was removed: it consumed GPU time without adding
+        # value beyond what a simple score-differential heuristic provides.
+        bull_score = bull.confidence
+        bear_score = bear.confidence
+        if bull_toulmin and bull_toulmin.is_structured:
             bull_score = max(
-                0.01, min(1.0, float(risk_raw.get("bull_evidence_score", 0.5)))
+                0.01, (bull.confidence + bull_toulmin.evidence_quality) / 2
             )
+        if bear_toulmin and bear_toulmin.is_structured:
             bear_score = max(
-                0.01, min(1.0, float(risk_raw.get("bear_evidence_score", 0.5)))
+                0.01, (bear.confidence + bear_toulmin.evidence_quality) / 2
             )
-            verdict = risk_raw.get("verdict", "HOLD")
-            risk_conf = float(risk_raw.get("confidence", 0.5))
-            risk_reasoning = str(risk_raw.get("reasoning", ""))
-        else:
-            # Risk agent failed — fall back to heuristic synthesis
-            logger.warning("ADIR risk agent failed, using heuristic synthesis")
-            bull_score = bull.confidence
-            bear_score = bear.confidence
-            # Heuristic: use automated evidence quality if available
-            if bull_toulmin and bull_toulmin.is_structured:
-                bull_score = max(
-                    0.01, (bull.confidence + bull_toulmin.evidence_quality) / 2
-                )
-            if bear_toulmin and bear_toulmin.is_structured:
-                bear_score = max(
-                    0.01, (bear.confidence + bear_toulmin.evidence_quality) / 2
-                )
 
-            # Consensus override: both agents agree on BUY or SELL
-            if bull.action == bear.action and bull.action in ("BUY", "SELL"):
-                verdict = bull.action
-                risk_conf = max(0.40, (bull.confidence + bear.confidence) / 2)
-            # Determine verdict from score differential
+        if bull.action == bear.action and bull.action in ("BUY", "SELL"):
+            verdict = bull.action
+            risk_conf = max(0.40, (bull.confidence + bear.confidence) / 2)
+        else:
+            diff = bull_score - bear_score
+            if diff >= 0.15:
+                verdict = "BUY"
+            elif diff <= -0.15:
+                verdict = bear.action if bear.action in ("SELL", "HOLD") else "HOLD"
             else:
-                diff = bull_score - bear_score
-                if diff >= 0.15:
-                    verdict = "BUY"
-                elif diff <= -0.15:
-                    verdict = bear.action if bear.action in ("SELL", "HOLD") else "HOLD"
-                else:
-                    verdict = "HOLD"
-                # Confidence: use absolute differential, with minimum floor for non-trivial spread
-                spread = abs(bull_score - bear_score)
-                if spread >= 0.05:
-                    risk_conf = (
-                        0.25 + spread
-                    )  # floor 0.30 for any disagreement, scales with spread
-                else:
-                    risk_conf = 0.1  # near-zero disagreement → very low conviction
-                risk_conf = min(0.95, risk_conf)
-            risk_reasoning = "Heuristic synthesis (risk agent unavailable)"
+                verdict = "HOLD"
+            spread = abs(bull_score - bear_score)
+            if spread >= 0.05:
+                risk_conf = 0.25 + spread
+            else:
+                risk_conf = 0.1
+            risk_conf = min(0.95, risk_conf)
+        risk_reasoning = "Heuristic synthesis"
 
         # ── Final synthesis ──
         # When both agents agree on action, use their consensus

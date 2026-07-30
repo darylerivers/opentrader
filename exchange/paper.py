@@ -4,6 +4,7 @@
 No real money, no API keys. Uses a simple internal ledger.
 Ported from ATLANTIS TraderHarness.
 """
+
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from .base import ExchangeBase, OHLCV, OrderResult, Balance, register_exchange
@@ -17,7 +18,9 @@ class PaperExchange(ExchangeBase):
 
     def __init__(self, name: str = "paper", config: dict = None):
         super().__init__(name, config)
-        self._cash: float = float(config.get("initial_cash", 100_000)) if config else 100_000.0
+        self._cash: float = (
+            float(config.get("initial_cash", 100_000)) if config else 100_000.0
+        )
         self._positions: Dict[str, float] = {}
         self._cost_basis: Dict[str, float] = {}
         self._fills: List[dict] = []
@@ -26,9 +29,15 @@ class PaperExchange(ExchangeBase):
         self._order_counter: int = 1
 
         # Slippage and partial fill config
-        self._slippage_pct: float = float(config.get("slippage_pct", 0.0)) if config else 0.0
-        self._partial_fill_prob: float = float(config.get("partial_fill_prob", 0.0)) if config else 0.0
-        self._partial_fill_ratio: float = float(config.get("partial_fill_ratio", 0.7)) if config else 0.7
+        self._slippage_pct: float = (
+            float(config.get("slippage_pct", 0.0)) if config else 0.0
+        )
+        self._partial_fill_prob: float = (
+            float(config.get("partial_fill_prob", 0.0)) if config else 0.0
+        )
+        self._partial_fill_ratio: float = (
+            float(config.get("partial_fill_ratio", 0.7)) if config else 0.7
+        )
 
     def connect(self) -> bool:
         self._connected = True
@@ -40,29 +49,47 @@ class PaperExchange(ExchangeBase):
         if self._bars[symbol]:
             self._prices[symbol] = self._bars[symbol][-1].close
 
+    _MAX_BARS_PER_SYMBOL: int = 10_000
+
     def push_bar(self, symbol: str, bar: dict) -> None:
         """Push a single new bar (for live simulation)."""
         ohlcv = OHLCV.from_dict(bar)
         if symbol not in self._bars:
             self._bars[symbol] = []
         self._bars[symbol].append(ohlcv)
+        # Trim oldest bars to prevent unbounded memory growth
+        if len(self._bars[symbol]) > self._MAX_BARS_PER_SYMBOL:
+            self._bars[symbol] = self._bars[symbol][-self._MAX_BARS_PER_SYMBOL :]
         self._prices[symbol] = ohlcv.close
 
-    def get_bars(self, symbol: str, timeframe: str = "1h", limit: int = 100) -> List[OHLCV]:
+    def get_bars(
+        self, symbol: str, timeframe: str = "1h", limit: int = 100
+    ) -> List[OHLCV]:
         bars = self._bars.get(symbol, [])
         return bars[-limit:] if len(bars) > limit else bars
 
     def get_current_price(self, symbol: str) -> Optional[float]:
         return self._prices.get(symbol)
 
-    def place_order(self, symbol: str, side: str, quantity: float,
-                    order_type: str = "market", price: Optional[float] = None) -> OrderResult:
+    def place_order(
+        self,
+        symbol: str,
+        side: str,
+        quantity: float,
+        order_type: str = "market",
+        price: Optional[float] = None,
+    ) -> OrderResult:
         import random
+
         base_price = price if price else self._prices.get(symbol, 0)
         if base_price <= 0:
             return OrderResult(
-                order_id="", symbol=symbol, side=side,
-                quantity=quantity, price=0, status="rejected",
+                order_id="",
+                symbol=symbol,
+                side=side,
+                quantity=quantity,
+                price=0,
+                status="rejected",
                 timestamp=datetime.now(timezone.utc).isoformat(),
                 raw={"error": "no price data"},
             )
@@ -78,7 +105,9 @@ class PaperExchange(ExchangeBase):
         effective_qty = quantity
         fill_pct = 1.0
         if self._partial_fill_prob > 0 and random.random() < self._partial_fill_prob:
-            fill_ratio = self._partial_fill_ratio + random.random() * (1.0 - self._partial_fill_ratio)
+            fill_ratio = self._partial_fill_ratio + random.random() * (
+                1.0 - self._partial_fill_ratio
+            )
             effective_qty *= fill_ratio
             fill_pct = fill_ratio
 
@@ -90,8 +119,11 @@ class PaperExchange(ExchangeBase):
                 if affordable_qty <= 0:
                     return OrderResult(
                         order_id=f"paper_{self._order_counter}",
-                        symbol=symbol, side=side, quantity=effective_qty,
-                        price=fill_price, status="rejected",
+                        symbol=symbol,
+                        side=side,
+                        quantity=effective_qty,
+                        price=fill_price,
+                        status="rejected",
                         timestamp=datetime.now(timezone.utc).isoformat(),
                         raw={"error": "insufficient cash"},
                     )
@@ -107,8 +139,11 @@ class PaperExchange(ExchangeBase):
             if pos <= 0:
                 return OrderResult(
                     order_id=f"paper_{self._order_counter}",
-                    symbol=symbol, side=side, quantity=effective_qty,
-                    price=fill_price, status="rejected",
+                    symbol=symbol,
+                    side=side,
+                    quantity=effective_qty,
+                    price=fill_price,
+                    status="rejected",
                     timestamp=datetime.now(timezone.utc).isoformat(),
                     raw={"error": "no position"},
                 )
@@ -118,22 +153,35 @@ class PaperExchange(ExchangeBase):
             self._positions[symbol] -= effective_qty
             if self._positions[symbol] <= 0:
                 del self._positions[symbol]
-                self._cost_basis.pop(symbol, None)  # safe delete — may not exist on restore
+                self._cost_basis.pop(
+                    symbol, None
+                )  # safe delete — may not exist on restore
 
         order_id = f"paper_{self._order_counter}"
         self._order_counter += 1
         fill = {
-            "order_id": order_id, "symbol": symbol, "side": side,
-            "quantity": round(effective_qty, 8), "price": round(fill_price, 2),
-            "cost": round(cost, 2), "cash_after": round(self._cash, 2),
+            "order_id": order_id,
+            "symbol": symbol,
+            "side": side,
+            "quantity": round(effective_qty, 8),
+            "price": round(fill_price, 2),
+            "cost": round(cost, 2),
+            "cash_after": round(self._cash, 2),
             "fill_pct": round(fill_pct, 4),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self._fills.append(fill)
+        if len(self._fills) > 5000:
+            del self._fills[:-5000]
         return OrderResult(
-            order_id=order_id, symbol=symbol, side=side,
-            quantity=round(effective_qty, 8), price=fill_price,
-            status="filled", timestamp=fill["timestamp"], raw=fill,
+            order_id=order_id,
+            symbol=symbol,
+            side=side,
+            quantity=round(effective_qty, 8),
+            price=fill_price,
+            status="filled",
+            timestamp=fill["timestamp"],
+            raw=fill,
         )
 
     def get_balance(self) -> Balance:
@@ -167,6 +215,10 @@ class PaperExchange(ExchangeBase):
         self._bars.clear()
         self._prices.clear()
         self._order_counter = 1
+
+    def discover_symbols(self) -> List[str]:
+        """Return symbols currently loaded into the paper exchange."""
+        return list(self._bars.keys()) if self._bars else list(self._prices.keys())
 
 
 register_exchange("paper", PaperExchange)

@@ -48,3 +48,17 @@ _unsloth_sentencepiece_temp/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Runtime caches & churn (audit F7 / push-readiness)
+*.db
+*.db-shm
+*.db-wal
+data/research/
+data/backups/
+data/history/
+data/fast_test/
+*.bak.*
+
+# Rust build artifacts
+exchange-engine/target/
+exchange_engine/

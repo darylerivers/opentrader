@@ -142,6 +142,20 @@ class MultiExchangeRouter(ExchangeBase):
             positions=all_positions,
         )
 
+    # ── Discovery ────────────────────────────────────────────
+
+    def discover_symbols(self, max_symbols: int = 20) -> List[str]:
+        """Aggregate symbols from crypto and stock child exchanges."""
+        symbols: List[str] = []
+        for ex in [self._crypto, self._stock]:
+            if ex is None:
+                continue
+            try:
+                symbols.extend(ex.discover_symbols(max_symbols=max_symbols))
+            except Exception as e:
+                logger.debug(f"discover_symbols from {ex.name}: {e}")
+        return symbols
+
     # ── Utilities ────────────────────────────────────────────
 
     def get_fills(self) -> List[dict]:

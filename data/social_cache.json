@@ -1,26 +1,26 @@
 {
   "sentiment": {
     "BTC/USDT": {
-      "score": 0.27,
-      "raw_score": -0.45999999999999996,
+      "score": 0.28,
+      "raw_score": -0.43999999999999995,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
     "ETH/USDT": {
-      "score": 0.27,
-      "raw_score": -0.45999999999999996,
+      "score": 0.28,
+      "raw_score": -0.43999999999999995,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
     "SOL/USDT": {
-      "score": 0.27,
-      "raw_score": -0.45999999999999996,
+      "score": 0.28,
+      "raw_score": -0.43999999999999995,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     }
   },
-  "fetched_at": 1784962822.766629
+  "fetched_at": 1785443703.7617924
 }

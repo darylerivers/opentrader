@@ -109,8 +109,9 @@ class DebateResult:
 def _extract_text(message: dict) -> str:
     """Extract text from LLM response, handling models that use reasoning_content.
 
-    Some models (Qwen Revised, DeepSeek R1) put their output in `reasoning_content`
-    with an empty `content`. This normalizes to always return usable text.
+    Some models (Qwen Revised, DeepSeek R1, Qwythos-MTP) put their output in
+    `reasoning_content` with an empty `content`. This normalizes to always
+    return usable text.
     """
     content = message.get("content", "") or ""
     if content.strip():
@@ -118,10 +119,64 @@ def _extract_text(message: dict) -> str:
 
     # Fallback: reasoning_content (Qwen thinking mode, DeepSeek R1, etc.)
     reasoning = message.get("reasoning_content", "") or ""
-    if reasoning.strip():
-        return reasoning
+    if not reasoning.strip():
+        return ""
 
-    return ""
+    # If reasoning_content is a thinking trace, try to extract the final
+    # structured output that the model wrote near the end.
+    lines = reasoning.split("\n")
+    formatted_lines = []
+    for ln in lines:
+        s = ln.strip()
+        if not s:
+            continue
+        # Skip meta-commentary / thinking preamble lines
+        if any(
+            s.startswith(p)
+            for p in (
+                "Alright,",
+                "Let me",
+                "I need",
+                "Now,",
+                "I will",
+                "I'll",
+                "I can",
+                "The user",
+                "I'm",
+                "I think",
+                "I should",
+                "I have",
+                "First,",
+                "Next,",
+                "Then,",
+                "Finally,",
+                "I note",
+                "I see",
+                "I understand",
+                "I realize",
+                "I notice",
+                "I'm going",
+                "I am going",
+                "I am",
+                "I want",
+                "I expect",
+                "I believe",
+                "I suppose",
+                "Here",
+                "This",
+                "That",
+            )
+        ):
+            continue
+        # Keep lines that look like structured output
+        formatted_lines.append(s)
+
+    if formatted_lines:
+        return "\n".join(formatted_lines)
+
+    # If no formatted lines extracted, return the last 2000 chars of reasoning
+    # (the model typically outputs final answer at the end of its thinking)
+    return reasoning[-2000:] if len(reasoning) > 2000 else reasoning
 
 
 # ── Agent Prompts ─────────────────────────────────────────────
@@ -217,7 +272,7 @@ class DebateEngine:
 
     def __init__(
         self,
-        llama_host: str = "http://127.0.0.1:5802",
+        llama_host: str = "http://127.0.0.1:5801",
         bull_model: str = "qwythos-9b-mtp",
         bear_model: str = "qwythos-9b-mtp",
         risk_model: str = "qwythos-9b-mtp",
@@ -240,6 +295,64 @@ class DebateEngine:
 
     # ── Build Context ───────────────────────────────────────────
 
+    @staticmethod
+    def _parse_ohlcv_text(text: str) -> dict:
+        """Parse harness ohlcv_json text string into a dict with bars and indicators.
+
+        String format: "SYM $PRICE 1h:RSI=N SMA=N 4h:RSI=N SMA=N 1d:RSI=N SMA=N ATR=N chg=+N%"
+        Returns dict with 'symbol', 'price', and 'bars' list suitable for build_context consumption.
+        """
+        import re
+
+        if not text or not isinstance(text, str):
+            return {}
+        text = text.strip()
+        m = re.match(
+            r"^(\S+)\s+"                      # symbol (any non-whitespace)
+            r"\$?([\d,.]+)\s+"                # price (optional $)
+            r"1h:RSI=([\d.-]+)\s+SMA=([\d,.]+)\s+"
+            r"4h:RSI=([\d.-]+)\s+SMA=([\d,.]+)\s+"
+            r"1d:RSI=([\d.-]+)\s+SMA=([\d,.]+)\s+"
+            r"ATR=([\d,.]+)\s+"
+            r"chg=([\d.+-]+)%",
+            text,
+        )
+        if not m:
+            return {}
+
+        sym, p, r1, s1, r4, s4, rd, sd, atr_s, chg_s = m.groups()
+        try:
+            price = float(p.replace(",", ""))
+            rsi_1h = float(r1)
+            sma_1h = float(s1.replace(",", ""))
+            rsi_4h = float(r4)
+            sma_4h = float(s4.replace(",", ""))
+            rsi_1d = float(rd)
+            sma_1d = float(sd.replace(",", ""))
+            atr = float(atr_s.replace(",", ""))
+        except (ValueError, AttributeError):
+            return {}
+
+        # Synthesize a bars-like structure with key datapoints as named closes
+        bars = [
+            {"close": sma_1d, "name": "SMA_1d"},
+            {"close": sma_4h, "name": "SMA_4h"},
+            {"close": sma_1h, "name": "SMA_1h"},
+            {"close": price, "name": "current"},
+            {"close": price + atr, "name": "ATR_upper"},
+            {"close": price - atr, "name": "ATR_lower"},
+        ]
+        return {
+            "symbol": sym,
+            "price": price,
+            "rsi_1h": rsi_1h,
+            "rsi_4h": rsi_4h,
+            "rsi_1d": rsi_1d,
+            "atr": atr,
+            "chg_pct": chg_s,
+            "bars": bars,
+        }
+
     def build_context(
         self,
         ohlcv_json: str,
@@ -250,6 +363,7 @@ class DebateEngine:
         extra_context: str = "",
     ) -> str:
         """Build a shared context block for all agents."""
+        ohlcv_text = ohlcv_json if isinstance(ohlcv_json, str) else ""
         try:
             ohlcv = json.loads(ohlcv_json or "{}")
             portfolio = json.loads(portfolio_json or "{}")
@@ -257,8 +371,11 @@ class DebateEngine:
             econ = json.loads(economics_json or "{}")
             news = json.loads(news_json or "{}")
         except Exception:
-            ohlcv = portfolio = regime = econ = {}
+            portfolio = regime = econ = {}
             news = {}
+            ohlcv = self._parse_ohlcv_text(ohlcv_text) if ohlcv_text else {}
+            if ohlcv:
+                logger.debug("build_context: text-parsed ohlcv fallback (symbol=%s price=%.2f)", ohlcv.get("symbol"), ohlcv.get("price"))
 
         bars = ohlcv.get("bars", [])
         symbol = ohlcv.get("symbol", "")
@@ -414,14 +531,20 @@ class DebateEngine:
                                 return _safe_parse_json(json_str)
                             except ValueError:
                                 pass
-                        json_str = self._strip_markdown_fences(text)
+                        json_str = _strip_markdown_fences(text)
                         if json_str:
                             try:
                                 return _safe_parse_json(json_str)
                             except ValueError:
                                 pass
                         return None
-                    return json_str
+                json_str = _extract_json_from_text(text) or _strip_markdown_fences(text)
+                if json_str:
+                    try:
+                        return _safe_parse_json(json_str)
+                    except ValueError:
+                        pass
+                return None
             except (URLError, OSError, ConnectionError) as e:
                 logger.warning(f"Debate agent HTTP error ({model}), retrying after 1s: {e}")
                 time.sleep(1.0)
@@ -437,7 +560,7 @@ class DebateEngine:
                         return None
                     json_str = _extract_json_from_text(
                         text
-                    ) or self._strip_markdown_fences(text)
+                    ) or _strip_markdown_fences(text)
                     if json_str:
                         try:
                             return _safe_parse_json(json_str)
@@ -523,6 +646,7 @@ class DebateEngine:
         extra_context: str = "",
     ) -> str:
         """Build a shared context block for all agents."""
+        ohlcv_text = ohlcv_json if isinstance(ohlcv_json, str) else ""
         try:
             ohlcv = json.loads(ohlcv_json or "{}")
             portfolio = json.loads(portfolio_json or "{}")
@@ -530,8 +654,11 @@ class DebateEngine:
             econ = json.loads(economics_json or "{}")
             news = json.loads(news_json or "{}")
         except Exception:
-            ohlcv = portfolio = regime = econ = {}
+            portfolio = regime = econ = {}
             news = {}
+            ohlcv = self._parse_ohlcv_text(ohlcv_text) if ohlcv_text else {}
+            if ohlcv:
+                logger.debug("build_context: text-parsed ohlcv fallback (symbol=%s price=%.2f)", ohlcv.get("symbol"), ohlcv.get("price"))
 
         bars = ohlcv.get("bars", [])
         symbol = ohlcv.get("symbol", "")
@@ -850,7 +977,7 @@ class DebateEngine:
                     {"role": "user", "content": user_prompt},
                 ],
                 "temperature": 0.5,
-                "max_tokens": 600,
+                "max_tokens": 2000,
             }
         ).encode()
 
@@ -900,14 +1027,16 @@ class DebateEngine:
             "You are a crypto trading analyst. Analyze the data and output a BUY, SELL, or HOLD signal.\n"
             "Do NOT default to HOLD — if the data supports a trade, take a position.\n"
             "Consider Fear & Greed as contrarian: fear=opportunity, greed=caution.\n\n"
+            "IMPORTANT: Output DIRECTLY in your response content. Do NOT use reasoning/thinking mode.\n"
+            "No preamble, no chain-of-thought. Start immediately with the sections.\n\n"
             "Output THREE sections:\n\n"
-            "BULL: Best case for buying. confidence=0.85 (0.00-1.00 decimal) position_pct=0.10\n"
+            "BULL: action=BUY confidence=0.XX position_pct=0.XX reasoning=Best case for buying.\n"
             f"{'Regime: ' + bull_inst + chr(10) if bull_inst else ''}"
-            "BEAR: Risks and why NOT to buy. confidence=0.75 (0.00-1.00 decimal)\n"
+            "BEAR: action=SELL confidence=0.XX position_pct=0.XX reasoning=Risks and why NOT to buy.\n"
             f"{'Regime: ' + bear_inst + chr(10) if bear_inst else ''}"
-            "RISK: Final BUY/SELL/HOLD verdict. confidence=0.80 (0.00-1.00 decimal) position_pct=0.10\n"
+            "RISK: action=BUY|SELL|HOLD confidence=0.XX position_pct=0.XX reasoning=Final verdict.\n"
             f"{'Regime: ' + risk_inst + chr(10) if risk_inst else ''}"
-            "Format: [SECTION] action=X confidence=0.XX position_pct=0.XX reasoning=..."
+            "Format: label action=X confidence=0.XX position_pct=0.XX reasoning=..."
         )
         prompt = f"{context}\n\nMulti-perspective analysis:"
 

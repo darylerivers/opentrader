@@ -108,6 +108,14 @@ class ExchangeBase(ABC):
     def is_connected(self) -> bool:
         return self._connected
 
+    def discover_symbols(self, max_symbols: int = 20) -> List[str]:
+        """Return all tradable symbols available on this exchange.
+        
+        Subclasses should override to fetch live symbol lists from the provider.
+        Returns empty list by default — caller should fall back to hardcoded universe.
+        """
+        return []
+
 
 _REGISTRY: Dict[str, type] = {}
 

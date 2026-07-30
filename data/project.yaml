@@ -120,13 +120,13 @@ gpu:
     port: 5802
 
 exchange:
-  active: kraken
+  active: ibkr
   mode: live_paper
-  available: ["kraken", "coinbase", "alpaca"]
+  available: ["ibkr", "paper", "kraken", "coinbase", "alpaca"]
 
 config:
-  initial_capital: 100
-  active_symbols: ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+  initial_capital: 100000
+  active_symbols: ["SPY", "QQQ", "AAPL", "MSFT", "NVDA", "GOOGL", "AMZN", "META", "TSLA"]
   stage: 2
   default_sl_pct: 4
   default_tp_pct: 8
