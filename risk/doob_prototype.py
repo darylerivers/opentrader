@@ -163,3 +163,65 @@ def try_bounds(paths: List[List[float]], p_values: List[float]) -> List[dict]:
             rep = evaluate(path, p)
             rows.append(rep.as_row())
     return rows
+
+
+# ── Weak-type (1,1) bound (the actionable form) ────────────────────────
+
+
+@dataclass
+class WeakTypeReport:
+    """State for the weak-type (1,1) maximal inequality test.
+
+    Classical result (Doob paper sec.1): for a non-negative submartingale X,
+        P[X*_n >= t] <= t^{-1} E[X_n].
+    This is the practically usable risk bound: it bounds the probability of
+    the running max (drawdown) exceeding a level t in terms of the expected
+    terminal value. On a single path we check the Markov-style corollary
+    X*_n <= t * E[X_n].
+    """
+
+    t: float
+    running_max: float
+    expected_terminal: float
+    max_allowable: float  # t * E[X_n] — what the bound permits
+    holds: bool  # running_max <= max_allowable
+    slack_pct: float  # (allowable - running_max)/running_max*100
+
+
+def evaluate_weak_type(returns: List[float], t: float) -> WeakTypeReport:
+    """Weak-type check on the positive submartingale X = |partial sums|.
+
+    X_n = (partial sum_n)^+ is a non-negative submartingale; E[X_n] is the
+    average positive partial sum. The bound says P[X*_n >= t] <= E[X_n]/t;
+    per-path (Markov on one sample) this implies X*_n <= t * E[X_n].
+    """
+    if not returns:
+        return WeakTypeReport(
+            t=t,
+            running_max=0.0,
+            expected_terminal=0.0,
+            max_allowable=0.0,
+            holds=True,
+            slack_pct=0.0,
+        )
+    s = 0.0
+    pos_sums = []
+    run_max = 0.0
+    for r in returns:
+        s += r
+        pos_sums.append(max(0.0, s))
+        run_max = max(run_max, max(0.0, s))
+    E_terminal = sum(pos_sums) / len(pos_sums) if pos_sums else 0.0
+    allowable = t * E_terminal if E_terminal > 0 else float("inf")
+    holds = run_max <= allowable + 1e-12
+    slack = (
+        ((allowable - run_max) / run_max * 100.0) if run_max > 1e-12 else float("inf")
+    )
+    return WeakTypeReport(
+        t=t,
+        running_max=round(run_max, 6),
+        expected_terminal=round(E_terminal, 6),
+        max_allowable=round(allowable, 6),
+        holds=holds,
+        slack_pct=slack,
+    )

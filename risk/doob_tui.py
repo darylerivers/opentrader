@@ -15,6 +15,7 @@ import sys
 from risk.doob_prototype import (
     doob_constant,
     evaluate,
+    evaluate_weak_type,
     synthesize_path,
 )
 
@@ -85,6 +86,23 @@ def render(state: State) -> str:
                 f"→ {'HOLDS' if r['holds'] else 'VIOL'} "
                 f"tight={r['tightness']:.2f} margin={r['margin_pct']:+.0f}%"
             )
+    lines.append("")
+    lines.append(
+        "  "
+        + BOLD
+        + "weak-type (1,1) bound"
+        + RESET
+        + "  "
+        + DIM
+        + "P[X*_n >= t] <= E[X_n]/t"
+        + RESET
+    )
+    for t in (1.0, 2.0, 3.0, 5.0):
+        wt = evaluate_weak_type(state.path, t)
+        flag = "HOLDS" if wt.holds else "VIOL"
+        lines.append(
+            f"    t={t:.1f}  max={wt.running_max:.4f}  allow={wt.max_allowable:.4f}  {flag}"
+        )
     lines.append("")
     lines.append(
         f"  {BOLD}[n]{RESET}{DIM} new path{RESET}  "
