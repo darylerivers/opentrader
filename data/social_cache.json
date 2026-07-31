@@ -1,13 +1,13 @@
 {
   "sentiment": {
-    "NVDA": {
+    "AAPL": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "TSLA": {
+    "META": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
@@ -21,21 +21,21 @@
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "ETH/USDT": {
+    "NVDA": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "SOL/USDT": {
+    "MSFT": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "AAPL": {
+    "GOOGL": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
@@ -43,5 +43,5 @@
       "source": "fng_only"
     }
   },
-  "fetched_at": 1785527371.1771712
+  "fetched_at": 1785532904.056731
 }

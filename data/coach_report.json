@@ -1,71 +1,72 @@
 {
   "grade": "C",
-  "grade_reason": "The agent shows a mixed record with several profitable take-profit exits on ETH and SOL, but is heavily penalized by stop-losses on NVDA, BTC, and SOL, resulting in a net loss and a win rate below 50% on most major symbols.",
+  "grade_reason": "The agent shows a stark dichotomy with a few high-performing crypto trades (SOL, ETH, APT) but suffers catastrophic losses on tech stocks (NVDA, AAPL, TSLA) and frequent gate-skipping failures, resulting in a net negative PnL.",
   "winning_patterns": [
-    "Take-profit exits on ETH/USDT and SOL/USDT during strong upward momentum phases yield significant gains (e.g., ETH +$332, SOL +$271).",
-    "Manual ADIR (Adaptive Directional) entries on APT/USDT and SOL/USDT successfully captured early trend moves before stop-losses were triggered.",
-    "Trailing-stop exits on ETH/USDT allowed partial profit realization while avoiding deep drawdowns during volatile swings."
+    "Crypto volatility capture: Aggressively taking profits on SOL/USDT and ETH/USDT during rapid upward moves, yielding positive PnL on multiple entries.",
+    "APT breakout: A single high-conviction APT/USDT trade executed via manual gate with a Bull HOLD signal resulted in a substantial gain.",
+    "Gate-skipping avoidance on strong crypto: When the ADIR gate was skipped for BTC, the agent held through the move, suggesting the gate logic is more conservative on high-volatility assets than on tech stocks."
   ],
   "failure_patterns": [
-    "Stop-loss exits on NVDA and BTC/USDT during choppy or downward regimes caused repeated small losses that erode capital without clear directional bias.",
-    "Manual [GATE-SKIPPED] entries on AAPL, BTC, and TSLA resulted in immediate stop-losses or negligible moves, indicating poor entry timing or lack of volatility filter.",
-    "Overlapping NVDA trades (10 trades) show a pattern of entering too frequently in a ranging market, leading to a 40% win rate and cumulative loss."
+    "Tech stock stop-loss clustering: NVDA and TSLA trades consistently hit stop-losses shortly after entry, indicating poor entry timing or adverse regime in tech equities.",
+    "Gate-skipping on tech: The agent frequently skips the ADIR gate for tech stocks (NVDA, AAPL, META) and enters blindly, leading to immediate losses.",
+    "Manual gate misalignment: Even when a manual gate is triggered (e.g., APT), the agent sometimes exits too early or the signal is weak, leading to small losses on otherwise volatile assets."
   ],
   "symbol_advice": {
-    "NVDA": "cold",
     "BTC/USDT": "neutral",
     "ETH/USDT": "hot",
     "SOL/USDT": "hot",
-    "AAPL": "neutral",
-    "TSLA": "cold",
     "APT/USDT": "hot",
+    "NVDA": "cold",
+    "AAPL": "cold",
+    "META": "cold",
     "GOOGL": "neutral",
+    "TSLA": "cold",
     "XRP/USDT": "neutral"
   },
   "position_sizing": "decrease",
-  "position_sizing_rationale": "The agent is taking too many overlapping positions on NVDA and BTC, which dilutes capital and increases exposure to regime noise; reducing size will lower the probability of consecutive stop-loss hits.",
+  "position_sizing_rationale": "The agent is overexposed to tech stocks which are currently in a cold regime; reduce size on NVDA, AAPL, TSLA, and META until the ADIR gate logic is fixed for these symbols, while maintaining or slightly increasing size on SOL and ETH where the hot regime is confirmed by recent wins.",
   "retrain_recommended": true,
-  "retrain_focus": "Curate examples of successful take-profit exits on ETH/SOL and ADIR entries on APT/SOL, while excluding all [GATE-SKIPPED] trades and NVDA stop-loss clusters to teach the agent to filter choppy regimes and respect trailing-stop logic.",
-  "data_curation_advice": "Include only trades with exit=take-profit or exit=manual_ADIR where pnl>0. Exclude all trades with exit=stop-loss on NVDA, BTC, and TSLA, and exclude any manual_[GATE-SKIPPED] entries regardless of pnl.",
-  "confidence": 0.82,
-  "cycle": 6555,
+  "retrain_focus": "Curate a curriculum focusing on NVDA, AAPL, META, and TSLA with synthetic data that simulates the gate-skipping failure mode. Teach the agent to wait for ADIR gate signals on tech stocks before entering, and to reduce position size by 50% when entering these symbols until a positive PnL is achieved.",
+  "data_curation_advice": "Include all NVDA, AAPL, META, and TSLA trades that exited via stop-loss or gate-skip. Exclude the few APT and SOL trades that were manually successful to avoid overfitting to noise; instead, augment with backtested scenarios where the ADIR gate would have triggered on these tech stocks.",
+  "confidence": 0.85,
+  "cycle": 6622,
   "trades_reviewed": 50,
-  "win_rate": 40.0,
+  "win_rate": 36.0,
   "symbol_stats": {
+    "ETH/USDT": {
+      "pnl": 402.52,
+      "wins": 3,
+      "count": 5
+    },
+    "SOL/USDT": {
+      "pnl": 180.14000000000004,
+      "wins": 6,
+      "count": 9
+    },
     "BTC/USDT": {
-      "pnl": -145.97,
-      "wins": 5,
+      "pnl": -174.92,
+      "wins": 4,
       "count": 9
     },
     "XRP/USDT": {
       "pnl": 0.0,
       "wins": 0,
-      "count": 3
+      "count": 1
+    },
+    "NVDA": {
+      "pnl": -135.16,
+      "wins": 4,
+      "count": 13
     },
     "AAPL": {
-      "pnl": 0.0,
+      "pnl": -7.7,
       "wins": 0,
       "count": 6
     },
-    "ETH/USDT": {
-      "pnl": 387.47,
-      "wins": 4,
-      "count": 8
-    },
-    "SOL/USDT": {
-      "pnl": 158.87,
-      "wins": 6,
-      "count": 11
-    },
-    "NVDA": {
-      "pnl": -117.35000000000001,
-      "wins": 4,
-      "count": 10
-    },
     "TSLA": {
-      "pnl": -61.54,
+      "pnl": -67.97,
       "wins": 0,
-      "count": 1
+      "count": 2
     },
     "APT/USDT": {
       "pnl": 48.12,
@@ -76,10 +77,15 @@
       "pnl": -0.35,
       "wins": 0,
       "count": 1
+    },
+    "META": {
+      "pnl": -13.310000000000002,
+      "wins": 0,
+      "count": 3
     }
   },
   "regime_counts": {
     "unknown": 50
   },
-  "timestamp": "2026-07-31T20:00:42.050697"
+  "timestamp": "2026-07-31T21:19:57.041997"
 }

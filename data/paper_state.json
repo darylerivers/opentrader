@@ -1,145 +1,101 @@
 {
-  "cycle": 6555,
-  "timestamp": "2026-07-31T20:00:20.278257+00:00",
+  "cycle": 6622,
+  "timestamp": "2026-07-31T21:19:42.501136+00:00",
   "initial_cash": 100000.0,
-  "cash": 73153.54,
-  "portfolio_value": 99971.84,
+  "cash": 79749.36,
+  "portfolio_value": 99988.48,
   "positions": [
     {
-      "symbol": "BTC/USDT",
-      "quantity": 0.07937973,
-      "current_price": 62980.8,
-      "entry_price": 62980.4,
-      "stop_loss": 62021.19194079647,
-      "take_profit": 64898.81611840707,
-      "highest_price": 62980.4,
-      "cycle_opened": 6555
-    },
-    {
-      "symbol": "AAPL",
-      "quantity": 15.17891225,
-      "current_price": 309.6401062011719,
-      "entry_price": 309.6401062011719,
-      "stop_loss": 296.9684057167191,
-      "take_profit": 334.98350717007753,
-      "highest_price": 309.6401062011719,
-      "cycle_opened": 6555
-    },
-    {
       "symbol": "META",
-      "quantity": 8.42301384,
-      "current_price": 557.97998046875,
-      "entry_price": 557.97998046875,
-      "stop_loss": 532.4887123839243,
-      "take_profit": 608.9625166384016,
-      "highest_price": 557.97998046875,
-      "cycle_opened": 6555
+      "quantity": 8.98472597,
+      "current_price": 556.5,
+      "entry_price": 556.5,
+      "stop_loss": 531.0299430688882,
+      "take_profit": 607.4401138622235,
+      "highest_price": 556.5,
+      "cycle_opened": 6622
     },
     {
       "symbol": "NVDA",
-      "quantity": 16.20489365,
-      "current_price": 201.77999877929688,
-      "entry_price": 201.77999877929688,
-      "stop_loss": 193.88422648977576,
-      "take_profit": 217.57154335833908,
-      "highest_price": 201.77999877929688,
-      "cycle_opened": 6555
+      "quantity": 22.20941658,
+      "current_price": 200.80999755859375,
+      "entry_price": 200.80999755859375,
+      "stop_loss": 192.91422526907263,
+      "take_profit": 216.60154213763596,
+      "highest_price": 200.80999755859375,
+      "cycle_opened": 6622
     },
     {
       "symbol": "MSFT",
-      "quantity": 8.56426451,
-      "current_price": 465.8550109863281,
-      "entry_price": 465.8550109863281,
-      "stop_loss": 445.4632693997135,
-      "take_profit": 506.63849415955735,
-      "highest_price": 465.8550109863281,
-      "cycle_opened": 6555
+      "quantity": 11.09808067,
+      "current_price": 464.9200134277344,
+      "entry_price": 464.9200134277344,
+      "stop_loss": 444.52827184111976,
+      "take_profit": 505.7034966009636,
+      "highest_price": 464.9200134277344,
+      "cycle_opened": 6622
     },
     {
       "symbol": "TSLA",
-      "quantity": 16.53923853,
-      "current_price": 311.9549865722656,
-      "entry_price": 311.9549865722656,
-      "stop_loss": 298.96499874683803,
-      "take_profit": 337.93496222312075,
-      "highest_price": 311.9549865722656,
-      "cycle_opened": 6555
+      "quantity": 18.06225976,
+      "current_price": 311.1199951171875,
+      "entry_price": 311.1199951171875,
+      "stop_loss": 298.12558691126736,
+      "take_profit": 337.1088115290278,
+      "highest_price": 311.1199951171875,
+      "cycle_opened": 6622
     }
   ],
   "prices": {
-    "BTC/USDT": 62980.8,
-    "AAPL": 309.6401062011719,
-    "META": 557.97998046875,
-    "NVDA": 201.77999877929688,
-    "MSFT": 465.8550109863281,
-    "TSLA": 311.9549865722656
+    "META": 556.5,
+    "NVDA": 200.80999755859375,
+    "MSFT": 464.9200134277344,
+    "TSLA": 311.1199951171875
   },
   "fills": [
     {
-      "order_id": "live_1",
-      "symbol": "BTC/USDT",
-      "side": "BUY",
-      "quantity": 0.07937973,
-      "price": 63012.2904,
-      "cost": 5001.9,
-      "fee": 13.0,
-      "cash_after": 44985.1,
-      "timestamp": "2026-07-31T20:00:19.458711+00:00"
-    },
-    {
       "order_id": "fh_1",
-      "symbol": "AAPL",
+      "symbol": "META",
       "side": "BUY",
-      "quantity": 15.17891225,
-      "price": 309.79492625427247,
-      "cost": 4702.35,
+      "quantity": 8.98472597,
+      "price": 556.77825,
+      "cost": 5002.5,
       "fee": 0.35,
-      "cash_after": 45297.3,
-      "timestamp": "2026-07-31T20:00:14.473992+00:00"
+      "cash_after": 44997.15,
+      "timestamp": "2026-07-31T21:19:38.432958+00:00"
     },
     {
       "order_id": "fh_2",
-      "symbol": "META",
+      "symbol": "NVDA",
       "side": "BUY",
-      "quantity": 8.42301384,
-      "price": 558.2589704589843,
-      "cost": 4702.22,
+      "quantity": 22.20941658,
+      "price": 200.91040255737303,
+      "cost": 4462.1,
       "fee": 0.35,
-      "cash_after": 40594.73,
-      "timestamp": "2026-07-31T20:00:15.341427+00:00"
+      "cash_after": 40534.7,
+      "timestamp": "2026-07-31T21:19:39.412041+00:00"
     },
     {
       "order_id": "fh_3",
-      "symbol": "NVDA",
+      "symbol": "MSFT",
       "side": "BUY",
-      "quantity": 16.20489365,
-      "price": 201.8808887786865,
-      "cost": 3271.46,
+      "quantity": 11.09808067,
+      "price": 465.1524734344482,
+      "cost": 5162.3,
       "fee": 0.35,
-      "cash_after": 37322.92,
-      "timestamp": "2026-07-31T20:00:16.291193+00:00"
+      "cash_after": 35372.05,
+      "timestamp": "2026-07-31T21:19:40.402140+00:00"
     },
     {
       "order_id": "fh_4",
-      "symbol": "MSFT",
-      "side": "BUY",
-      "quantity": 8.56426451,
-      "price": 466.08793849182126,
-      "cost": 3991.7,
-      "fee": 0.35,
-      "cash_after": 33330.87,
-      "timestamp": "2026-07-31T20:00:17.287515+00:00"
-    },
-    {
-      "order_id": "fh_5",
       "symbol": "TSLA",
       "side": "BUY",
-      "quantity": 16.53923853,
-      "price": 312.11096406555174,
-      "cost": 5162.08,
+      "quantity": 18.06225976,
+      "price": 311.27555511474606,
+      "cost": 5622.34,
       "fee": 0.35,
-      "cash_after": 28168.44,
-      "timestamp": "2026-07-31T20:00:18.617316+00:00"
+      "cash_after": 29749.36,
+      "timestamp": "2026-07-31T21:19:41.438516+00:00"
     }
   ],
   "data_provenance": {
@@ -659,7 +615,7 @@
       "NVDA",
       "MSFT",
       "TSLA",
-      "BTC/USDT"
+      "XOP"
     ],
     "llama_available": true,
     "llama_host": "http://127.0.0.1:5801",
@@ -667,9 +623,9 @@
   },
   "metrics": {
     "cycle_time_s": 0,
-    "total_cycles": 6555,
-    "total_fills": 6,
-    "drawdown_pct": 0.98,
+    "total_cycles": 6622,
+    "total_fills": 4,
+    "drawdown_pct": 0.97,
     "peak_value": 100965.56,
     "stage": 2,
     "symbol_count": 6,
@@ -678,14 +634,14 @@
       "classification": "Extreme Fear"
     },
     "signal_accuracy": {
-      "overall_accuracy_pct": 48.1,
-      "total_predictions": 106,
+      "overall_accuracy_pct": 44.0,
+      "total_predictions": 116,
       "total_correct": 51,
       "by_action": {
         "SELL": {
-          "correct": 1,
-          "total": 1,
-          "accuracy_pct": 100.0
+          "correct": 0,
+          "total": 2,
+          "accuracy_pct": 0.0
         },
         "BUY": {
           "correct": 0,
@@ -696,273 +652,99 @@
     }
   },
   "portfolio_optimization": {
-    "diversification_ratio": 2.1061,
-    "portfolio_var": 309.1,
-    "total_exposure_pct": 0.3032,
+    "diversification_ratio": 1.8184,
+    "portfolio_var": 324.5,
+    "total_exposure_pct": 0.2087,
     "correlation_matrix": {
       "AAPL": {
         "AAPL": 1.0,
-        "META": 0.109,
-        "NVDA": -0.2,
-        "MSFT": -0.126,
-        "TSLA": 0.106,
-        "BTC/USDT": 0.378
+        "META": 0.105,
+        "NVDA": -0.21,
+        "MSFT": -0.129,
+        "TSLA": 0.104,
+        "XOP": -0.022
       },
       "META": {
-        "AAPL": 0.109,
+        "AAPL": 0.105,
         "META": 1.0,
-        "NVDA": -0.294,
-        "MSFT": -0.713,
-        "TSLA": 0.025,
-        "BTC/USDT": 0.069
+        "NVDA": -0.304,
+        "MSFT": -0.716,
+        "TSLA": 0.022,
+        "XOP": -0.219
       },
       "NVDA": {
-        "AAPL": -0.2,
-        "META": -0.294,
+        "AAPL": -0.21,
+        "META": -0.304,
         "NVDA": 1.0,
-        "MSFT": 0.417,
-        "TSLA": 0.476,
-        "BTC/USDT": -0.154
+        "MSFT": 0.416,
+        "TSLA": 0.474,
+        "XOP": -0.133
       },
       "MSFT": {
-        "AAPL": -0.126,
-        "META": -0.713,
-        "NVDA": 0.417,
+        "AAPL": -0.129,
+        "META": -0.716,
+        "NVDA": 0.416,
         "MSFT": 1.0,
-        "TSLA": 0.355,
-        "BTC/USDT": -0.195
+        "TSLA": 0.354,
+        "XOP": -0.121
       },
       "TSLA": {
-        "AAPL": 0.106,
-        "META": 0.025,
-        "NVDA": 0.476,
-        "MSFT": 0.355,
+        "AAPL": 0.104,
+        "META": 0.022,
+        "NVDA": 0.474,
+        "MSFT": 0.354,
         "TSLA": 1.0,
-        "BTC/USDT": 0.076
+        "XOP": -0.311
       },
-      "BTC/USDT": {
-        "AAPL": 0.378,
-        "META": 0.069,
-        "NVDA": -0.154,
-        "MSFT": -0.195,
-        "TSLA": 0.076,
-        "BTC/USDT": 1.0
+      "XOP": {
+        "AAPL": -0.022,
+        "META": -0.219,
+        "NVDA": -0.133,
+        "MSFT": -0.121,
+        "TSLA": -0.311,
+        "XOP": 1.0
       }
     },
     "kelly_fractions": {
-      "AAPL": 0.047,
-      "META": 0.047,
-      "NVDA": 0.0327,
-      "MSFT": 0.0399,
-      "TSLA": 0.0516,
-      "BTC/USDT": 0.0849
+      "AAPL": 0.0,
+      "META": 0.0562,
+      "NVDA": 0.0446,
+      "MSFT": 0.0516,
+      "TSLA": 0.0562,
+      "XOP": 0.0
     },
     "allocations": [
       {
-        "symbol": "AAPL",
-        "side": "BUY",
-        "weight_pct": 0.04699029680365296,
-        "quantity": 15.15351638,
-        "reason": "kelly=4.70% corr-adjusted"
-      },
-      {
         "symbol": "META",
         "side": "BUY",
-        "weight_pct": 0.04699029680365296,
-        "quantity": 8.43707618,
-        "reason": "kelly=4.70% corr-adjusted"
+        "weight_pct": 0.05622365470852018,
+        "quantity": 10.10308261,
+        "reason": "kelly=5.62% corr-adjusted"
       },
       {
         "symbol": "NVDA",
         "side": "BUY",
-        "weight_pct": 0.032736502347417804,
-        "quantity": 16.25850576,
-        "reason": "kelly=3.27% corr-adjusted"
+        "weight_pct": 0.04464908256880737,
+        "quantity": 22.23449186,
+        "reason": "kelly=4.46% corr-adjusted"
       },
       {
         "symbol": "MSFT",
         "side": "BUY",
-        "weight_pct": 0.03992592592592595,
-        "quantity": 8.57957865,
-        "reason": "kelly=3.99% corr-adjusted"
+        "weight_pct": 0.0516329185520362,
+        "quantity": 11.1057638,
+        "reason": "kelly=5.16% corr-adjusted"
       },
       {
         "symbol": "TSLA",
         "side": "BUY",
-        "weight_pct": 0.0516329185520362,
-        "quantity": 16.57344711,
-        "reason": "kelly=5.16% corr-adjusted"
-      },
-      {
-        "symbol": "BTC/USDT",
-        "side": "BUY",
-        "weight_pct": 0.08488983050847454,
-        "quantity": 0.13479947,
-        "reason": "kelly=8.49% corr-adjusted"
+        "weight_pct": 0.05622365470852018,
+        "quantity": 18.07137297,
+        "reason": "kelly=5.62% corr-adjusted"
       }
     ]
   },
   "trades": [
-    {
-      "symbol": "BTC/USDT",
-      "entry_price": 85151.27,
-      "exit_price": 85222.02,
-      "quantity": 0.03131667,
-      "pnl_pct": 0.0008,
-      "pnl_dollar": 2.22,
-      "fees_paid": 0.0,
-      "entry_cycle": 6394,
-      "exit_cycle": 6395,
-      "duration_cycles": 1,
-      "timestamp": "2026-07-31T17:35:40.570941+00:00",
-      "exit_reason": "manual_ADIR: Bull(HOLD,45%,evq=0.72) vs Bear(HO",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "entry_price": 0.75,
-      "exit_price": 0.75,
-      "quantity": 3778.399926,
-      "pnl_pct": 0.0,
-      "pnl_dollar": 0.0,
-      "fees_paid": 0.0,
-      "entry_cycle": 6394,
-      "exit_cycle": 6395,
-      "duration_cycles": 1,
-      "timestamp": "2026-07-31T17:35:40.572693+00:00",
-      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,ev",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "AAPL",
-      "entry_price": 238.84,
-      "exit_price": 238.84,
-      "quantity": 8.28655948,
-      "pnl_pct": 0.0,
-      "pnl_dollar": 0.0,
-      "fees_paid": 0.0,
-      "entry_cycle": 6310,
-      "exit_cycle": 6395,
-      "duration_cycles": 85,
-      "timestamp": "2026-07-31T17:35:40.573824+00:00",
-      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,ev",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "entry_price": 4102.53,
-      "exit_price": 4107.47,
-      "quantity": 0.53061099,
-      "pnl_pct": 0.0012,
-      "pnl_dollar": 2.62,
-      "fees_paid": 0.0,
-      "entry_cycle": 6395,
-      "exit_cycle": 6396,
-      "duration_cycles": 1,
-      "timestamp": "2026-07-31T17:36:42.081895+00:00",
-      "exit_reason": "manual_ADIR: Bull(BUY,38%,evq=0.59) vs Bear(HOL",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "entry_price": 4102.53,
-      "exit_price": 4098.64,
-      "quantity": 0.32215997,
-      "pnl_pct": -0.0009,
-      "pnl_dollar": -1.25,
-      "fees_paid": 0.0,
-      "entry_cycle": 6395,
-      "exit_cycle": 6397,
-      "duration_cycles": 2,
-      "timestamp": "2026-07-31T17:37:29.322527+00:00",
-      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,65%,ev",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "entry_price": 0.75,
-      "exit_price": 0.75,
-      "quantity": 2179.302182,
-      "pnl_pct": 0.0,
-      "pnl_dollar": 0.0,
-      "fees_paid": 0.0,
-      "entry_cycle": 6394,
-      "exit_cycle": 6398,
-      "duration_cycles": 4,
-      "timestamp": "2026-07-31T17:38:25.144108+00:00",
-      "exit_reason": "manual_ADIR: Bull(HOLD,28%,evq=0.64) vs Bear(HO",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "entry_price": 214.08,
-      "exit_price": 213.05,
-      "quantity": 9.33349604,
-      "pnl_pct": -0.0048,
-      "pnl_dollar": -9.6,
-      "fees_paid": 0.0,
-      "entry_cycle": 6397,
-      "exit_cycle": 6399,
-      "duration_cycles": 2,
-      "timestamp": "2026-07-31T17:39:20.717425+00:00",
-      "exit_reason": "manual_ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HO",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "AAPL",
-      "entry_price": 238.84,
-      "exit_price": 238.84,
-      "quantity": 4.68580023,
-      "pnl_pct": 0.0,
-      "pnl_dollar": 0.0,
-      "fees_paid": 0.0,
-      "entry_cycle": 6310,
-      "exit_cycle": 6399,
-      "duration_cycles": 89,
-      "timestamp": "2026-07-31T17:39:20.718707+00:00",
-      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,ev",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "entry_price": 4108.72,
-      "exit_price": 4059.3,
-      "quantity": 0.33226625,
-      "pnl_pct": -0.012,
-      "pnl_dollar": -16.42,
-      "fees_paid": 0.0,
-      "entry_cycle": 6398,
-      "exit_cycle": 6400,
-      "duration_cycles": 2,
-      "timestamp": "2026-07-31T17:40:16.732301+00:00",
-      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,ev",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "entry_price": 214.08,
-      "exit_price": 212.83,
-      "quantity": 9.34165542,
-      "pnl_pct": -0.0058,
-      "pnl_dollar": -11.67,
-      "fees_paid": 0.0,
-      "entry_cycle": 6397,
-      "exit_cycle": 6400,
-      "duration_cycles": 3,
-      "timestamp": "2026-07-31T17:40:16.733514+00:00",
-      "exit_reason": "manual_ADIR: Bull(HOLD,45%,evq=0.72) vs Bear(HO",
-      "signal_action": "BUY",
-      "override_source": "portfolio_optimizer"
-    },
     {
       "symbol": "ETH/USDT",
       "entry_price": 4108.72,
@@ -1584,6 +1366,166 @@
       "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,ev",
       "signal_action": "BUY",
       "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "META",
+      "entry_price": 556.97,
+      "exit_price": 556.5,
+      "quantity": 6.30085808,
+      "pnl_pct": -0.001,
+      "pnl_dollar": -3.68,
+      "fees_paid": 0.7,
+      "entry_cycle": 6557,
+      "exit_cycle": 6558,
+      "duration_cycles": 1,
+      "timestamp": "2026-07-31T20:04:32.400895+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_price": 201.0,
+      "exit_price": 200.81,
+      "quantity": 47.25925758,
+      "pnl_pct": -0.001,
+      "pnl_dollar": -9.78,
+      "fees_paid": 0.7,
+      "entry_cycle": 6557,
+      "exit_cycle": 6558,
+      "duration_cycles": 1,
+      "timestamp": "2026-07-31T20:04:32.402153+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,82%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_price": 201.0,
+      "exit_price": 200.81,
+      "quantity": 34.51194706,
+      "pnl_pct": -0.0011,
+      "pnl_dollar": -7.33,
+      "fees_paid": 0.7,
+      "entry_cycle": 6557,
+      "exit_cycle": 6559,
+      "duration_cycles": 2,
+      "timestamp": "2026-07-31T20:05:32.211101+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(BUY,68%,evq",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "entry_price": 62989.29,
+      "exit_price": 62974.9,
+      "quantity": 0.07817351,
+      "pnl_pct": -0.0054,
+      "pnl_dollar": -26.73,
+      "fees_paid": 25.61,
+      "entry_cycle": 6559,
+      "exit_cycle": 6560,
+      "duration_cycles": 1,
+      "timestamp": "2026-07-31T20:06:27.124773+00:00",
+      "exit_reason": "manual_ADIR: Bull(HOLD,38%,evq=0.69) vs Bear(HO",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "TSLA",
+      "entry_price": 311.44,
+      "exit_price": 311.12,
+      "quantity": 18.03473419,
+      "pnl_pct": -0.0011,
+      "pnl_dollar": -6.43,
+      "fees_paid": 0.7,
+      "entry_cycle": 6559,
+      "exit_cycle": 6561,
+      "duration_cycles": 2,
+      "timestamp": "2026-07-31T20:08:22.986584+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "META",
+      "entry_price": 556.97,
+      "exit_price": 556.5,
+      "quantity": 8.97232435,
+      "pnl_pct": -0.001,
+      "pnl_dollar": -4.94,
+      "fees_paid": 0.7,
+      "entry_cycle": 6557,
+      "exit_cycle": 6564,
+      "duration_cycles": 7,
+      "timestamp": "2026-07-31T20:12:05.207576+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,68%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_price": 200.81,
+      "exit_price": 200.81,
+      "quantity": 24.51528641,
+      "pnl_pct": -0.0001,
+      "pnl_dollar": -0.7,
+      "fees_paid": 0.7,
+      "entry_cycle": 6561,
+      "exit_cycle": 6564,
+      "duration_cycles": 3,
+      "timestamp": "2026-07-31T20:12:05.822352+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "AAPL",
+      "entry_price": 309.22,
+      "exit_price": 309.03,
+      "quantity": 16.16176106,
+      "pnl_pct": -0.0008,
+      "pnl_dollar": -3.85,
+      "fees_paid": 0.7,
+      "entry_cycle": 6560,
+      "exit_cycle": 6565,
+      "duration_cycles": 5,
+      "timestamp": "2026-07-31T20:12:50.650209+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "META",
+      "entry_price": 556.97,
+      "exit_price": 556.5,
+      "quantity": 8.43605914,
+      "pnl_pct": -0.001,
+      "pnl_dollar": -4.69,
+      "fees_paid": 0.7,
+      "entry_cycle": 6557,
+      "exit_cycle": 6565,
+      "duration_cycles": 8,
+      "timestamp": "2026-07-31T20:12:50.651582+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "AAPL",
+      "entry_price": 309.22,
+      "exit_price": 309.03,
+      "quantity": 16.16578656,
+      "pnl_pct": -0.0008,
+      "pnl_dollar": -3.85,
+      "fees_paid": 0.7,
+      "entry_cycle": 6560,
+      "exit_cycle": 6566,
+      "duration_cycles": 6,
+      "timestamp": "2026-07-31T20:13:36.132198+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
     }
   ],
   "alerts": [],
@@ -1591,9 +1533,9 @@
     "enabled": true,
     "value": 0,
     "return_pct": 0,
-    "outperform_pct": -5.69,
-    "hodl_return_pct": 5.66,
-    "bot_return_pct": -0.03
+    "outperform_pct": -5.46,
+    "hodl_return_pct": 5.45,
+    "bot_return_pct": -0.01
   },
   "Committee": {
     "accuracy": {
@@ -1629,7 +1571,7 @@
       },
       "META:SELL": {
         "correct": 0,
-        "total": 1,
+        "total": 4,
         "accuracy": 0.0
       },
       "AMZN:BUY": {
@@ -1659,8 +1601,8 @@
       },
       "BTC/USDT:SELL": {
         "correct": 14,
-        "total": 19,
-        "accuracy": 0.737
+        "total": 20,
+        "accuracy": 0.7
       },
       "ETH/USDT:SELL": {
         "correct": 9,
@@ -1679,8 +1621,8 @@
       },
       "NVDA:SELL": {
         "correct": 4,
-        "total": 4,
-        "accuracy": 1.0
+        "total": 7,
+        "accuracy": 0.571
       },
       "TSLA:BUY": {
         "correct": 0,
@@ -1696,6 +1638,16 @@
         "correct": 1,
         "total": 1,
         "accuracy": 1.0
+      },
+      "TSLA:SELL": {
+        "correct": 0,
+        "total": 1,
+        "accuracy": 0.0
+      },
+      "AAPL:SELL": {
+        "correct": 0,
+        "total": 2,
+        "accuracy": 0.0
       }
     },
     "risk_limits": {
@@ -1707,37 +1659,37 @@
     "BTC/USDT": {
       "regime": "trending_down",
       "confidence": 0.85,
-      "thesis": "downtrend (ADX=75, slope=-0.0017)",
+      "thesis": "downtrend (ADX=68, slope=-0.0017)",
       "symbol": "unknown",
-      "price": 62974.9,
+      "price": 62955.3,
       "indicators": {
-        "adx": 75.0,
-        "bb_width": 0.0387,
-        "ma_slope": -0.001726,
-        "volume_ratio": 0.78,
+        "adx": 68.5,
+        "bb_width": 0.0375,
+        "ma_slope": -0.001714,
+        "volume_ratio": 0.73,
         "structure": "mixed",
-        "return_5d": 0.0036,
-        "return_10d": -0.0149,
-        "return_20d": -0.0267,
-        "return_40d": -0.0165
+        "return_5d": 0.0012,
+        "return_10d": -0.0133,
+        "return_20d": -0.0249,
+        "return_40d": -0.0168
       }
     },
     "ETH/USDT": {
-      "regime": "ranging",
-      "confidence": 0.5,
-      "thesis": "mixed signals, no clear regime",
+      "regime": "trending_down",
+      "confidence": 0.81,
+      "thesis": "downtrend (ADX=34, slope=-0.0016)",
       "symbol": "unknown",
-      "price": 4120.78,
+      "price": 1870.19,
       "indicators": {
-        "adx": 32.1,
-        "bb_width": 0.0256,
-        "ma_slope": 0.001086,
-        "volume_ratio": 0.71,
+        "adx": 34.4,
+        "bb_width": 0.0353,
+        "ma_slope": -0.001599,
+        "volume_ratio": 0.46,
         "structure": "mixed",
-        "return_5d": -0.0138,
-        "return_10d": -0.0063,
-        "return_20d": 0.0003,
-        "return_40d": -0.018
+        "return_5d": 0.0027,
+        "return_10d": -0.0075,
+        "return_20d": -0.021,
+        "return_40d": -0.0184
       }
     },
     "SOL/USDT": {
@@ -1761,19 +1713,19 @@
     "NVDA": {
       "regime": "bullish",
       "confidence": 0.75,
-      "thesis": "across-tf advance (5d=+1.6%, 20d=+4.6%), strong uptrend",
+      "thesis": "across-tf advance (5d=+1.4%, 20d=+4.4%), strong uptrend",
       "symbol": "unknown",
-      "price": 201.25,
+      "price": 200.80999755859375,
       "indicators": {
         "adx": 4.4,
-        "bb_width": 0.0614,
-        "ma_slope": 0.002321,
-        "volume_ratio": 0.79,
+        "bb_width": 0.0606,
+        "ma_slope": 0.002308,
+        "volume_ratio": 0.84,
         "structure": "strong_uptrend",
-        "return_5d": 0.0163,
-        "return_10d": 0.0401,
-        "return_20d": 0.0461,
-        "return_40d": -0.0452
+        "return_5d": 0.0141,
+        "return_10d": 0.0378,
+        "return_20d": 0.0438,
+        "return_40d": -0.0473
       }
     },
     "SPY": {
@@ -1799,17 +1751,17 @@
       "confidence": 0.85,
       "thesis": "downtrend (ADX=64, slope=-0.0089)",
       "symbol": "unknown",
-      "price": 309.8699951171875,
+      "price": 309.0299987792969,
       "indicators": {
         "adx": 63.5,
-        "bb_width": 0.2009,
-        "ma_slope": -0.008876,
-        "volume_ratio": 1.2,
+        "bb_width": 0.2014,
+        "ma_slope": -0.00889,
+        "volume_ratio": 1.27,
         "structure": "mixed",
-        "return_5d": 0.031,
-        "return_10d": -0.0697,
-        "return_20d": -0.0881,
-        "return_40d": -0.0715
+        "return_5d": 0.0282,
+        "return_10d": -0.0723,
+        "return_20d": -0.0906,
+        "return_40d": -0.074
       }
     },
     "MSFT": {
@@ -1817,17 +1769,17 @@
       "confidence": 0.85,
       "thesis": "uptrend (ADX=49, slope=0.0097)",
       "symbol": "unknown",
-      "price": 465.3399963378906,
+      "price": 464.9200134277344,
       "indicators": {
-        "adx": 48.9,
-        "bb_width": 0.2615,
-        "ma_slope": 0.009656,
-        "volume_ratio": 0.57,
+        "adx": 48.6,
+        "bb_width": 0.2613,
+        "ma_slope": 0.009651,
+        "volume_ratio": 0.61,
         "structure": "mixed",
-        "return_5d": 0.0036,
-        "return_10d": 0.0156,
-        "return_20d": 0.1792,
-        "return_40d": 0.2082
+        "return_5d": 0.0027,
+        "return_10d": 0.0147,
+        "return_20d": 0.1781,
+        "return_40d": 0.2071
       }
     },
     "TSLA": {
@@ -1835,17 +1787,17 @@
       "confidence": 0.9,
       "thesis": "uptrend (ADX=80, slope=0.0017), strong uptrend",
       "symbol": "unknown",
-      "price": 311.6000061035156,
+      "price": 311.1199951171875,
       "indicators": {
         "adx": 79.7,
-        "bb_width": 0.0491,
-        "ma_slope": 0.001691,
-        "volume_ratio": 0.62,
+        "bb_width": 0.0487,
+        "ma_slope": 0.001683,
+        "volume_ratio": 0.65,
         "structure": "strong_uptrend",
-        "return_5d": 0.0071,
-        "return_10d": 0.0132,
-        "return_20d": 0.0296,
-        "return_40d": 0.0037
+        "return_5d": 0.0056,
+        "return_10d": 0.0116,
+        "return_20d": 0.028,
+        "return_40d": 0.0021
       }
     },
     "XRP/USDT": {
@@ -1957,21 +1909,21 @@
       }
     },
     "MA": {
-      "regime": "trending_up",
-      "confidence": 0.9,
-      "thesis": "uptrend (ADX=84, slope=0.0035), strong downtrend",
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
       "symbol": "unknown",
-      "price": 551.844970703125,
+      "price": 573.1799926757812,
       "indicators": {
-        "adx": 84.1,
-        "bb_width": 0.0738,
-        "ma_slope": 0.003476,
-        "volume_ratio": 1.02,
-        "structure": "strong_downtrend",
-        "return_5d": -0.0021,
-        "return_10d": 0.0304,
-        "return_20d": 0.0464,
-        "return_40d": 0.0101
+        "adx": 10.4,
+        "bb_width": 0.0305,
+        "ma_slope": 0.000696,
+        "volume_ratio": 0.87,
+        "structure": "mixed",
+        "return_5d": 0.0028,
+        "return_10d": -0.0057,
+        "return_20d": 0.0111,
+        "return_40d": 0.0701
       }
     },
     "FCX": {
@@ -2175,19 +2127,19 @@
     "META": {
       "regime": "trending_down",
       "confidence": 0.85,
-      "thesis": "downtrend (ADX=67, slope=-0.0033)",
+      "thesis": "downtrend (ADX=67, slope=-0.0034)",
       "symbol": "unknown",
-      "price": 557.0,
+      "price": 556.5,
       "indicators": {
         "adx": 67.1,
         "bb_width": 0.1709,
-        "ma_slope": -0.003348,
-        "volume_ratio": 0.62,
+        "ma_slope": -0.003353,
+        "volume_ratio": 0.65,
         "structure": "mixed",
-        "return_5d": 0.0141,
-        "return_10d": 0.0451,
-        "return_20d": -0.0582,
-        "return_40d": -0.0765
+        "return_5d": 0.0132,
+        "return_10d": 0.0442,
+        "return_20d": -0.0591,
+        "return_40d": -0.0774
       }
     },
     "CORN": {
@@ -2209,21 +2161,21 @@
       }
     },
     "USD/JPY": {
-      "regime": "volatile",
-      "confidence": 0.6,
-      "thesis": "low volatility range (tight Bollinger bands), low volume consolidation, volatility spike (1.00% vs 0.47% avg)",
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "low volume consolidation",
       "symbol": "unknown",
-      "price": 162.5,
+      "price": 158.484,
       "indicators": {
-        "adx": 3.6,
-        "bb_width": 0.0441,
-        "ma_slope": 0.000289,
-        "volume_ratio": 0.15,
+        "adx": 47.3,
+        "bb_width": 0.0374,
+        "ma_slope": 0.000366,
+        "volume_ratio": 0.56,
         "structure": "mixed",
-        "return_5d": 0.0,
-        "return_10d": 0.0214,
-        "return_20d": 0.0,
-        "return_40d": -0.0208
+        "return_5d": -0.0233,
+        "return_10d": -0.0056,
+        "return_20d": -0.0014,
+        "return_40d": -0.0235
       }
     },
     "AVAX/USDT": {
@@ -2246,20 +2198,20 @@
     },
     "XOP": {
       "regime": "trending_up",
-      "confidence": 0.85,
-      "thesis": "uptrend (ADX=51, slope=0.0026)",
+      "confidence": 0.9,
+      "thesis": "uptrend (ADX=60, slope=0.0020), strong uptrend",
       "symbol": "unknown",
-      "price": 174.81500244140625,
+      "price": 177.39999389648438,
       "indicators": {
-        "adx": 51.0,
-        "bb_width": 0.068,
-        "ma_slope": 0.002586,
-        "volume_ratio": 0.59,
-        "structure": "mixed",
-        "return_5d": 0.0115,
-        "return_10d": 0.0177,
-        "return_20d": 0.0451,
-        "return_40d": -0.0132
+        "adx": 59.8,
+        "bb_width": 0.0444,
+        "ma_slope": 0.001999,
+        "volume_ratio": 0.73,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0139,
+        "return_10d": 0.0214,
+        "return_20d": 0.0355,
+        "return_40d": 0.0153
       }
     },
     "ADBE": {
@@ -2314,6 +2266,60 @@
         "return_10d": 0.0755,
         "return_20d": 0.0698,
         "return_40d": 0.1182
+      }
+    },
+    "UNG": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "low volatility range (tight Bollinger bands), low volume consolidation",
+      "symbol": "unknown",
+      "price": 10.069999694824219,
+      "indicators": {
+        "adx": 2.7,
+        "bb_width": 0.0204,
+        "ma_slope": 0.000198,
+        "volume_ratio": 0.65,
+        "structure": "mixed",
+        "return_5d": 0.0136,
+        "return_10d": 0.0025,
+        "return_20d": 0.0126,
+        "return_40d": -0.0567
+      }
+    },
+    "XLE": {
+      "regime": "trending_up",
+      "confidence": 0.9,
+      "thesis": "uptrend (ADX=63, slope=0.0010), strong uptrend",
+      "symbol": "unknown",
+      "price": 59.540000915527344,
+      "indicators": {
+        "adx": 62.9,
+        "bb_width": 0.0251,
+        "ma_slope": 0.000953,
+        "volume_ratio": 0.75,
+        "structure": "strong_uptrend",
+        "return_5d": 0.011,
+        "return_10d": 0.0141,
+        "return_20d": 0.0105,
+        "return_40d": -0.0016
+      }
+    },
+    "NFLX": {
+      "regime": "ranging",
+      "confidence": 0.6,
+      "thesis": "low volume consolidation, strong uptrend",
+      "symbol": "unknown",
+      "price": 71.69999694824219,
+      "indicators": {
+        "adx": 61.4,
+        "bb_width": 0.0477,
+        "ma_slope": -0.001181,
+        "volume_ratio": 0.64,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0008,
+        "return_10d": -0.0171,
+        "return_20d": -0.0079,
+        "return_40d": 0.0222
       }
     }
   }

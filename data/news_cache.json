@@ -4,12 +4,12 @@
       "value": 25,
       "classification": "Extreme Fear",
       "timestamp": "1785456000",
-      "time_until_update": "16330",
+      "time_until_update": "12685",
       "yesterday_value": 28,
       "yesterday_classification": "Fear",
       "change": -3
     },
-    "fetched_at": 1785526070.6715865
+    "fetched_at": 1785529714.822596
   },
   "coingecko_trending": {
     "data": {
@@ -22,81 +22,81 @@
           "thumb": "https://coin-images.coingecko.com/coins/images/36530/standard/ethena.png?1711701436"
         },
         {
-          "name": "Pudgy Penguins",
-          "symbol": "PENGU",
-          "market_cap_rank": 112,
-          "score": 1,
-          "thumb": "https://coin-images.coingecko.com/coins/images/52622/standard/PUDGY_PENGUINS_PENGU_PFP.png?1733809110"
-        },
-        {
           "name": "GRVT Token",
           "symbol": "GRVT",
-          "market_cap_rank": 566,
-          "score": 2,
+          "market_cap_rank": 624,
+          "score": 1,
           "thumb": "https://coin-images.coingecko.com/coins/images/102172513/standard/grvt_400x400.jpg?1773653767"
         },
         {
-          "name": "Pump.fun",
-          "symbol": "PUMP",
-          "market_cap_rank": 75,
-          "score": 3,
-          "thumb": "https://coin-images.coingecko.com/coins/images/67164/standard/pump.jpg?1751949376"
-        },
-        {
-          "name": "The Black Bull",
-          "symbol": "ANSEM",
-          "market_cap_rank": 313,
-          "score": 4,
-          "thumb": "https://coin-images.coingecko.com/coins/images/102174035/standard/IMG_9497.jpeg?1782005339"
+          "name": "Pudgy Penguins",
+          "symbol": "PENGU",
+          "market_cap_rank": 112,
+          "score": 2,
+          "thumb": "https://coin-images.coingecko.com/coins/images/52622/standard/PUDGY_PENGUINS_PENGU_PFP.png?1733809110"
         },
         {
           "name": "Hyperliquid",
           "symbol": "HYPE",
           "market_cap_rank": 10,
-          "score": 5,
+          "score": 3,
           "thumb": "https://coin-images.coingecko.com/coins/images/50882/standard/hyperliquid.jpg?1729431300"
         },
         {
-          "name": "Giggle Fund",
-          "symbol": "GIGGLE",
-          "market_cap_rank": 447,
+          "name": "Pump.fun",
+          "symbol": "PUMP",
+          "market_cap_rank": 76,
+          "score": 4,
+          "thumb": "https://coin-images.coingecko.com/coins/images/67164/standard/pump.jpg?1751949376"
+        },
+        {
+          "name": "Ondo",
+          "symbol": "ONDO",
+          "market_cap_rank": 41,
+          "score": 5,
+          "thumb": "https://coin-images.coingecko.com/coins/images/26580/standard/ONDO.png?1696525656"
+        },
+        {
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "market_cap_rank": 2,
           "score": 6,
-          "thumb": "https://coin-images.coingecko.com/coins/images/69414/standard/giggle-fund.jpg?1758541887"
+          "thumb": "https://coin-images.coingecko.com/coins/images/279/standard/ethereum.png?1696501628"
         }
       ],
       "count": 7
     },
-    "fetched_at": 1785527776.7971168
+    "fetched_at": 1785532612.8934772
   },
   "coingecko_global": {
     "data": {
-      "total_market_cap_usd": 2246607712550.2935,
-      "total_volume_24h_usd": 65936404812.290276,
-      "btc_dominance_pct": 56.21581292819712,
-      "eth_dominance_pct": 10.024974489661915,
+      "total_market_cap_usd": 2245311970218.5903,
+      "total_volume_24h_usd": 69077616860.48296,
+      "btc_dominance_pct": 56.24878945465084,
+      "eth_dominance_pct": 10.002303860261128,
       "active_cryptocurrencies": 18090,
-      "market_cap_change_24h_pct": -2.1463509255767086
+      "market_cap_change_24h_pct": -2.1138600370338403
     },
-    "fetched_at": 1785527776.7971168
+    "fetched_at": 1785532739.4160607
   },
   "btc_stats": {
     "data": {
-      "price_usd": 62938,
-      "market_cap_usd": 1262897337145,
+      "price_usd": 62947,
+      "market_cap_usd": 1262961780308,
       "market_cap_rank": 1,
-      "total_volume_usd": 30117821607,
-      "price_change_24h_pct": -2.83,
-      "price_change_7d_pct": -1.96,
-      "price_change_30d_pct": 4.7,
+      "total_volume_usd": 30067382330,
+      "price_change_24h_pct": -2.72,
+      "price_change_7d_pct": -1.88,
+      "price_change_30d_pct": 4.79,
       "ath_usd": 126080,
       "ath_date": "2025-10-06",
       "ath_change_pct": -50.1,
       "atl_usd": 67.81,
       "high_24h_usd": 65305,
       "low_24h_usd": 62425,
-      "circulating_supply": 20063884.0,
+      "circulating_supply": 20063906.0,
       "max_supply": 21000000.0
     },
-    "fetched_at": 1785527776.7971168
+    "fetched_at": 1785532612.8934772
   }
 }

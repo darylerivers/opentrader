@@ -1011,8 +1011,15 @@ class OpenTraderHarness:
             for p in saved_positions:
                 sym = p.get("symbol", "")
                 qty = float(p.get("quantity", 0) or 0)
-                entry = float(p.get("entry_price", 0) or p.get("current_price", 0) or 0)
-                current = float(p.get("current_price", entry) or entry)
+                current = float(p.get("current_price", 0) or 0)
+                # Prefer cost-basis-derived entry (replay is accurate); fall
+                # back to the saved entry only if cost basis is unavailable.
+                cb = restored_cost_basis.get(sym, 0)
+                entry = (
+                    cb / qty
+                    if sym in restored_cost_basis and qty > 0 and cb > 0
+                    else float(p.get("entry_price", 0) or current or 0)
+                )
                 if sym and qty > 0 and entry > 0:
                     risk_cfg = self.risk.config
                     bars_raw = (
