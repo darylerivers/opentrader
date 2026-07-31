@@ -1,1 +1,1 @@
-python3 harness.py --exchange paper --stage 2 --cash 100000 --max-cycles 0 --mot-force increase --max-daily-trades 500 --debate-mode adir --llama-host http://127.0.0.1:5801 --parallel-debate --interval 10
+python3 harness.py --exchange finnhub --no-synthetic --stage 2 --cash 100000 --max-cycles 0 --mot-force increase --max-daily-trades 500 --debate-mode adir --llama-host http://127.0.0.1:5801 --parallel-debate --interval 10

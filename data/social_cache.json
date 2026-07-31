@@ -1,13 +1,20 @@
 {
   "sentiment": {
-    "BTC/USDT": {
+    "NVDA": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "NVDA": {
+    "TSLA": {
+      "score": 0.25,
+      "raw_score": -0.5,
+      "mentions": 0,
+      "sentiment": "fear",
+      "source": "fng_only"
+    },
+    "BTC/USDT": {
       "score": 0.25,
       "raw_score": -0.5,
       "mentions": 0,
@@ -28,13 +35,6 @@
       "sentiment": "fear",
       "source": "fng_only"
     },
-    "DOGE/USDT": {
-      "score": 0.25,
-      "raw_score": -0.5,
-      "mentions": 0,
-      "sentiment": "fear",
-      "source": "fng_only"
-    },
     "AAPL": {
       "score": 0.25,
       "raw_score": -0.5,
@@ -43,5 +43,5 @@
       "source": "fng_only"
     }
   },
-  "fetched_at": 1785524609.0007493
+  "fetched_at": 1785527371.1771712
 }

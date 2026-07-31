@@ -1,66 +1,79 @@
 {
-  "grade": "D",
-  "grade_reason": "The agent has generated significant losses on BTC, SOL, and ETH despite a high frequency of successful manual exits, indicating a critical disconnect between the ADIR model's predictions and the agent's actual execution logic.",
+  "grade": "C",
+  "grade_reason": "The agent shows a mixed record with several profitable take-profit exits on ETH and SOL, but is heavily penalized by stop-losses on NVDA, BTC, and SOL, resulting in a net loss and a win rate below 50% on most major symbols.",
   "winning_patterns": [
-    "Manual exits on SOL/USDT during early volatility spikes generated positive PnL before the ADIR model could intervene.",
-    "The ADIR model correctly identified a bullish HOLD signal for ETH/USDT at $4146.62, which was successfully exited via a trailing stop.",
-    "Manual exits on BTC/USDT occasionally captured minor moves before the ADIR model's aggressive HOLD signals caused drawdowns."
+    "Take-profit exits on ETH/USDT and SOL/USDT during strong upward momentum phases yield significant gains (e.g., ETH +$332, SOL +$271).",
+    "Manual ADIR (Adaptive Directional) entries on APT/USDT and SOL/USDT successfully captured early trend moves before stop-losses were triggered.",
+    "Trailing-stop exits on ETH/USDT allowed partial profit realization while avoiding deep drawdowns during volatile swings."
   ],
   "failure_patterns": [
-    "The ADIR model's 'Bull(HOLD)' signals are systematically ignored by the manual exit logic, leading to large unrealized losses on BTC and SOL.",
-    "The agent fails to exit losing positions on AAPL, NVDA, and TSLA entirely, resulting in 0% win rates and zero PnL.",
-    "Gate-skipped exits on BTC/USDT occurred precisely when the ADIR model was holding, suggesting the manual exit logic is overwriting the model's valid predictions."
+    "Stop-loss exits on NVDA and BTC/USDT during choppy or downward regimes caused repeated small losses that erode capital without clear directional bias.",
+    "Manual [GATE-SKIPPED] entries on AAPL, BTC, and TSLA resulted in immediate stop-losses or negligible moves, indicating poor entry timing or lack of volatility filter.",
+    "Overlapping NVDA trades (10 trades) show a pattern of entering too frequently in a ranging market, leading to a 40% win rate and cumulative loss."
   ],
   "symbol_advice": {
-    "BTC/USDT": "cold",
+    "NVDA": "cold",
+    "BTC/USDT": "neutral",
     "ETH/USDT": "hot",
-    "SOL/USDT": "cold",
+    "SOL/USDT": "hot",
     "AAPL": "neutral",
-    "NVDA": "neutral",
-    "TSLA": "neutral",
+    "TSLA": "cold",
+    "APT/USDT": "hot",
+    "GOOGL": "neutral",
     "XRP/USDT": "neutral"
   },
   "position_sizing": "decrease",
+  "position_sizing_rationale": "The agent is taking too many overlapping positions on NVDA and BTC, which dilutes capital and increases exposure to regime noise; reducing size will lower the probability of consecutive stop-loss hits.",
   "retrain_recommended": true,
-  "retrain_focus": "Retrain the ADIR model to prioritize manual exit signals over HOLD signals, specifically teaching it that when the agent manually exits, the trade is closed and no further action is needed, while ensuring it respects trailing stops on ETH.",
-  "data_curation_advice": "Include all manual exit trades where the ADIR model predicted HOLD but the agent closed the position (e.g., BTC, SOL). Exclude trades where the agent used the trailing stop successfully (ETH) as they represent a different decision path.",
-  "confidence": 0.85,
-  "cycle": 6461,
+  "retrain_focus": "Curate examples of successful take-profit exits on ETH/SOL and ADIR entries on APT/SOL, while excluding all [GATE-SKIPPED] trades and NVDA stop-loss clusters to teach the agent to filter choppy regimes and respect trailing-stop logic.",
+  "data_curation_advice": "Include only trades with exit=take-profit or exit=manual_ADIR where pnl>0. Exclude all trades with exit=stop-loss on NVDA, BTC, and TSLA, and exclude any manual_[GATE-SKIPPED] entries regardless of pnl.",
+  "confidence": 0.82,
+  "cycle": 6555,
   "trades_reviewed": 50,
-  "win_rate": 30.0,
+  "win_rate": 40.0,
   "symbol_stats": {
-    "ETH/USDT": {
-      "pnl": 51.14,
-      "wins": 5,
-      "count": 10
-    },
-    "NVDA": {
-      "pnl": 0.0,
-      "wins": 0,
-      "count": 6
-    },
     "BTC/USDT": {
-      "pnl": -39.94,
+      "pnl": -145.97,
       "wins": 5,
-      "count": 8
-    },
-    "SOL/USDT": {
-      "pnl": -48.19,
-      "wins": 5,
-      "count": 11
+      "count": 9
     },
     "XRP/USDT": {
       "pnl": 0.0,
       "wins": 0,
-      "count": 5
+      "count": 3
     },
     "AAPL": {
       "pnl": 0.0,
       "wins": 0,
-      "count": 9
+      "count": 6
+    },
+    "ETH/USDT": {
+      "pnl": 387.47,
+      "wins": 4,
+      "count": 8
+    },
+    "SOL/USDT": {
+      "pnl": 158.87,
+      "wins": 6,
+      "count": 11
+    },
+    "NVDA": {
+      "pnl": -117.35000000000001,
+      "wins": 4,
+      "count": 10
     },
     "TSLA": {
-      "pnl": 0.0,
+      "pnl": -61.54,
+      "wins": 0,
+      "count": 1
+    },
+    "APT/USDT": {
+      "pnl": 48.12,
+      "wins": 1,
+      "count": 1
+    },
+    "GOOGL": {
+      "pnl": -0.35,
       "wins": 0,
       "count": 1
     }
@@ -68,5 +81,5 @@
   "regime_counts": {
     "unknown": 50
   },
-  "timestamp": "2026-07-31T18:33:12.356370"
+  "timestamp": "2026-07-31T20:00:42.050697"
 }

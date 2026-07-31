@@ -91,8 +91,8 @@
     "performance": {
       "win_rate": 8.268090135511427e-06,
       "avg_return": 3.272747069614741e-08,
-      "cycles_completed": 125064,
-      "avg_confidence": 0.03913064111187709
+      "cycles_completed": 125352,
+      "avg_confidence": 0.03951891074746146
     }
   }
 }

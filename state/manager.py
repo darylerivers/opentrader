@@ -3,6 +3,7 @@
 
 Ported from ATLANTIS TraderHarness. Writes JSON files atomically.
 """
+
 import hashlib
 import json
 import logging
@@ -30,31 +31,74 @@ class StateManager:
         self.state_path = self.state_dir / "paper_state.json"
         self.high_level_path = self.state_dir / "high_level_state.json"
 
-    def write(self, cycle: int, portfolio: dict, positions: list,
-              fills: list, prices: dict, regime: dict = None,
-              signals: list = None,               models: dict = None,
-              metrics: dict = None, initial_cash: float = None,
-              portfolio_metrics: dict = None,
-              trades: list = None,
-              alerts: list = None,
-              hodl_benchmark: dict = None,
-              committee: dict = None,
-              symbol_regimes: dict = None,
-              skip_history: bool = False) -> dict:
+    def write(
+        self,
+        cycle: int,
+        portfolio: dict,
+        positions: list,
+        fills: list,
+        prices: dict,
+        regime: dict = None,
+        signals: list = None,
+        models: dict = None,
+        metrics: dict = None,
+        initial_cash: float = None,
+        portfolio_metrics: dict = None,
+        trades: list = None,
+        alerts: list = None,
+        hodl_benchmark: dict = None,
+        committee: dict = None,
+        symbol_regimes: dict = None,
+        skip_history: bool = False,
+        data_provenance: dict = None,
+    ) -> dict:
         now = datetime.now(timezone.utc).isoformat()
-        state = self._build_state(cycle, portfolio, positions, fills, prices,
-                                   regime, signals, models, metrics, initial_cash,
-                                   portfolio_metrics, trades, alerts,
-                                   hodl_benchmark, committee, symbol_regimes, now)
+        state = self._build_state(
+            cycle,
+            portfolio,
+            positions,
+            fills,
+            prices,
+            regime,
+            signals,
+            models,
+            metrics,
+            initial_cash,
+            portfolio_metrics,
+            trades,
+            alerts,
+            hodl_benchmark,
+            committee,
+            symbol_regimes,
+            now,
+            data_provenance,
+        )
         self._write_state(state)
         if not skip_history:
             self._write_cycle(cycle, state)
         return state
 
-    def _build_state(self, cycle, portfolio, positions, fills, prices,
-                     regime, signals, models, metrics, initial_cash,
-                     portfolio_metrics, trades, alerts,
-                     hodl_benchmark, committee, symbol_regimes, now) -> dict:
+    def _build_state(
+        self,
+        cycle,
+        portfolio,
+        positions,
+        fills,
+        prices,
+        regime,
+        signals,
+        models,
+        metrics,
+        initial_cash,
+        portfolio_metrics,
+        trades,
+        alerts,
+        hodl_benchmark,
+        committee,
+        symbol_regimes,
+        now,
+        data_provenance: dict = None,
+    ) -> dict:
         state = {
             "cycle": cycle,
             "timestamp": now,
@@ -62,17 +106,17 @@ class StateManager:
             "cash": portfolio.get("cash", 0),
             "portfolio_value": portfolio.get("total_value", 0),
             "positions": positions,
+            "prices": prices,
             "fills": fills[-50:] if fills else [],
-            "prices": {k: round(v, 2) for k, v in (prices or {}).items()},
-            "regime": regime or {},
-            "signals": [{"symbol": s.get("symbol", ""), "action": s.get("action", ""),
-                         "confidence": s.get("confidence", 0), "reason": s.get("reason", ""),
-                         "position_pct": s.get("position_pct", 0),
-                         "timestamp": s.get("timestamp", "")} for s in (signals or [])],
+            "data_provenance": data_provenance or {},
+            "signals": [s.get("signal") for s in (signals or [])],
             "models": models or {},
-            "metrics": {"cycle_time_s": metrics.get("cycle_time_s", 0) if metrics else 0,
-                        "total_cycles": cycle, "total_fills": len(fills) if fills else 0,
-                        **(metrics or {})},
+            "metrics": {
+                "cycle_time_s": metrics.get("cycle_time_s", 0) if metrics else 0,
+                "total_cycles": cycle,
+                "total_fills": len(fills) if fills else 0,
+                **(metrics or {}),
+            },
             "portfolio_optimization": portfolio_metrics or {},
             "trades": trades or [],
             "alerts": alerts or [],
@@ -94,47 +138,84 @@ class StateManager:
         cycle_path = history_dir / f"cycle_{cycle:04d}.json"
         with open(cycle_path, "w") as f:
             json.dump(state, f, indent=2, default=str)
+        self._trim_history(history_dir)
+
+    _MAX_HISTORY_FILES = 2000
+
+    def _trim_history(self, history_dir: Path) -> None:
+        """Rolling retention for per-cycle snapshots — one file per cycle
+        grows ~8,640 files/day (~57MB+); cap to the most recent N."""
+        try:
+            files = sorted(history_dir.glob("cycle_*.json"))
+            if len(files) <= self._MAX_HISTORY_FILES:
+                return
+            for f in files[: -self._MAX_HISTORY_FILES]:
+                try:
+                    f.unlink()
+                except OSError:
+                    pass
+        except Exception:
+            pass
 
     @staticmethod
     def state_key(state: dict) -> str:
         """Deterministic hash of meaningful trading state changes.
-        
+
         Only includes fields that indicate actual trade/portfolio changes.
         Ignores purely cosmetic fields like timestamp, cycle number, etc.
         """
         positions = state.get("positions", [])
-        pos_str = ";".join(sorted(
-            f"{p.get('symbol','')}:{p.get('quantity',p.get('size',0)):.6f}:{p.get('entry_price') or 0:.2f}"
-            for p in positions
-        )) if positions else ""
-        
+        pos_str = (
+            ";".join(
+                sorted(
+                    f"{p.get('symbol', '')}:{p.get('quantity', p.get('size', 0)):.6f}:{p.get('entry_price') or 0:.2f}"
+                    for p in positions
+                )
+            )
+            if positions
+            else ""
+        )
+
         trades = state.get("trades", [])
-        trade_str = ";".join(
-            f"{t.get('symbol','')}:{t.get('side','')}:{t.get('pnl',0):.4f}"
-            for t in trades[-5:]
-        ) if trades else ""
-        
+        trade_str = (
+            ";".join(
+                f"{t.get('symbol', '')}:{t.get('side', '')}:{t.get('pnl', 0):.4f}"
+                for t in trades[-5:]
+            )
+            if trades
+            else ""
+        )
+
         committee = state.get("Committee", {})
-        comm_str = f"{committee.get('action','')}:{committee.get('confidence',0):.2f}"
-        
+        comm_str = f"{committee.get('action', '')}:{committee.get('confidence', 0):.2f}"
+
         raw = (
             f"pos={pos_str}|"
-            f"fil_ct={len(state.get('fills',[]))}|"
-            f"trade_ct={len(state.get('trades',[]))}|"
-            f"sig_ct={len(state.get('signals',[]))}|"
+            f"fil_ct={len(state.get('fills', []))}|"
+            f"trade_ct={len(state.get('trades', []))}|"
+            f"sig_ct={len(state.get('signals', []))}|"
             f"comm={comm_str}|"
             f"trd={trade_str}"
         )
         return hashlib.sha256(raw.encode()).hexdigest()[:20]
 
-    def write_high_level(self, regime: str = "unknown", confidence: float = 0.0,
-                         thesis: str = "", posture: str = "defensive",
-                         available: bool = False, updated: str = None,
-                         models: dict = None,
-                         portfolio: dict = None) -> dict:
+    def write_high_level(
+        self,
+        regime: str = "unknown",
+        confidence: float = 0.0,
+        thesis: str = "",
+        posture: str = "defensive",
+        available: bool = False,
+        updated: str = None,
+        models: dict = None,
+        portfolio: dict = None,
+    ) -> dict:
         state = {
-            "regime": regime, "confidence": round(confidence, 2),
-            "thesis": thesis, "posture": posture, "available": available,
+            "regime": regime,
+            "confidence": round(confidence, 2),
+            "thesis": thesis,
+            "posture": posture,
+            "available": available,
             "updated": updated or datetime.now(timezone.utc).isoformat(),
             "models": models or {},
             "portfolio": portfolio or {},

@@ -188,6 +188,8 @@ async def health():
         "drawdown_pct": s.get("metrics", {}).get("drawdown_pct", 0),
         "model_available": s.get("models", {}).get("llama_available", False),
         "debate_model": s.get("models", {}).get("debate_model", ""),
+        "data_mode": s.get("data_provenance", {}).get("mode", "unknown"),
+        "exchange": s.get("data_provenance", {}).get("exchange", ""),
     }
 
 

@@ -73,7 +73,8 @@ def main():
         if unknown
         else [
             "--exchange",
-            "ibkr",
+            "finnhub",
+            "--no-synthetic",
             "--stage",
             "2",
             "--cash",

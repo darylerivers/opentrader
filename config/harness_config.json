@@ -5,12 +5,13 @@
   "llama_host": "http://127.0.0.1:5801",
   "gpu0_host": "http://127.0.0.1:5801",
   "mcp_url": "http://127.0.0.1:8092",
-  "default_exchange": "paper",
+  "default_exchange": "finnhub",
   "default_cash": 100000,
   "stage": 2,
   "debate_mode": "adir",
   "parallel_debate": true,
   "max_daily_trades": 500,
   "mot_force": "increase",
-  "interval": 10
+  "interval": 10,
+  "synthetic_data": false
 }

@@ -658,6 +658,9 @@ body{
       <div class="pill" id="model-pill" title="Debate model reachability" style="display:none;background:var(--red);color:white">
         <span class="dot"></span><span id="model-pill-text">MODEL DOWN</span>
       </div>
+      <div class="pill" id="data-pill" title="Data provenance" style="background:var(--green);color:white">
+        <span class="dot"></span><span id="data-pill-text">LIVE DATA</span>
+      </div>
       <div class="pill gpu" title="GPU0: Qwen2.5-7B (NVIDIA RTX 3070)">
         <span class="dot"></span>GPU0
       </div>
@@ -1005,6 +1008,14 @@ async function loadState(){
     mp.style.display = modelUp ? 'none' : 'flex';
     document.getElementById('model-pill-text').textContent =
       'MODEL DOWN — TRADING ON HEURISTICS';
+  }
+  var dp = document.getElementById('data-pill');
+  if(dp && h){
+    var live = h.data_mode !== 'synthetic';
+    dp.style.background = live ? 'var(--green)' : 'var(--red)';
+    dp.style.color = 'white';
+    document.getElementById('data-pill-text').textContent =
+      live ? ('LIVE DATA · ' + (h.exchange||'').toUpperCase()) : 'SYNTHETIC DATA — NOT REAL';
   }
   POSITIONS = (FULL.positions||[]).map(function(p){
     var cur = p.current_price||0, entry = p.entry_price||0, qty = p.quantity||0;

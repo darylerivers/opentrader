@@ -90,12 +90,13 @@
     "capability_manifest_20260730_211636.json",
     "capability_manifest_20260730_224501.json",
     "capability_manifest_20260731_105000.json",
-    "capability_manifest_20260731_183250.json"
+    "capability_manifest_20260731_183250.json",
+    "capability_manifest_20260731_195553.json"
   ],
-  "total_scenarios": 3454,
+  "total_scenarios": 3491,
   "total_transforms": 9,
   "total_augmentations": 1751,
-  "cumulative_scenarios": 3454,
+  "cumulative_scenarios": 3491,
   "folded_capabilities": [
     "test_capability",
     "test_capability_v2",

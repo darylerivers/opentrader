@@ -1,6 +1,6 @@
 {
   "name": "trading_agent",
-  "cycle_count": 5407,
+  "cycle_count": 5695,
   "history": [],
   "thinking_history": [],
   "config": {
@@ -10,11 +10,11 @@
     "initial_cash": 100000.0,
     "max_tool_calls": 5
   },
-  "_cycle": 6507,
+  "_cycle": 6555,
   "_signal_count": 500,
   "_peak_value": 100965.56,
   "_stage": 2,
-  "_stage_start": 1785522729.0762556,
+  "_stage_start": 1785527903.5404735,
   "_initial_cash": 100000.0,
   "_trade_journal": [
     {
@@ -2760,2313 +2760,99 @@
       "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,ev",
       "signal_action": "BUY",
       "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "entry_price": 211.47,
+      "exit_price": 219.02,
+      "quantity": 35.96503294,
+      "pnl_pct": 0.0357,
+      "pnl_dollar": 271.54,
+      "fees_paid": 0.0,
+      "entry_cycle": 6487,
+      "exit_cycle": 6516,
+      "duration_cycles": 29,
+      "timestamp": "2026-07-31T19:20:17.870887+00:00",
+      "exit_reason": "take-profit: $219.02 >= $218.51"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_price": 148.48,
+      "exit_price": 144.76,
+      "quantity": 23.62129059,
+      "pnl_pct": -0.0251,
+      "pnl_dollar": -87.87,
+      "fees_paid": 0.0,
+      "entry_cycle": 6504,
+      "exit_cycle": 6518,
+      "duration_cycles": 14,
+      "timestamp": "2026-07-31T19:21:54.090660+00:00",
+      "exit_reason": "stop-loss: $144.76 <= $145.90"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "entry_price": 220.15,
+      "exit_price": 216.2,
+      "quantity": 23.36662211,
+      "pnl_pct": -0.0179,
+      "pnl_dollar": -92.3,
+      "fees_paid": 0.0,
+      "entry_cycle": 6518,
+      "exit_cycle": 6534,
+      "duration_cycles": 16,
+      "timestamp": "2026-07-31T19:35:55.020776+00:00",
+      "exit_reason": "stop-loss: $216.20 <= $216.29"
+    },
+    {
+      "symbol": "APT/USDT",
+      "entry_price": 11.31,
+      "exit_price": 11.44,
+      "quantity": 370.12592439,
+      "pnl_pct": 0.0115,
+      "pnl_dollar": 48.12,
+      "fees_paid": 0.0,
+      "entry_cycle": 6413,
+      "exit_cycle": 6534,
+      "duration_cycles": 121,
+      "timestamp": "2026-07-31T19:36:33.655735+00:00",
+      "exit_reason": "manual_ADIR: Bull(HOLD,32%,evq=0.66) vs Bear(HO",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "NVDA",
+      "entry_price": 144.87,
+      "exit_price": 145.07,
+      "quantity": 22.57127024,
+      "pnl_pct": 0.0014,
+      "pnl_dollar": 4.51,
+      "fees_paid": 0.0,
+      "entry_cycle": 6534,
+      "exit_cycle": 6535,
+      "duration_cycles": 1,
+      "timestamp": "2026-07-31T19:37:25.750252+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
+    },
+    {
+      "symbol": "GOOGL",
+      "entry_price": 357.01,
+      "exit_price": 357.04,
+      "quantity": 11.5113357,
+      "pnl_pct": -0.0001,
+      "pnl_dollar": -0.35,
+      "fees_paid": 0.7,
+      "entry_cycle": 6553,
+      "exit_cycle": 6554,
+      "duration_cycles": 1,
+      "timestamp": "2026-07-31T19:56:59.003882+00:00",
+      "exit_reason": "manual_[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,ev",
+      "signal_action": "BUY",
+      "override_source": "portfolio_optimizer"
     }
   ],
   "_signal_history": [
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:01:51+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0616,
-      "timestamp": "2026-07-31T18:01:51+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,28%,evq=0.28) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0504,
-      "timestamp": "2026-07-31T18:01:51+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0319,
-      "timestamp": "2026-07-31T18:01:51+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "BUY",
-      "confidence": 0.31,
-      "reason": "ADIR: Bull(HOLD,55%,evq=0.78) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(BUY,43%)",
-      "position_pct": 0.0775,
-      "timestamp": "2026-07-31T18:01:51+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0256,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.49,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,85%,evq=0.85) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.1225,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,45%,evq=0.72) vs Bear(HOLD,45%,evq=0.72) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0563,
-      "timestamp": "2026-07-31T18:02:36+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:03:29+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.36,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.81) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0906,
-      "timestamp": "2026-07-31T18:03:29+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:03:29+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,30%)",
-      "position_pct": 0.0521,
-      "timestamp": "2026-07-31T18:03:29+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.15,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.42)",
-      "position_pct": 0.0372,
-      "timestamp": "2026-07-31T18:03:29+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:04:17+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "ADIR: Bull(BUY,45%,evq=0.72) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(BUY,40%)",
-      "position_pct": 0.0627,
-      "timestamp": "2026-07-31T18:04:17+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:04:17+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:04:17+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:04:17+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:05:03+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,25%,evq=0.53) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0457,
-      "timestamp": "2026-07-31T18:05:03+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0488,
-      "timestamp": "2026-07-31T18:05:03+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:05:03+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:05:03+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.62,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.30)",
-      "position_pct": 0.1562,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "ADIR: Bull(HOLD,45%,evq=0.72) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0616,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.35) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,58%)",
-      "position_pct": 0.0576,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:05:54+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0398,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.26,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,48%,evq=0.64) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0659,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,30%)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.61) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0529,
-      "timestamp": "2026-07-31T18:06:41+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,30%)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.14,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0347,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.32,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,55%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0807,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.6,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,60%)",
-      "position_pct": 0.15,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:07:31+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.61) vs Bear(HOLD,42%,evq=0.61) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0525,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0492,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.26,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.42) vs Bear(HOLD,42%,evq=0.71) \u2192 RISK(HOLD,54%)",
-      "position_pct": 0.066,
-      "timestamp": "2026-07-31T18:08:23+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "SELL",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,40%)",
-      "position_pct": 0.0568,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.08,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0196,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0467,
-      "timestamp": "2026-07-31T18:09:09+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.08,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0201,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "SELL",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.60) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.051,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.7,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,70%)",
-      "position_pct": 0.175,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.6,
-      "reason": "ADIR: Bull(HOLD,85%,evq=0.93) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(BUY,60%)",
-      "position_pct": 0.15,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0509,
-      "timestamp": "2026-07-31T18:09:57+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.3,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,evq=0.76) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.074,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.11,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0277,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0525,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:10:54+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0398,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.35)",
-      "position_pct": 0.0576,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.51) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,34%)",
-      "position_pct": 0.0541,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:11:42+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.15,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.56) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.038,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.14,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,28%,evq=0.64) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0361,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0319,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0492,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:12:33+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.39,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,62%,evq=0.81) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0977,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0319,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.25,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.42) vs Bear(HOLD,42%,evq=0.61) \u2192 RISK(HOLD,44%)",
-      "position_pct": 0.0622,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:13:29+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,32%,evq=0.66) vs Bear(HOLD,32%,evq=0.32) \u2192 RISK(BUY,59%)",
-      "position_pct": 0.0539,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.61) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0577,
-      "timestamp": "2026-07-31T18:14:20+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.31,
-      "reason": "ADIR: Bull(HOLD,55%,evq=0.78) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(BUY,43%)",
-      "position_pct": 0.0775,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.08,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.43) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0198,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.61) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0564,
-      "timestamp": "2026-07-31T18:15:10+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0467,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:16:05+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0467,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0447,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.38,
-      "reason": "ADIR: Bull(HOLD,65%,evq=0.73) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(BUY,48%)",
-      "position_pct": 0.0962,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0402,
-      "timestamp": "2026-07-31T18:16:45+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0512,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.36,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.091,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:17:30+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:18:19+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0256,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0256,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.32,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,evq=0.76) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.08,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.38,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.81) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0958,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0528,
-      "timestamp": "2026-07-31T18:19:08+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0326,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.62,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.20) \u2192 RISK(BUY,62%)",
-      "position_pct": 0.1562,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:19:52+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.17,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.66) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0428,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.22,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.62,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.30)",
-      "position_pct": 0.1562,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0398,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(BUY,42%,evq=0.71) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,34%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:20:47+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.09,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.35) \u2192 RISK(BUY,48%)",
-      "position_pct": 0.0233,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0398,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:21:40+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.35) \u2192 RISK(BUY,58%)",
-      "position_pct": 0.0576,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0629,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0319,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0528,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "BUY",
-      "confidence": 0.26,
-      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(HOLD,30%,evq=0.47) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0641,
-      "timestamp": "2026-07-31T18:22:26+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,45%)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0515,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "BUY",
-      "confidence": 0.14,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0347,
-      "timestamp": "2026-07-31T18:23:19+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.30) \u2192 RISK(BUY,52%)",
-      "position_pct": 0.0246,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0398,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:24:13+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.17,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.66) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0419,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:24:57+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.11,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.51) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0278,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.18,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,35%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0449,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0509,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:25:49+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0556,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.24,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.06,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0319,
-      "timestamp": "2026-07-31T18:26:37+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,45%,evq=0.72) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0583,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.11,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.51) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0278,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.24,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,42%,evq=0.71) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0604,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.15,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0375,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:27:27+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.71) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0529,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(BUY,43%)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "SELL",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(SELL,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.45) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0461,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:28:22+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.78,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,78%)",
-      "position_pct": 0.1938,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "SELL",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0506,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0326,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,32%,evq=0.66) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,31%)",
-      "position_pct": 0.0419,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:29:07+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0629,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0256,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0515,
-      "timestamp": "2026-07-31T18:29:54+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,30%)",
-      "position_pct": 0.0521,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.11,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(HOLD,30%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0283,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,42%,evq=0.61) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0529,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "BUY",
-      "confidence": 0.5,
-      "reason": "ADIR: Bull(HOLD,85%,evq=0.93) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(BUY,52%)",
-      "position_pct": 0.1248,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "ATOM/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:30:57+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0402,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "ATOM/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:31:57+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.058,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "XRP/USDT",
-      "action": "HOLD",
-      "confidence": 0.13,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.35) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,50%)",
-      "position_pct": 0.0316,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.15,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.42)",
-      "position_pct": 0.0372,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:32:50+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0463,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0479,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0616,
-      "timestamp": "2026-07-31T18:33:53+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.40)",
-      "position_pct": 0.0516,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.22,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.40)",
-      "position_pct": 0.0549,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "BUY",
-      "confidence": 0.33,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,58%,evq=0.79) \u2192 Bear(HOLD,35%,evq=0.60)",
-      "position_pct": 0.0824,
-      "timestamp": "2026-07-31T18:34:33+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0477,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0468,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:35:23+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.66,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,76%,evq=0.88) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.1638,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.15,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0375,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.23,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.61) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,36%)",
-      "position_pct": 0.0577,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "HOLD",
-      "confidence": 0.26,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,50%,evq=0.75) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0658,
-      "timestamp": "2026-07-31T18:36:17+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.55) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.0532,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "BUY",
-      "confidence": 0.35,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,55%,evq=0.78) \u2192 Bear(HOLD,40%,evq=0.45)",
-      "position_pct": 0.087,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,42%,evq=0.71) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0538,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:37:06+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.16,
-      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(HOLD,30%,evq=0.57) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0401,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.68,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,82%,evq=0.91) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.1712,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "MSFT",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.0457,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "SELL",
-      "confidence": 0.21,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(SELL,40%,evq=0.70) \u2192 RISK(HOLD,32%)",
-      "position_pct": 0.0528,
-      "timestamp": "2026-07-31T18:37:53+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
-      "position_pct": 0.0558,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.19,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "BUY",
-      "confidence": 0.13,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0326,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.19,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
-      "position_pct": 0.0473,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.22,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.35) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,48%)",
-      "position_pct": 0.0544,
-      "timestamp": "2026-07-31T18:38:59+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.25,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.50)",
-      "position_pct": 0.0625,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "SELL",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,45%,evq=0.62) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.05,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.31,
-      "reason": "ADIR: Bull(HOLD,55%,evq=0.78) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(BUY,43%)",
-      "position_pct": 0.0775,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,32%,evq=0.66) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,31%)",
-      "position_pct": 0.0419,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "BUY",
-      "confidence": 0.14,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0355,
-      "timestamp": "2026-07-31T18:39:56+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0511,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "BUY",
-      "confidence": 0.21,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0514,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "LINK/USDT",
-      "action": "HOLD",
-      "confidence": 0.11,
-      "reason": "ADIR: Bull(HOLD,2%,evq=0.41) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,34%)",
-      "position_pct": 0.0275,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.12,
-      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,36%)",
-      "position_pct": 0.0302,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "APT/USDT",
-      "action": "HOLD",
-      "confidence": 0.7,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,70%)",
-      "position_pct": 0.175,
-      "timestamp": "2026-07-31T18:40:53+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0437,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "BUY",
-      "confidence": 0.2,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(BUY,43%)",
-      "position_pct": 0.0503,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "HOLD",
-      "confidence": 0.24,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,40%,evq=0.53)",
-      "position_pct": 0.06,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "AAPL",
-      "action": "HOLD",
-      "confidence": 0.17,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,30%,evq=0.47)",
-      "position_pct": 0.0432,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "TSLA",
-      "action": "HOLD",
-      "confidence": 0.18,
-      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,30%)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:41:49+00:00"
-    },
-    {
-      "symbol": "SOL/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:42:38+00:00"
-    },
-    {
-      "symbol": "BTC/USDT",
-      "action": "BUY",
-      "confidence": 0.18,
-      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
-      "position_pct": 0.0454,
-      "timestamp": "2026-07-31T18:42:38+00:00"
-    },
-    {
-      "symbol": "ETH/USDT",
-      "action": "HOLD",
-      "confidence": 0.1,
-      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
-      "position_pct": 0.0255,
-      "timestamp": "2026-07-31T18:42:38+00:00"
-    },
-    {
-      "symbol": "NVDA",
-      "action": "BUY",
-      "confidence": 0.4,
-      "reason": "ADIR: Bull(BUY,65%,evq=0.82) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(BUY,55%)",
-      "position_pct": 0.0993,
-      "timestamp": "2026-07-31T18:42:38+00:00"
-    },
     {
       "symbol": "AAPL",
       "action": "HOLD",
@@ -6762,6 +4548,2310 @@
       "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
       "position_pct": 0.0514,
       "timestamp": "2026-07-31T19:13:19+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.42) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0476,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.43) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(HOLD,34%)",
+      "position_pct": 0.0547,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.38)",
+      "position_pct": 0.0563,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0468,
+      "timestamp": "2026-07-31T19:14:04+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.11,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.51) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,34%)",
+      "position_pct": 0.0271,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.35)",
+      "position_pct": 0.0576,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.14,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0355,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.14,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0355,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:14:51+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "SELL",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(SELL,50%,evq=0.57) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0685,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.17,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.56) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0433,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.24,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.06,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0514,
+      "timestamp": "2026-07-31T19:15:42+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "SELL",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.50) vs Bear(SELL,40%,evq=0.70) \u2192 RISK(SELL,45%)",
+      "position_pct": 0.0583,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.72) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0653,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.24,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0604,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.50) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0556,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:16:30+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.25,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0629,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.38)",
+      "position_pct": 0.0391,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.24,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.62) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0611,
+      "timestamp": "2026-07-31T19:17:19+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.66) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0455,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.61) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0541,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:18:23+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.68)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0468,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,55%,evq=0.78) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0775,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,25%,evq=0.45)",
+      "position_pct": 0.0525,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0521,
+      "timestamp": "2026-07-31T19:19:08+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0457,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.24,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.72) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0604,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.51) vs Bear(HOLD,20%,evq=0.53) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(BUY,42%,evq=0.61) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0529,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:20:00+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.72,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,72%)",
+      "position_pct": 0.1812,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.42)",
+      "position_pct": 0.0537,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0511,
+      "timestamp": "2026-07-31T19:20:55+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.15,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,28%,evq=0.64) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0385,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0641,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.41,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,68%,evq=0.74) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.1015,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.24,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.55) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0589,
+      "timestamp": "2026-07-31T19:21:44+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.56) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0527,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0514,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.38,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.81) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0958,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,38%,evq=0.69) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,31%)",
+      "position_pct": 0.0498,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:22:27+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.35) \u2192 RISK(BUY,58%)",
+      "position_pct": 0.0576,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(BUY,42%,evq=0.43) vs Bear(HOLD,35%,evq=0.60) \u2192 RISK(HOLD,42%)",
+      "position_pct": 0.0507,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:23:27+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(HOLD,32%,evq=0.56) vs Bear(HOLD,32%,evq=0.56) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.04,
+      "timestamp": "2026-07-31T19:24:16+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(BUY,52%,evq=0.66) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,31%)",
+      "position_pct": 0.0681,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.25) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0491,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.61,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,40%,evq=0.35)",
+      "position_pct": 0.1525,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:25:00+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "ADIR: Bull(BUY,45%,evq=0.62) vs Bear(HOLD,35%,evq=0.40) \u2192 RISK(BUY,48%)",
+      "position_pct": 0.0686,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.32) \u2192 RISK(BUY,55%)",
+      "position_pct": 0.0411,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:25:53+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.30)",
+      "position_pct": 0.0781,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.36,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,65%,evq=0.73) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0889,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0468,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.53) \u2192 RISK(BUY,40%)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.55) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.032,
+      "timestamp": "2026-07-31T19:26:41+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.47) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0205,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0192,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "SELL",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0506,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0468,
+      "timestamp": "2026-07-31T19:27:31+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0569,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.35) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0466,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0256,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:28:28+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.14,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0355,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.35)",
+      "position_pct": 0.0544,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0558,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.51) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0389,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.50) vs Bear(HOLD,35%,evq=0.50) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,30%)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:29:26+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.72) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0653,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "ADIR: Bull(HOLD,55%,evq=0.78) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0735,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.058,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:30:05+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0256,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.50) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.67,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,68%)",
+      "position_pct": 0.1687,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(HOLD,42%,evq=0.71) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,36%)",
+      "position_pct": 0.0569,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,55%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0728,
+      "timestamp": "2026-07-31T19:31:03+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0512,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.25,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0616,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.7,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.15) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,70%)",
+      "position_pct": 0.175,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:31:49+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,evq=0.76) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.074,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.42)",
+      "position_pct": 0.0657,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0332,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0509,
+      "timestamp": "2026-07-31T19:32:40+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0192,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(HOLD,52%,evq=0.76) vs Bear(HOLD,20%,evq=0.53) \u2192 RISK(BUY,48%)",
+      "position_pct": 0.0769,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.72) \u2192 Bear(HOLD,35%,evq=0.40)",
+      "position_pct": 0.0725,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.57) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:33:52+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0543,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.55)",
+      "position_pct": 0.0482,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "BUY",
+      "confidence": 0.62,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.20) \u2192 RISK(BUY,62%)",
+      "position_pct": 0.1562,
+      "timestamp": "2026-07-31T19:34:47+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.24,
+      "reason": "ADIR: Bull(HOLD,42%,evq=0.71) vs Bear(SELL,40%,evq=0.53) \u2192 RISK(BUY,43%)",
+      "position_pct": 0.0604,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.25,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.61) \u2192 Bear(HOLD,35%,evq=0.42)",
+      "position_pct": 0.0619,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.032,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0256,
+      "timestamp": "2026-07-31T19:35:38+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.14,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0355,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0375,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0457,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "BUY",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,32%,evq=0.66) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,31%)",
+      "position_pct": 0.0419,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:36:33+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.45) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0421,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "HOLD",
+      "confidence": 0.14,
+      "reason": "ADIR: Bull(HOLD,28%,evq=0.64) vs Bear(HOLD,28%,evq=0.64) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.035,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "SELL",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(SELL,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0506,
+      "timestamp": "2026-07-31T19:37:25+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,evq=0.66) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0681,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,58%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0871,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "APT/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:38:14+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.24,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,47%)",
+      "position_pct": 0.0596,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0454,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.25,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.71) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0616,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(BUY,50%,evq=0.50) vs Bear(HOLD,40%,evq=0.53) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0512,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "DOGE/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:39:19+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.40) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0204,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.31,
+      "reason": "ADIR: Bull(BUY,58%,evq=0.69) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,34%)",
+      "position_pct": 0.0776,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "DOGE/USDT",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0398,
+      "timestamp": "2026-07-31T19:40:18+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0641,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "DOGE/USDT",
+      "action": "BUY",
+      "confidence": 0.62,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.20) \u2192 RISK(BUY,62%)",
+      "position_pct": 0.1562,
+      "timestamp": "2026-07-31T19:41:10+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0509,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0556,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,42%,evq=0.64) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0529,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.3,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,55%,evq=0.78) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0761,
+      "timestamp": "2026-07-31T19:42:14+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,55%,evq=0.55) vs Bear(HOLD,40%,evq=0.62) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0532,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,65%,evq=0.73) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0873,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.14,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0347,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:43:01+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.34,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,62%,evq=0.71) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0856,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.61) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0577,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.51) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0389,
+      "timestamp": "2026-07-31T19:43:51+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.15,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0387,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,42%,evq=0.71) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0529,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.35)",
+      "position_pct": 0.0544,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,85%,evq=0.93) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.032,
+      "timestamp": "2026-07-31T19:44:50+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0401,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(SELL,40%,evq=0.45) \u2192 RISK(BUY,48%)",
+      "position_pct": 0.0525,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.50) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0449,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0479,
+      "timestamp": "2026-07-31T19:45:39+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,50%,evq=0.50) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0477,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0319,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,38%,evq=0.59) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0504,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,30%,evq=0.55) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0192,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.40) vs Bear(HOLD,35%,evq=0.50) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0486,
+      "timestamp": "2026-07-31T19:46:30+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.05,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,30%,evq=0.65) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0446,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.11,
+      "reason": "ADIR: Bull(HOLD,1%,evq=0.51) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,34%)",
+      "position_pct": 0.0271,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.42) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0515,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,25%,evq=0.53) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0328,
+      "timestamp": "2026-07-31T19:47:24+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,35%,evq=0.68) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0326,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.2,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0509,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0447,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.38)",
+      "position_pct": 0.0391,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "HOLD",
+      "confidence": 0.16,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.53) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0392,
+      "timestamp": "2026-07-31T19:48:11+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.33,
+      "reason": "ADIR: Bull(HOLD,62%,evq=0.81) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,36%)",
+      "position_pct": 0.0831,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(SELL,40%,evq=0.45) \u2192 RISK(BUY,48%)",
+      "position_pct": 0.0525,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "HOLD",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.60) vs Bear(HOLD,35%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0437,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,52%,evq=0.66) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0681,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0514,
+      "timestamp": "2026-07-31T19:49:10+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0503,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.30)",
+      "position_pct": 0.0575,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.50) vs Bear(HOLD,20%,evq=0.53) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0256,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.11,
+      "reason": "ADIR: Bull(HOLD,22%,evq=0.61) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0277,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.09,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.43) \u2192 RISK(HOLD,40%)",
+      "position_pct": 0.0216,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.23,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.35) vs Bear(HOLD,40%,evq=0.45) \u2192 RISK(HOLD,35%)",
+      "position_pct": 0.0563,
+      "timestamp": "2026-07-31T19:50:16+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.23,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,38%,evq=0.69) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0563,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.27,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.72) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.068,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,38%,evq=0.69) vs Bear(HOLD,38%,evq=0.69) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0475,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,38%,evq=0.69) vs Bear(HOLD,38%,evq=0.69) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0475,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,18%,evq=0.49) vs Bear(HOLD,20%,evq=0.50) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0253,
+      "timestamp": "2026-07-31T19:51:22+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.2,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0492,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.17,
+      "reason": "ADIR: Bull(HOLD,28%,evq=0.64) vs Bear(HOLD,40%,evq=0.42) \u2192 RISK(BUY,46%)",
+      "position_pct": 0.0421,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "ADIR: Bull(HOLD,25%,evq=0.62) vs Bear(HOLD,35%,evq=0.57) \u2192 RISK(HOLD,30%)",
+      "position_pct": 0.0326,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.68) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0473,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.08,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,35%,evq=0.50) \u2192 RISK(HOLD,32%)",
+      "position_pct": 0.0201,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.26,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0639,
+      "timestamp": "2026-07-31T19:52:25+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.18,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.57) vs Bear(HOLD,20%,evq=0.53) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0457,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "ETH/USDT",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.62) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0326,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "SOL/USDT",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "ADIR: Bull(HOLD,35%,evq=0.68) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,33%)",
+      "position_pct": 0.0463,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,48%,evq=0.74) \u2192 Bear(HOLD,35%,evq=0.50)",
+      "position_pct": 0.0716,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,40%,evq=0.70) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0549,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "DOGE/USDT",
+      "action": "HOLD",
+      "confidence": 0.1,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.57) vs Bear(HOLD,20%,evq=0.60) \u2192 RISK(HOLD,10%)",
+      "position_pct": 0.0255,
+      "timestamp": "2026-07-31T19:53:33+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.35,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.81) \u2192 Bear(HOLD,40%,evq=0.62)",
+      "position_pct": 0.0875,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.36,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,62%,evq=0.81) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.089,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.35)",
+      "position_pct": 0.0544,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.65,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,85%,evq=0.93) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.1625,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "META",
+      "action": "HOLD",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,52%,evq=0.52) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0469,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "AMZN",
+      "action": "HOLD",
+      "confidence": 0.22,
+      "reason": "ADIR: Bull(HOLD,15%,evq=0.48) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(HOLD,38%)",
+      "position_pct": 0.0558,
+      "timestamp": "2026-07-31T19:55:43+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,35%,evq=0.40)",
+      "position_pct": 0.0516,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.22,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,42%,evq=0.64) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.054,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.29,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,45%,evq=0.62) \u2192 Bear(HOLD,35%,evq=0.35)",
+      "position_pct": 0.0721,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.6,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,65%,evq=0.82) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.15,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "META",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0479,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "AMZN",
+      "action": "HOLD",
+      "confidence": 0.18,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(BUY,55%,evq=0.55) \u2192 Bear(HOLD,35%,evq=0.60)",
+      "position_pct": 0.0457,
+      "timestamp": "2026-07-31T19:56:52+00:00"
+    },
+    {
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,38%,evq=0.59) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0481,
+      "timestamp": "2026-07-31T20:00:09+00:00"
+    },
+    {
+      "symbol": "META",
+      "action": "BUY",
+      "confidence": 0.19,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.60) \u2192 Bear(HOLD,40%,evq=0.53)",
+      "position_pct": 0.0467,
+      "timestamp": "2026-07-31T20:00:09+00:00"
+    },
+    {
+      "symbol": "NVDA",
+      "action": "BUY",
+      "confidence": 0.13,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,25%,evq=0.55) \u2192 Bear(HOLD,30%,evq=0.47)",
+      "position_pct": 0.0335,
+      "timestamp": "2026-07-31T20:00:09+00:00"
+    },
+    {
+      "symbol": "MSFT",
+      "action": "BUY",
+      "confidence": 0.16,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.58) \u2192 Bear(HOLD,30%,evq=0.57)",
+      "position_pct": 0.0403,
+      "timestamp": "2026-07-31T20:00:09+00:00"
+    },
+    {
+      "symbol": "TSLA",
+      "action": "BUY",
+      "confidence": 0.21,
+      "reason": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,35%,evq=0.57) \u2192 Bear(HOLD,40%,evq=0.40)",
+      "position_pct": 0.0516,
+      "timestamp": "2026-07-31T20:00:09+00:00"
+    },
+    {
+      "symbol": "BTC/USDT",
+      "action": "BUY",
+      "confidence": 0.36,
+      "reason": "ADIR: Bull(HOLD,62%,evq=0.81) vs Bear(HOLD,40%,evq=0.60) \u2192 RISK(BUY,46%)",
+      "position_pct": 0.089,
+      "timestamp": "2026-07-31T20:00:09+00:00"
     }
   ],
   "_committee": {
@@ -6837,9 +6927,9 @@
         "accuracy": 0.45
       },
       "SOL/USDT:BUY": {
-        "correct": 0,
-        "total": 3,
-        "accuracy": 0.0
+        "correct": 1,
+        "total": 5,
+        "accuracy": 0.2
       },
       "ETH/USDT:BUY": {
         "correct": 2,
@@ -6847,8 +6937,8 @@
         "accuracy": 1.0
       },
       "NVDA:SELL": {
-        "correct": 3,
-        "total": 3,
+        "correct": 4,
+        "total": 4,
         "accuracy": 1.0
       },
       "TSLA:BUY": {
@@ -6858,8 +6948,13 @@
       },
       "NVDA:BUY": {
         "correct": 0,
-        "total": 1,
+        "total": 2,
         "accuracy": 0.0
+      },
+      "APT/USDT:SELL": {
+        "correct": 1,
+        "total": 1,
+        "accuracy": 1.0
       }
     },
     "risk_limits": {
@@ -6953,8 +7048,8 @@
       "action": "SELL"
     },
     "SOL/USDT:BUY": {
-      "correct": 0,
-      "total": 3,
+      "correct": 1,
+      "total": 5,
       "symbol": "SOL/USDT",
       "action": "BUY"
     },
@@ -6965,8 +7060,8 @@
       "action": "BUY"
     },
     "NVDA:SELL": {
-      "correct": 3,
-      "total": 3,
+      "correct": 4,
+      "total": 4,
       "symbol": "NVDA",
       "action": "SELL"
     },
@@ -6978,17 +7073,23 @@
     },
     "NVDA:BUY": {
       "correct": 0,
-      "total": 1,
+      "total": 2,
       "symbol": "NVDA",
       "action": "BUY"
+    },
+    "APT/USDT:SELL": {
+      "correct": 1,
+      "total": 1,
+      "symbol": "APT/USDT",
+      "action": "SELL"
     }
   },
-  "_accuracy_total": 101,
-  "_accuracy_correct": 48,
+  "_accuracy_total": 106,
+  "_accuracy_correct": 51,
   "_sl_tp_levels": {
     "SUI/USDT": {
-      "stop_loss": 2.233265770475252,
-      "take_profit": 2.3134684590494956,
+      "stop_loss": 2.15,
+      "take_profit": 2.49,
       "entry_price": 2.26,
       "qty": 2013.27433628,
       "highest_price": 2.26,
@@ -6997,124 +7098,125 @@
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "atr": 0.00891140984158267,
-      "atr_mult": 3.0
-    },
-    "META": {
-      "stop_loss": 620.8853341446984,
-      "take_profit": 643.7893317106032,
-      "entry_price": 628.52,
-      "qty": 0.98666126,
-      "highest_price": 628.52,
-      "cycle_opened": 6218,
-      "trailing_stop_pct": 0.02,
-      "trailing_activation": 0.015,
-      "max_position_cycles": 0,
-      "position_stop_pct": 0.05,
-      "atr": 2.5448886184338706,
-      "atr_mult": 3.0
-    },
-    "AAPL": {
-      "stop_loss": 234.99027963819444,
-      "take_profit": 244.87150697475087,
-      "entry_price": 238.28402208371324,
-      "qty": 47.61142245,
-      "highest_price": 239.41,
-      "cycle_opened": 6464,
-      "trailing_stop_pct": 0.02,
-      "trailing_activation": 0.015,
-      "max_position_cycles": 0,
-      "position_stop_pct": 0.05,
-      "portfolio_weight": 0.03531495872130449,
-      "atr": 1.097914148506271,
-      "atr_mult": 3.0
-    },
-    "XRP/USDT": {
-      "stop_loss": 0.7358878340417986,
-      "take_profit": 0.7782243319164031,
-      "entry_price": 0.7500000000000001,
-      "qty": 20418.181954,
-      "highest_price": 0.7500000000000001,
-      "cycle_opened": 6415,
-      "trailing_stop_pct": 0.02,
-      "trailing_activation": 0.015,
-      "max_position_cycles": 0,
-      "position_stop_pct": 0.05,
-      "atr": 0.004704055319400497,
-      "atr_mult": 3.0
+      "atr": 0.0,
+      "atr_mult": 0
     },
     "APT/USDT": {
-      "stop_loss": 11.169275549047097,
-      "take_profit": 11.591448901905814,
+      "stop_loss": 10.74,
+      "take_profit": 12.44,
       "entry_price": 11.310000000000002,
-      "qty": 440.98335518,
-      "highest_price": 11.45,
+      "qty": 70.85743079,
+      "highest_price": 11.35,
       "cycle_opened": 6413,
       "trailing_stop_pct": 0.02,
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "atr": 0.04690815031763536,
-      "atr_mult": 3.0
+      "atr": 0.0,
+      "atr_mult": 0
     },
-    "MSFT": {
-      "stop_loss": 519.8567465757206,
-      "take_profit": 540.1710927984197,
-      "entry_price": 526.6281953166203,
-      "qty": 26.45438116,
-      "highest_price": 529.09,
-      "cycle_opened": 6463,
+    "GOOGL": {
+      "stop_loss": 345.263586496929,
+      "take_profit": 380.5028563030169,
+      "entry_price": 357.010009765625,
+      "qty": 6.61080016,
+      "highest_price": 357.1199951171875,
+      "cycle_opened": 6553,
       "trailing_stop_pct": 0.02,
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "portfolio_weight": 0.0784458154506438,
-      "atr": 2.2571495802998927,
+      "atr": 3.9154744228986584,
       "atr_mult": 3.0
     },
-    "SOL/USDT": {
-      "stop_loss": 207.94871105965345,
-      "take_profit": 218.5125778806931,
-      "entry_price": 211.47,
-      "qty": 41.47860394,
-      "highest_price": 213.2,
-      "cycle_opened": 6487,
+    "AAPL": {
+      "stop_loss": 296.9684057167191,
+      "take_profit": 334.98350717007753,
+      "entry_price": 309.6401062011719,
+      "qty": 15.17891225,
+      "highest_price": 309.6401062011719,
+      "cycle_opened": 6555,
       "trailing_stop_pct": 0.02,
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "portfolio_weight": 0.13707442748091606,
-      "atr": 1.1737629801155158,
+      "portfolio_weight": 0.04699029680365296,
+      "atr": 4.223900161484274,
+      "atr_mult": 3.0
+    },
+    "META": {
+      "stop_loss": 532.4887123839243,
+      "take_profit": 608.9625166384016,
+      "entry_price": 557.97998046875,
+      "qty": 8.42301384,
+      "highest_price": 557.97998046875,
+      "cycle_opened": 6555,
+      "trailing_stop_pct": 0.02,
+      "trailing_activation": 0.015,
+      "max_position_cycles": 0,
+      "position_stop_pct": 0.05,
+      "portfolio_weight": 0.04699029680365296,
+      "atr": 8.497089361608586,
       "atr_mult": 3.0
     },
     "NVDA": {
-      "stop_loss": 145.89900898006766,
-      "take_profit": 153.64198203986464,
-      "entry_price": 148.48,
-      "qty": 23.62129059,
-      "highest_price": 149.2,
-      "cycle_opened": 6504,
+      "stop_loss": 193.88422648977576,
+      "take_profit": 217.57154335833908,
+      "entry_price": 201.77999877929688,
+      "qty": 16.20489365,
+      "highest_price": 201.77999877929688,
+      "cycle_opened": 6555,
       "trailing_stop_pct": 0.02,
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "portfolio_weight": 0.03514719626168225,
-      "atr": 0.8603303399774446,
+      "portfolio_weight": 0.032736502347417804,
+      "atr": 2.6319240965070363,
+      "atr_mult": 3.0
+    },
+    "MSFT": {
+      "stop_loss": 445.4632693997135,
+      "take_profit": 506.63849415955735,
+      "entry_price": 465.8550109863281,
+      "qty": 8.56426451,
+      "highest_price": 465.8550109863281,
+      "cycle_opened": 6555,
+      "trailing_stop_pct": 0.02,
+      "trailing_activation": 0.015,
+      "max_position_cycles": 0,
+      "position_stop_pct": 0.05,
+      "portfolio_weight": 0.03992592592592595,
+      "atr": 6.797247195538207,
+      "atr_mult": 3.0
+    },
+    "TSLA": {
+      "stop_loss": 298.96499874683803,
+      "take_profit": 337.93496222312075,
+      "entry_price": 311.9549865722656,
+      "qty": 16.53923853,
+      "highest_price": 311.9549865722656,
+      "cycle_opened": 6555,
+      "trailing_stop_pct": 0.02,
+      "trailing_activation": 0.015,
+      "max_position_cycles": 0,
+      "position_stop_pct": 0.05,
+      "portfolio_weight": 0.0516329185520362,
+      "atr": 4.329995941809189,
       "atr_mult": 3.0
     },
     "BTC/USDT": {
-      "stop_loss": 83104.80792089272,
-      "take_profit": 87096.88415821454,
-      "entry_price": 84435.5,
-      "qty": 0.05607321,
-      "highest_price": 84435.5,
-      "cycle_opened": 6506,
+      "stop_loss": 62021.19194079647,
+      "take_profit": 64898.81611840707,
+      "entry_price": 62980.4,
+      "qty": 0.07937973,
+      "highest_price": 62980.4,
+      "cycle_opened": 6555,
       "trailing_stop_pct": 0.02,
       "trailing_activation": 0.015,
       "max_position_cycles": 0,
       "position_stop_pct": 0.05,
-      "portfolio_weight": 0.0473,
-      "atr": 443.5640263690905,
+      "portfolio_weight": 0.08488983050847454,
+      "atr": 319.736019734512,
       "atr_mult": 3.0
     }
   },
@@ -7122,73 +7224,73 @@
     "BTC/USDT": {
       "regime": "trending_down",
       "confidence": 0.85,
-      "thesis": "downtrend (ADX=90, slope=-0.0013)",
+      "thesis": "downtrend (ADX=75, slope=-0.0017)",
       "symbol": "unknown",
-      "price": 84435.07,
+      "price": 62974.9,
       "indicators": {
-        "adx": 90.5,
-        "bb_width": 0.0308,
-        "ma_slope": -0.001271,
-        "volume_ratio": 1.07,
+        "adx": 75.0,
+        "bb_width": 0.0387,
+        "ma_slope": -0.001726,
+        "volume_ratio": 0.78,
         "structure": "mixed",
-        "return_5d": 0.002,
-        "return_10d": -0.0072,
-        "return_20d": -0.0168,
-        "return_40d": -0.0151
+        "return_5d": 0.0036,
+        "return_10d": -0.0149,
+        "return_20d": -0.0267,
+        "return_40d": -0.0165
       }
     },
     "ETH/USDT": {
-      "regime": "trending_down",
-      "confidence": 0.9,
-      "thesis": "downtrend (ADX=70, slope=-0.0007), strong downtrend",
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
       "symbol": "unknown",
-      "price": 4213.27,
+      "price": 4120.78,
       "indicators": {
-        "adx": 70.4,
-        "bb_width": 0.0224,
-        "ma_slope": -0.000703,
-        "volume_ratio": 0.87,
-        "structure": "strong_downtrend",
-        "return_5d": -0.0027,
-        "return_10d": -0.0104,
-        "return_20d": -0.0191,
-        "return_40d": -0.0014
+        "adx": 32.1,
+        "bb_width": 0.0256,
+        "ma_slope": 0.001086,
+        "volume_ratio": 0.71,
+        "structure": "mixed",
+        "return_5d": -0.0138,
+        "return_10d": -0.0063,
+        "return_20d": 0.0003,
+        "return_40d": -0.018
       }
     },
     "SOL/USDT": {
-      "regime": "volatile",
-      "confidence": 0.6,
-      "thesis": "low volatility range (tight Bollinger bands), volatility spike (0.43% vs 0.13% avg)",
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
       "symbol": "unknown",
-      "price": 213.2,
+      "price": 216.48,
       "indicators": {
-        "adx": 2.7,
-        "bb_width": 0.019,
-        "ma_slope": -0.000398,
-        "volume_ratio": 0.86,
+        "adx": 27.1,
+        "bb_width": 0.026,
+        "ma_slope": -0.00129,
+        "volume_ratio": 1.28,
         "structure": "mixed",
-        "return_5d": 0.0173,
-        "return_10d": 0.005,
-        "return_20d": 0.0068,
-        "return_40d": 0.0167
+        "return_5d": 0.0052,
+        "return_10d": 0.0024,
+        "return_20d": -0.0048,
+        "return_40d": 0.0109
       }
     },
     "NVDA": {
-      "regime": "ranging",
-      "confidence": 0.6,
-      "thesis": "low volatility range (tight Bollinger bands)",
+      "regime": "bullish",
+      "confidence": 0.75,
+      "thesis": "across-tf advance (5d=+1.6%, 20d=+4.6%), strong uptrend",
       "symbol": "unknown",
-      "price": 148.41,
+      "price": 201.25,
       "indicators": {
-        "adx": 4.9,
-        "bb_width": 0.0203,
-        "ma_slope": 0.000339,
-        "volume_ratio": 0.84,
-        "structure": "uptrend",
-        "return_5d": -0.0013,
-        "return_10d": -0.004,
-        "return_20d": -0.0109,
-        "return_40d": -0.0237
+        "adx": 4.4,
+        "bb_width": 0.0614,
+        "ma_slope": 0.002321,
+        "volume_ratio": 0.79,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0163,
+        "return_10d": 0.0401,
+        "return_20d": 0.0461,
+        "return_40d": -0.0452
       }
     },
     "SPY": {
@@ -7210,57 +7312,57 @@
       }
     },
     "AAPL": {
-      "regime": "volatile",
-      "confidence": 0.6,
-      "thesis": "low volume consolidation, volatility spike (0.35% vs 0.13% avg)",
+      "regime": "trending_down",
+      "confidence": 0.85,
+      "thesis": "downtrend (ADX=64, slope=-0.0089)",
       "symbol": "unknown",
-      "price": 237.61,
+      "price": 309.8699951171875,
       "indicators": {
-        "adx": 45.7,
-        "bb_width": 0.0135,
-        "ma_slope": -0.000377,
-        "volume_ratio": 0.59,
+        "adx": 63.5,
+        "bb_width": 0.2009,
+        "ma_slope": -0.008876,
+        "volume_ratio": 1.2,
         "structure": "mixed",
-        "return_5d": 0.0081,
-        "return_10d": 0.0001,
-        "return_20d": -0.0004,
-        "return_40d": -0.0037
+        "return_5d": 0.031,
+        "return_10d": -0.0697,
+        "return_20d": -0.0881,
+        "return_40d": -0.0715
       }
     },
     "MSFT": {
-      "regime": "ranging",
-      "confidence": 0.6,
-      "thesis": "low volatility range (tight Bollinger bands)",
+      "regime": "trending_up",
+      "confidence": 0.85,
+      "thesis": "uptrend (ADX=49, slope=0.0097)",
       "symbol": "unknown",
-      "price": 527.61,
+      "price": 465.3399963378906,
       "indicators": {
-        "adx": 9.2,
-        "bb_width": 0.0116,
-        "ma_slope": -7.7e-05,
-        "volume_ratio": 1.13,
+        "adx": 48.9,
+        "bb_width": 0.2615,
+        "ma_slope": 0.009656,
+        "volume_ratio": 0.57,
         "structure": "mixed",
-        "return_5d": 0.0038,
-        "return_10d": -0.002,
-        "return_20d": 0.0013,
-        "return_40d": -0.0064
+        "return_5d": 0.0036,
+        "return_10d": 0.0156,
+        "return_20d": 0.1792,
+        "return_40d": 0.2082
       }
     },
     "TSLA": {
-      "regime": "ranging",
-      "confidence": 0.6,
-      "thesis": "strong uptrend",
+      "regime": "trending_up",
+      "confidence": 0.9,
+      "thesis": "uptrend (ADX=80, slope=0.0017), strong uptrend",
       "symbol": "unknown",
-      "price": 307.0,
+      "price": 311.6000061035156,
       "indicators": {
-        "adx": 66.5,
-        "bb_width": 0.018,
-        "ma_slope": 0.000299,
-        "volume_ratio": 1.18,
+        "adx": 79.7,
+        "bb_width": 0.0491,
+        "ma_slope": 0.001691,
+        "volume_ratio": 0.62,
         "structure": "strong_uptrend",
-        "return_5d": -0.0019,
-        "return_10d": -0.0065,
-        "return_20d": -0.0132,
-        "return_40d": -0.0186
+        "return_5d": 0.0071,
+        "return_10d": 0.0132,
+        "return_20d": 0.0296,
+        "return_40d": 0.0037
       }
     },
     "XRP/USDT": {
@@ -7345,7 +7447,7 @@
         "adx": NaN,
         "bb_width": 0.0,
         "ma_slope": 0.0,
-        "volume_ratio": 0.77,
+        "volume_ratio": 0.73,
         "structure": "mixed",
         "return_5d": 0.0,
         "return_10d": 0.0,
@@ -7462,21 +7564,21 @@
       }
     },
     "APT/USDT": {
-      "regime": "bullish",
-      "confidence": 0.65,
-      "thesis": "low volatility range (tight Bollinger bands), across-tf advance (5d=+1.1%, 20d=+0.8%), volume confirming 1.4x avg",
+      "regime": "ranging",
+      "confidence": 0.5,
+      "thesis": "mixed signals, no clear regime",
       "symbol": "unknown",
-      "price": 11.45,
+      "price": 11.38,
       "indicators": {
-        "adx": 1.2,
-        "bb_width": 0.0153,
-        "ma_slope": -0.000193,
-        "volume_ratio": 1.44,
+        "adx": 52.2,
+        "bb_width": 0.0194,
+        "ma_slope": 0.000778,
+        "volume_ratio": 1.03,
         "structure": "mixed",
-        "return_5d": 0.0115,
-        "return_10d": 0.0088,
-        "return_20d": 0.0079,
-        "return_40d": 0.0124
+        "return_5d": 0.0009,
+        "return_10d": 0.008,
+        "return_20d": 0.0026,
+        "return_40d": 0.0044
       }
     },
     "ADA/USDT": {
@@ -7571,38 +7673,38 @@
     },
     "AMZN": {
       "regime": "ranging",
-      "confidence": 0.5,
-      "thesis": "mixed signals, no clear regime",
+      "confidence": 0.6,
+      "thesis": "strong uptrend",
       "symbol": "unknown",
-      "price": 251.41,
+      "price": 271.67999267578125,
       "indicators": {
-        "adx": 25.5,
-        "bb_width": 0.0119,
-        "ma_slope": 0.000396,
-        "volume_ratio": 0.81,
-        "structure": "mixed",
-        "return_5d": -0.0013,
-        "return_10d": 0.0031,
-        "return_20d": -0.0041,
-        "return_40d": -0.003
+        "adx": 3.5,
+        "bb_width": 0.2906,
+        "ma_slope": 0.013935,
+        "volume_ratio": 0.88,
+        "structure": "strong_uptrend",
+        "return_5d": 0.0033,
+        "return_10d": 0.1444,
+        "return_20d": 0.1915,
+        "return_40d": 0.1609
       }
     },
     "META": {
-      "regime": "ranging",
-      "confidence": 0.6,
-      "thesis": "low volatility range (tight Bollinger bands)",
+      "regime": "trending_down",
+      "confidence": 0.85,
+      "thesis": "downtrend (ADX=67, slope=-0.0033)",
       "symbol": "unknown",
-      "price": 628.52,
+      "price": 557.0,
       "indicators": {
-        "adx": 6.7,
-        "bb_width": 0.012,
-        "ma_slope": 0.000396,
-        "volume_ratio": 0.81,
+        "adx": 67.1,
+        "bb_width": 0.1709,
+        "ma_slope": -0.003348,
+        "volume_ratio": 0.62,
         "structure": "mixed",
-        "return_5d": -0.0013,
-        "return_10d": 0.0031,
-        "return_20d": -0.0042,
-        "return_40d": -0.003
+        "return_5d": 0.0141,
+        "return_10d": 0.0451,
+        "return_20d": -0.0582,
+        "return_40d": -0.0765
       }
     },
     "CORN": {
@@ -7714,21 +7816,21 @@
       }
     },
     "GOOGL": {
-      "regime": "ranging",
-      "confidence": 0.5,
-      "thesis": "mixed signals, no clear regime",
+      "regime": "trending_up",
+      "confidence": 0.9,
+      "thesis": "uptrend (ADX=34, slope=0.0044), strong uptrend",
       "symbol": "unknown",
-      "price": 219.98,
+      "price": 357.1499938964844,
       "indicators": {
-        "adx": 29.4,
-        "bb_width": 0.012,
-        "ma_slope": 0.000395,
-        "volume_ratio": 0.81,
-        "structure": "mixed",
-        "return_5d": -0.0013,
-        "return_10d": 0.0031,
-        "return_20d": -0.0042,
-        "return_40d": -0.003
+        "adx": 33.9,
+        "bb_width": 0.1096,
+        "ma_slope": 0.00438,
+        "volume_ratio": 0.97,
+        "structure": "strong_uptrend",
+        "return_5d": 0.008,
+        "return_10d": 0.0755,
+        "return_20d": 0.0698,
+        "return_40d": 0.1182
       }
     }
   }

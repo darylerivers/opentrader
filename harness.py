@@ -1457,8 +1457,10 @@ class OpenTraderHarness:
         """Record cycle state to disk."""
         bal = self.exchange.get_balance()
 
-        # Update equity curve
+        # Update equity curve (capped to bound RAM — ~5.5h at 10s/cycle)
         self.equity_curve.append(bal.total_value)
+        if len(self.equity_curve) > 2000:
+            del self.equity_curve[:-2000]
         if bal.total_value > self.peak_value:
             self.peak_value = bal.total_value
         dd = (
@@ -1467,6 +1469,8 @@ class OpenTraderHarness:
             else 0
         )
         self.drawdowns.append(dd)
+        if len(self.drawdowns) > 2000:
+            del self.drawdowns[:-2000]
 
         # Build positions list
         prices = {}
@@ -1549,6 +1553,17 @@ class OpenTraderHarness:
                 "llama_available": bool(getattr(self, "_llama_available", False)),
                 "llama_host": self.llama_host,
                 "debate_model": self.debate_model,
+            },
+            data_provenance={
+                "mode": "live" if self.live_mode else "synthetic",
+                "exchange": getattr(self.exchange, "name", ""),
+                "synthetic_data": bool(self.synthetic_data),
+                "note": (
+                    "Real market prices (kraken crypto + finnhub stocks) — "
+                    "paper settlement."
+                    if not self.synthetic_data and self.live_mode
+                    else "SYNTHETIC random-walk prices — NOT real market data."
+                ),
             },
             metrics={
                 "cycle_time_s": round(cycle_time, 3),
