@@ -1,49 +1,49 @@
 {
   "source": "simulated",
-  "generated_at": "2026-07-30T16:03:20.529943+00:00",
-  "regime": "Late Cycle",
+  "generated_at": "2026-07-31T16:52:27.886156+00:00",
+  "regime": "Risk-On",
   "indicators": [
     {
       "name": "Fed Funds Rate",
-      "value": 2.71,
+      "value": 0.26,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "10Y Treasury",
-      "value": 2.13,
+      "value": 2.08,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "2Y Treasury",
-      "value": 2.71,
+      "value": 0.5,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "10Y-2Y Spread",
-      "value": -0.58,
+      "value": 1.82,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "Unemployment",
-      "value": 4.2,
+      "value": 3.8,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "CPI (YoY)",
-      "value": 3.3,
+      "value": 1.9,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     },
     {
       "name": "GDP Growth",
-      "value": 2.6,
+      "value": 1.8,
       "unit": "%",
-      "date": "2026-07-30"
+      "date": "2026-07-31"
     }
   ]
 }

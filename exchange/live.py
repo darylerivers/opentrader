@@ -217,6 +217,43 @@ class LiveExchange(ExchangeBase):
             logger.debug(f"Failed to fetch ticker for {symbol}: {e}")
             return self._price_cache.get(symbol)
 
+    def get_prices_batch(self, symbols: list) -> dict:
+        result = {}
+        remaining = list(symbols)
+
+        for sym in list(remaining):
+            if sym in self._price_cache:
+                result[sym] = self._price_cache[sym]
+                remaining.remove(sym)
+
+        if not remaining:
+            return result
+
+        try:
+            markets = [self._ensure_market_symbol(s) for s in remaining]
+            self._rate_limit_wait()
+            tickers = self._ccxt.fetch_tickers(markets) if self._ccxt and hasattr(self._ccxt, "fetch_tickers") else {}
+            for sym in list(remaining):
+                market = self._ensure_market_symbol(sym)
+                ticker = tickers.get(market, {})
+                price = ticker.get("last") or ticker.get("close") or ticker.get("bid")
+                if price:
+                    result[sym] = price
+                    self._price_cache[sym] = price
+                    remaining.remove(sym)
+        except Exception as e:
+            logger.debug(f"Batch fetch_tickers failed: {e}")
+
+        for sym in remaining:
+            try:
+                price = self.get_current_price(sym)
+                if price:
+                    result[sym] = price
+            except Exception:
+                pass
+
+        return result
+
     def _fetch_ticker_live(self, symbol: str) -> Optional[float]:
         """Fetch current order book midpoint (bid-ask avg) for execution pricing.
         Kraken's ticker endpoint returns stale data (~$3 behind order book).
@@ -260,11 +297,21 @@ class LiveExchange(ExchangeBase):
                 timestamp=datetime.now(timezone.utc).isoformat(),
                 raw={"error": "no price data"},
             )
+        # Simulate slippage: buys fill higher (ask), sells fill lower (bid)
+        _slippage = 0.0005  # 5 bps half-spread
+        if side.upper() == "BUY":
+            fill_price = fill_price * (1.0 + _slippage)
+        else:
+            fill_price = fill_price * (1.0 - _slippage)
         cost = fill_price * quantity
 
+        fee_schedule = self.get_fee_schedule(symbol)
+        is_buy = side.upper() == "BUY"
+        fee = fee_schedule.buy_cost(cost) if is_buy else fee_schedule.sell_cost(cost)
+
         if side.upper() == "BUY":
-            if cost > self._cash:
-                affordable_qty = self._cash / fill_price
+            if cost + fee > self._cash:
+                affordable_qty = (self._cash - fee) / fill_price
                 if affordable_qty <= 0:
                     return OrderResult(
                         order_id=f"live_{self._order_counter}",
@@ -275,7 +322,8 @@ class LiveExchange(ExchangeBase):
                     )
                 quantity = affordable_qty
                 cost = fill_price * quantity
-            self._cash -= cost
+                fee = fee_schedule.buy_cost(cost)
+            self._cash -= cost + fee
             self._positions[symbol] = self._positions.get(symbol, 0) + quantity
             self._cost_basis[symbol] = self._cost_basis.get(symbol, 0) + cost
 
@@ -290,7 +338,7 @@ class LiveExchange(ExchangeBase):
                     raw={"error": "no position"},
                 )
             quantity = min(quantity, pos)
-            self._cash += fill_price * quantity
+            self._cash += fill_price * quantity - fee
             self._positions[symbol] -= quantity
             if self._positions[symbol] <= 0:
                 del self._positions[symbol]
@@ -301,7 +349,8 @@ class LiveExchange(ExchangeBase):
         fill = {
             "order_id": order_id, "symbol": symbol, "side": side,
             "quantity": round(quantity, 8), "price": fill_price,
-            "cost": round(cost, 2), "cash_after": round(self._cash, 2),
+            "cost": round(cost, 2), "fee": round(fee, 2),
+            "cash_after": round(self._cash, 2),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self._fills.append(fill)

@@ -1,17 +1,17 @@
 {
-  "name": "Ptolemy",
-  "generation": 9,
+  "name": "Mercator",
+  "generation": 1,
   "season": 1,
-  "last_review": "2026-07-30T17:01:49.247915+00:00",
-  "total_reviews": 10,
-  "current_score": 0.563,
-  "decision": "maintain",
-  "recommendation": "Performance stable. Keep current schedule.",
+  "last_review": "2026-07-31T17:23:38.508496+00:00",
+  "total_reviews": 14,
+  "current_score": 0.182,
+  "decision": "reduce",
+  "recommendation": "Mercator-1 underperforming. Reduce trading window to 4h max, lower position size to 3%, run training scenario analysis.",
   "model_performance": {
-    "return_pct": 99884.07,
-    "win_rate": 0.25,
-    "efficiency": 0.07,
-    "avg_confidence": 0.74
+    "return_pct": -53.63,
+    "win_rate": 0.24,
+    "efficiency": 0.43,
+    "avg_confidence": 0.24
   },
   "schedule_history": [
     {
@@ -73,6 +73,30 @@
       "score": 0.563,
       "decision": "maintain",
       "version": "Ptolemy-9"
+    },
+    {
+      "timestamp": "2026-07-30T23:10:08.638596+00:00",
+      "score": 0.149,
+      "decision": "reduce",
+      "version": "Ptolemy-9"
+    },
+    {
+      "timestamp": "2026-07-31T05:21:48.077200+00:00",
+      "score": 0.116,
+      "decision": "reduce",
+      "version": "Ptolemy-9"
+    },
+    {
+      "timestamp": "2026-07-31T11:23:19.381753+00:00",
+      "score": 0.096,
+      "decision": "iterate",
+      "version": "Mercator-1"
+    },
+    {
+      "timestamp": "2026-07-31T17:23:38.508496+00:00",
+      "score": 0.182,
+      "decision": "reduce",
+      "version": "Mercator-1"
     }
   ]
 }

@@ -1,92 +1,94 @@
 {
   "papers": [
     {
-      "title": "$\u03c0\\mathbf{R}^2$: Reactive Real-time Flow Policies",
-      "summary": "Generalist manipulation policies increasingly take the form of action-chunking flow policies built on large pretrained backbones. Such chunks run open-loop, so the policy cannot react to sensory input arriving mid-execution, sacrificing \\emph{reactivity}. Replanning more often would restore it, but the perception-to-action pipeline (a large backbone plus multiple denoising steps) is too slow: this \\emph{latency} forbids frequent replanning and leaves committed actions stale, making such policies ill-suited for dynamic, closed-loop control. We present $\u03c0\\mathbf{R}^2$, which makes these policies reactive and real-time while retaining large backbones, expressive multi-modal policies, and multi-action prediction. Built on the per-position noise schedule of diffusion forcing, $\u03c0\\mathbf{R}^2$ co...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26055v1",
+      "title": "Hierarchical Spatio-Temporal Transformer for Coherent Emergency Department Forecasting",
+      "summary": "Emergency Departments (EDs) are critical access points in healthcare systems, yet they face persistent pressure from unpredictable patient demand, seasonal surges, and non-urgent visits. Effective ED planning requires forecasts at multiple decision-making levels: hospitals need local demand estimates for staffing and bed management, regions require forecasts to coordinate healthcare units, and national authorities need system-wide projections for capacity planning. However, most existing approaches forecast ED demand independently at a single level, ignoring the hierarchy linking hospitals, regions, and national systems. This can produce incoherent predictions, where hospital-level forecasts do not aggregate consistently to regional or national demand. We propose HierSTT, a hierarchical Tr...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27106v1",
       "categories": [
-        "cs.RO",
+        "cs.LG"
+      ],
+      "_extracted": true
+    },
+    {
+      "title": "Rainfall is rough",
+      "summary": "We propose a new approach to model rainfall by combining heterogeneous data sources at different time scales. Continuous arrivals of rain cells are incorporated into a Hawkes process formalism that encompasses the classical Bartlett-Lewis and Neyman-Scott models, thereby providing a more flexible representation of clustering. Analysis of high frequency rainfall data (at the minute scale over several years) indicates that critical Hawkes processes with heavy-tailed power-law kernels yield a superior fit relative to classical models and alternative kernel specifications. Scaling arguments inspired by Jaisson and Rosenbaum (2016) imply that aggregated rainfall at coarse time scales converges to a rough fractional process with Hurst exponent close to zero. This prediction is supported by empir...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27099v1",
+      "categories": [
+        "stat.AP",
+        "q-fin.ST",
+        "stat.CO"
+      ],
+      "_extracted": true
+    },
+    {
+      "title": "When Do Learned Diffusion Proposals Help Constraint Solving? A Controlled Study on Continuous Algebraic Systems",
+      "summary": "Solving a continuous algebraic constraint system requires two decisions: which values satisfy the constraints, and which structural augmentation renders an unsolvable system solvable. Classical solvers answer the first well and the second only by enumeration. On that discrete decision, a candidate-conditioned repair ranker choosing among K augmentations reaches the exhaustive-search ceiling at a fraction of the calls, outperforming random (0.997 vs 0.236 balanced nonlinear menu accuracy; p < 10^-70; 0.982 +/- 0.006 across seeds) and beating a budget-matched per-candidate probe on accuracy and cost. MARC turns such a system into a factor graph, over which a graph-neural diffusion denoiser proposes assignments, descent on an exact computer-algebra energy polishes them, and an exact symbolic ...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27169v1",
+      "categories": [
+        "cs.LG"
+      ],
+      "_extracted": true
+    },
+    {
+      "title": "Skillful forecasting of offshore winds from satellite scatterometer constellations",
+      "summary": "Accurate intraday forecasts of offshore wind are becoming increasingly important for power system operation and the integration of growing shares of offshore wind energy. Operational forecasts rely predominantly on numerical weather prediction (NWP), which is not optimized for lead times of minutes to hours, where initial-condition accuracy dominates forecast skill. Although satellite scatterometer observations are routinely assimilated into NWP, they have not previously been used directly for forecasting. Here we present WindCastNet, the first satellite-based nowcasting framework for offshore wind speed and direction, introducing a new paradigm for intraday forecasting that learns from spatiotemporally irregular satellite observations. WindCastNet predicts offshore wind fields from observ...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27152v1",
+      "categories": [
+        "cs.LG"
+      ],
+      "_extracted": true
+    },
+    {
+      "title": "Do You Really Need to Pretrain Q-Functions for Online RL Fine-Tuning?",
+      "summary": "Pre-training followed by fine-tuning has become the dominant recipe for learning performant policies, and in value-based reinforcement learning (RL) this raises a natural question: given a pretrained policy, should the Q-function be pretrained on offline data too? Conventional wisdom suggests it should, but recent results show that online RL with a randomly-initialized Q-function can result in highly performant and reliable policies without needing to pretrain the Q-function. In this paper, we systematically study whether pretraining the Q-function actually helps when fine-tuning on top of a pretrained base policy. We find, surprisingly, that naive Q-function pretraining often provides little benefit over random initialization. We show this stems from a fundamental mismatch: the Q-function...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27203v1",
+      "categories": [
+        "cs.LG"
+      ],
+      "_extracted": true
+    },
+    {
+      "title": "Can AI agents conduct open-ended AI research? Early evidence from two case studies",
+      "summary": "Forecasts of explosive AI progress hinge on AI agents automating AI research. But evidence on whether agents can carry out open-ended AI research is thin. Current evaluations either test agents on narrow, verifiable tasks, which excludes open-ended research, or submit AI-generated papers to blind peer review, which is overstretched, stochastic, and suffers from poor review quality. We introduce a third way to measure progress towards AI R\\&D automation. An agent takes on the central, open-ended research question of a high-quality unpublished paper, and the paper's original authors grade its output. We call these shadow evaluations. We ran shadow evaluations on two unpublished NeurIPS 2026 submissions, giving frontier agents six days and thousands of dollars of compute. The agents completed...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27191v1",
+      "categories": [
         "cs.AI",
+        "cs.CY",
         "cs.LG"
       ],
       "_extracted": true
     },
     {
-      "title": "Testing Microbiome Community Differences in High Dimensions: A Bootstrap Approach for Compositional Data",
-      "summary": "Understanding differences in microbial community structure is critical for uncovering risk factors and mechanisms underlying diseases such as colorectal cancer and preterm birth. Microbiome data present unique statistical challenges because they are compositional in nature, violating assumptions of many classical inference procedures. We propose an empirical bootstrap framework that enables robust hypothesis testing for equality of microbial community means across groups, including two-sample, paired, and multi-sample settings. The method accounts for the simplex structure of microbiome data and provides valid inference even in high-dimensional regimes. Through applications to two large-scale studies, fecal microbiota in colorectal adenoma and cancer patients, and vaginal microbiota in pre...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26022v1",
-      "categories": [
-        "stat.ME",
-        "stat.AP"
-      ],
-      "_extracted": true
-    },
-    {
-      "title": "Generator-Aligned Representation Interfaces for Diagnostic Soft Equivariance",
-      "summary": "Exact-equivariant architectures typically encode prescribed group actions in specialized operators, which can complicate their reuse with generic backbones and across data modalities. We introduce the Generator-Aligned Representation Interface (GARI), a representation-level design principle that exposes selected transformation generators to a generic sequence backbone through aligned canonical and generator-induced views. We formalize the resulting behavior using a probe-specific soft-equivariance residual defined over declared data and transformation distributions. This framework distinguishes representation consistency from task robustness and exact equivariance, and localizes residual mismatch to interface construction, shared stream processing, and terminal fusion. We instantiate the i...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.25988v1",
-      "categories": [
-        "cs.LG"
-      ],
-      "_extracted": true
-    },
-    {
-      "title": "Reinformed Dreamer: An Asymmetric World Model Efficiently Trained through Latent Guidance",
-      "summary": "Much like humans benefit from guidance while learning, reinforcement learning algorithms may benefit from additional supervision beyond rewards. Leveraging additional information during training to learn better representations and behaviors has been the focus of asymmetric reinforcement learning. This learning paradigm has proven effective under partial observability when additional state information is available, but also under full observability when more refined state information is available. Focusing on model-based reinforcement learning, we study the effect of asymmetric learning on observation representations and on privileged information representations. First, we identify a limitation in the privileged information representations learned by an asymmetric model-based algorithm know...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26040v1",
+      "title": "Inverse Learning of Latent Risk-Neutral Densities from Irregular Option Quotes",
+      "summary": "Accurate option prices do not imply accurate recovery of the latent risk-neutral density. We study this distinction with two complementary benchmarks. A controlled benchmark exposes simulator-truth densities for latent evaluation, while a chronological NIFTY benchmark tests only held-out market prices. A two-component lognormal mixture has the lowest aggregate price, $L^1$, Wasserstein, and fixed-tail errors on the synthetic benchmark. Learned operators retain narrower strengths: DeepONet reduces 1% quantile and variance error by 39.0% and 34.6% relative to the mixture, and a quote transformer reduces $L^1$ by 16.4% on the structurally misspecified Merton family. A numerical conditioning analysis explains why these rankings can differ: after enforcing mass and forward constraints, 95 of 12...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27188v1",
       "categories": [
         "cs.LG",
-        "stat.ML"
+        "q-fin.CP",
+        "q-fin.PR",
+        "q-fin.ST"
       ],
       "_extracted": true
     },
     {
-      "title": "Reinforcement Learning for Code Optimization",
-      "summary": "RL for code correctness is now established: have the model generate a program, run it against hidden test cases, and reward solutions that pass. Extending this to code optimization seems straightforward: just add execution time to the reward. But in practice, once timing drives the reward, small problems in measurement noise, reward sparsity, or GRPO instability overwhelm the signal and make RL fail: generated solutions are barely faster, and more of them can fail. We make execution time learnable through three stages: (1) how code is tested, by building DMC-Optim with large optimization tests and a calibrated sandbox; (2) how speed is turned into reward, by composing correctness and speed in the RL environment and using an offline simulator to predict the most promising configurations; an...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.25970v1",
+      "title": "Cost-Sensitive Conformal Prediction and Human-in-the-Loop Abstention for Imbalanced High-Stakes Decision Support: A Multi-Domain Benchmark",
+      "summary": "High-stakes decision systems in credit scoring, fraud detection, healthcare, and industrial safety require reliable uncertainty quantification under severe class imbalance and asymmetric error costs. Standard marginal conformal prediction (CP) provides valid overall coverage guarantees; however, we show that it severely under-covers rare, costly minority classes, with minority-class coverage dropping to as low as 0.5% on certain datasets. To characterize and address this limitation, we conduct a comprehensive benchmark comparing marginal CP, class-conditional (Mondrian) CP, and cost-controlled abstention mechanisms across 15 real-world imbalanced tabular datasets, 7 classification models, 3 probability calibration techniques, and 10 random seeds, resulting in 3,150 experimental runs. Our r...",
+      "published": "2026-07-29",
+      "pdf_url": "https://arxiv.org/pdf/2607.27143v1",
       "categories": [
         "cs.LG",
         "cs.AI"
       ],
       "_extracted": true
-    },
-    {
-      "title": "Spend Experts Where You Are Unsure: Confidence-Adaptive Routing for Mixture-of-Experts LoRA",
-      "summary": "Mixture-of-Experts (MoE) variants of Low-Rank Adaptation (LoRA) route every token to a fixed number of experts $k$. Tokens differ in how uncertain the model is about them, so a single k over-spends on easy tokens and under-serves hard ones. We observe that the router's output distribution is already a per-token uncertainty signal: peaked mass indicates confidence, while a flat distribution indicates ambiguity. We introduce CARE (Confidence-Adaptive Routing of Experts), which admits experts in a nucleus fashion. Experts are activated in decreasing router weight until their cumulative mass reaches a threshold, with a small extension when the admitted experts disagree. A budget thermostat calibrates the threshold so that the average number of active experts matches any target. CARE is a drop-...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26052v1",
-      "categories": [
-        "cs.LG"
-      ],
-      "_extracted": true
-    },
-    {
-      "title": "VetClaw: An Edge-Cloud Multimodal Agentic System for Veterinary Disease Screening",
-      "summary": "We present VetClaw, an edge-cloud multimodal agentic system for early veterinary disease screening. VetClaw uses a camera module as an edge sensing device and sends captured images, together with optional symptom descriptions, to a server-hosted vision-language model for zero-shot disease classification. The system separates agent interaction from workflow orchestration: OpenClaw provides scheduling, tool access, user interaction, and notification services on the edge device, while LangGraph manages the stateful screening workflow, including input validation, image transmission, model invocation, safety checks, conditional routing, failure handling, and structured logging. This design moves beyond static image classification by enabling the system to collect visual evidence, invoke externa...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26042v1",
-      "categories": [
-        "cs.CV",
-        "cs.LG"
-      ],
-      "_extracted": true
-    },
-    {
-      "title": "Collaborative System Failure Prognostics via Federated Longitudinal-Survival Modeling",
-      "summary": "Time-to-event modeling provides a systematic framework for estimating time-dependent failure risk, reliability, and remaining useful life (RUL) from longitudinal condition monitoring data. However, applying these models to distributed prognostics remains challenging because sensor trajectories and failure-time records are often stored across organizations or operational sites and cannot be centrally pooled due to privacy or proprietary constraints. Moreover, the classical Cox proportional hazards model relies on a nonseparable partial likelihood involving global risk sets, making direct optimization difficult under standard federated learning protocols. This paper presents a federated longitudinal-survival modeling framework for collaborative system failure prognostics. The proposed framew...",
-      "published": "2026-07-28",
-      "pdf_url": "https://arxiv.org/pdf/2607.26038v1",
-      "categories": [
-        "cs.LG"
-      ],
-      "_extracted": true
     }
   ],
-  "fetched_at": 1785363417.7663257,
+  "fetched_at": 1785449830.0151317,
   "count": 8
 }

@@ -1,0 +1,17 @@
+[Unit]
+Description=GPU Sync - CPU-side multi-GPU orchestrator and request router
+After=network.target opentrader-llama-gpu1.service opentrader-llama-gpu0.service
+Wants=opentrader-llama-gpu1.service opentrader-llama-gpu0.service
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/usr/bin/python3 /home/mrc/opentrader/gpu_sync.py --port 5801 --backends 5802,5803 --health-interval 10
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

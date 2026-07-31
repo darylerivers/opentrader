@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenTrader MCP Server
+After=network.target
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/rocm_venv/bin/python3 /home/mrc/opentrader/mcp_server.py --port 8092 --exchange paper
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

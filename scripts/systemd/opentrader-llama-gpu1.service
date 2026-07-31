@@ -1,0 +1,17 @@
+[Unit]
+Description=LLM server GPU1 - Qwythos-9B-MTP (Genesis) on AMD RX 7900 GRE
+After=network.target
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/src/modelai-llama.cpp/build-wmma/bin/llama-server --model /home/mrc/models/qwythos-9b-mtp/Qwythos-9B-Claude-Mythos-5-1M-MTP-Q4_K_M.gguf --alias qwythos-9b-mtp --host 127.0.0.1 --port 5802 --ctx-size 16384 --cache-type-k q8_0 --cache-type-v q8_0 --jinja --parallel 4 --cont-batching --n-gpu-layers 99 --threads 8 --batch-size 4096 --ubatch-size 1024 --n-predict 2048 --reasoning off --spec-type none
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+Environment=LD_LIBRARY_PATH=/home/mrc/src/modelai-llama.cpp/build-wmma/bin:/opt/rocm/lib:/opt/rocm/hip/lib
+
+[Install]
+WantedBy=default.target

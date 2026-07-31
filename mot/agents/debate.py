@@ -25,7 +25,7 @@ from urllib.error import URLError
 
 logger = logging.getLogger("opentrader.debate")
 
-DEBATE_TIMEOUT = 300  # seconds per agent call (raised for 131K ctx llama-server)
+DEBATE_TIMEOUT = 600  # seconds per agent call (GPU1 27B model needs 10 min)
 
 import threading
 _API_SEMAPHORE = threading.Semaphore(2)

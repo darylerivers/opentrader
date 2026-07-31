@@ -62,3 +62,6 @@ data/fast_test/
 # Rust build artifacts
 exchange-engine/target/
 exchange_engine/
+*.bak
+data/paper_state.json.synthetic-era-bak
+*.bak-*

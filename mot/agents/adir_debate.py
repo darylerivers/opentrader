@@ -104,9 +104,9 @@ class AdirConfig:
     risk_temperature: float = 0.5
 
     # Max tokens per agent call
-    bull_max_tokens: int = 500
-    bear_max_tokens: int = 500
-    risk_max_tokens: int = 700
+    bull_max_tokens: int = 2000
+    bear_max_tokens: int = 2000
+    risk_max_tokens: int = 2000
 
     # Falsification: how many counter-evidence points the Bear must find
     falsification_rounds: int = 1
@@ -367,10 +367,16 @@ class AdirDebateEngine:
             "bear": (bear_host or self.llama_host).rstrip("/"),
             "risk": (risk_host or self.llama_host).rstrip("/"),
         }
-        if self.hosts["bull"] != self.llama_host or self.hosts["bear"] != self.llama_host or self.hosts["risk"] != self.llama_host:
+        if (
+            self.hosts["bull"] != self.llama_host
+            or self.hosts["bear"] != self.llama_host
+            or self.hosts["risk"] != self.llama_host
+        ):
             logger.info(
                 "ADIR dual-host routing: bull=%s bear=%s risk=%s",
-                self.hosts["bull"], self.hosts["bear"], self.hosts["risk"],
+                self.hosts["bull"],
+                self.hosts["bear"],
+                self.hosts["risk"],
             )
 
     def set_parent_engine(self, engine: Any) -> None:
@@ -406,7 +412,7 @@ class AdirDebateEngine:
         user_prompt: str,
         model: str,
         temperature: float = 0.5,
-        max_tokens: int = 400,
+        max_tokens: int = 2000,
         host: str = None,
     ) -> Optional[Dict[str, Any]]:
         """Call LLM via finetuned backend or direct API.

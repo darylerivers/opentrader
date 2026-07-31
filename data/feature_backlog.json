@@ -1153,8 +1153,47 @@
       "extracted_at": "2026-07-25T00:25:54Z",
       "status": "pending",
       "validated": false
+    },
+    {
+      "title": "rough volatility regime filter",
+      "rule": "IF 1m OHLCV Hurst exponent < 0.15 THEN reduce position size by 40%",
+      "type": "regime_detection",
+      "expected_impact": "+1.8% win rate",
+      "confidence": 0.82,
+      "implementation_effort": "moderate",
+      "paper_source": "Rainfall is rough",
+      "source": "arxiv_llm_extraction",
+      "extracted_at": "2026-07-31T13:56:31Z",
+      "status": "pending",
+      "validated": false
+    },
+    {
+      "title": "hierarchical volatility coherence check",
+      "rule": "IF 5m volatility > 3x 1h volatility AND 1h volatility > 3x 24h volatility THEN reject trade",
+      "type": "entry_filter",
+      "expected_impact": "+2.3% win rate",
+      "confidence": 0.76,
+      "implementation_effort": "trivial",
+      "paper_source": "Hierarchical Spatio-Temporal Transformer for Coherent Emergency Department Forecasting",
+      "source": "arxiv_llm_extraction",
+      "extracted_at": "2026-07-31T13:56:31Z",
+      "status": "pending",
+      "validated": false
+    },
+    {
+      "title": "multi-scale volatility regime switch",
+      "rule": "IF 1m Hurst < 0.15 AND 5m Hurst < 0.15 AND 1h Hurst > 0.25 THEN exit all positions",
+      "type": "exit_signal",
+      "expected_impact": "+1.5% win rate",
+      "confidence": 0.71,
+      "implementation_effort": "moderate",
+      "paper_source": "Rainfall is rough",
+      "source": "arxiv_llm_extraction",
+      "extracted_at": "2026-07-31T13:56:31Z",
+      "status": "pending",
+      "validated": false
     }
   ],
-  "updated_at": "2026-07-25T00:25:54Z",
-  "total_extracted": 78
+  "updated_at": "2026-07-31T13:56:31Z",
+  "total_extracted": 81
 }

@@ -1,102 +1,102 @@
 {
   "fear_greed": {
     "data": {
-      "value": 28,
-      "classification": "Fear",
-      "timestamp": "1785369600",
-      "time_until_update": "11583",
-      "yesterday_value": 29,
+      "value": 25,
+      "classification": "Extreme Fear",
+      "timestamp": "1785456000",
+      "time_until_update": "19937",
+      "yesterday_value": 28,
       "yesterday_classification": "Fear",
-      "change": -1
+      "change": -3
     },
-    "fetched_at": 1785444417.2552185
+    "fetched_at": 1785522463.2424629
   },
   "coingecko_trending": {
     "data": {
       "top_trending": [
         {
-          "name": "Moon Doge Coin",
-          "symbol": "MOONDOGECOIN",
-          "market_cap_rank": 785,
+          "name": "Ethena",
+          "symbol": "ENA",
+          "market_cap_rank": 77,
           "score": 0,
-          "thumb": "https://coin-images.coingecko.com/coins/images/102175181/standard/logo.png?1785432559"
+          "thumb": "https://coin-images.coingecko.com/coins/images/36530/standard/ethena.png?1711701436"
         },
         {
           "name": "Pudgy Penguins",
           "symbol": "PENGU",
-          "market_cap_rank": 110,
+          "market_cap_rank": 111,
           "score": 1,
           "thumb": "https://coin-images.coingecko.com/coins/images/52622/standard/PUDGY_PENGUINS_PENGU_PFP.png?1733809110"
         },
         {
-          "name": "GRVT Token",
-          "symbol": "GRVT",
-          "market_cap_rank": 635,
+          "name": "Solana",
+          "symbol": "SOL",
+          "market_cap_rank": 7,
           "score": 2,
-          "thumb": "https://coin-images.coingecko.com/coins/images/102172513/standard/grvt_400x400.jpg?1773653767"
+          "thumb": "https://coin-images.coingecko.com/coins/images/4128/standard/solana.png?1718769756"
         },
         {
-          "name": "Ethena",
-          "symbol": "ENA",
-          "market_cap_rank": 77,
+          "name": "Bitcoin",
+          "symbol": "BTC",
+          "market_cap_rank": 1,
           "score": 3,
-          "thumb": "https://coin-images.coingecko.com/coins/images/36530/standard/ethena.png?1711701436"
+          "thumb": "https://coin-images.coingecko.com/coins/images/1/standard/bitcoin.png?1696501400"
         },
         {
-          "name": "Cap",
-          "symbol": "CAP",
-          "market_cap_rank": 384,
+          "name": "XRP",
+          "symbol": "XRP",
+          "market_cap_rank": 6,
           "score": 4,
-          "thumb": "https://coin-images.coingecko.com/coins/images/102174107/standard/cap.jpg?1782391237"
+          "thumb": "https://coin-images.coingecko.com/coins/images/44/standard/xrp-symbol-white-128.png?1696501442"
         },
         {
-          "name": "Uniswap",
-          "symbol": "UNI",
-          "market_cap_rank": 33,
+          "name": "Ethereum",
+          "symbol": "ETH",
+          "market_cap_rank": 2,
           "score": 5,
-          "thumb": "https://coin-images.coingecko.com/coins/images/12504/standard/uniswap-logo.png?1720676669"
+          "thumb": "https://coin-images.coingecko.com/coins/images/279/standard/ethereum.png?1696501628"
         },
         {
-          "name": "Lorenzo Protocol",
-          "symbol": "BANK",
-          "market_cap_rank": 700,
+          "name": "Fake World Assets",
+          "symbol": "FWA",
+          "market_cap_rank": 870,
           "score": 6,
-          "thumb": "https://coin-images.coingecko.com/coins/images/55250/standard/lorenzo.jpg?1744963693"
+          "thumb": "https://coin-images.coingecko.com/coins/images/102174802/standard/fwa-logo.png?1784968252"
         }
       ],
       "count": 7
     },
-    "fetched_at": 1785444417.2552185
+    "fetched_at": 1785525164.937418
   },
   "coingecko_global": {
     "data": {
-      "total_market_cap_usd": 2296065396169.048,
-      "total_volume_24h_usd": 61068074717.56785,
-      "btc_dominance_pct": 56.59218389722357,
-      "eth_dominance_pct": 10.099787480965977,
-      "active_cryptocurrencies": 18072,
-      "market_cap_change_24h_pct": 1.9027776044255436
+      "total_market_cap_usd": 2248840757920.3374,
+      "total_volume_24h_usd": 69600418535.83545,
+      "btc_dominance_pct": 56.226382057496316,
+      "eth_dominance_pct": 10.032790886273425,
+      "active_cryptocurrencies": 18090,
+      "market_cap_change_24h_pct": -2.0490880003286236
     },
-    "fetched_at": 1785444417.2552185
+    "fetched_at": 1785525164.937418
   },
   "btc_stats": {
     "data": {
-      "price_usd": 64794,
-      "market_cap_usd": 1300143317919,
+      "price_usd": 63000,
+      "market_cap_usd": 1264026712891,
       "market_cap_rank": 1,
-      "total_volume_usd": 27509735777,
-      "price_change_24h_pct": 1.97,
-      "price_change_7d_pct": -0.02,
-      "price_change_30d_pct": 10.33,
+      "total_volume_usd": 30095617681,
+      "price_change_24h_pct": -2.76,
+      "price_change_7d_pct": -1.87,
+      "price_change_30d_pct": 4.81,
       "ath_usd": 126080,
       "ath_date": "2025-10-06",
-      "ath_change_pct": -48.6,
+      "ath_change_pct": -50.0,
       "atl_usd": 67.81,
-      "high_24h_usd": 65056,
-      "low_24h_usd": 63247,
-      "circulating_supply": 20063403.0,
+      "high_24h_usd": 65305,
+      "low_24h_usd": 62425,
+      "circulating_supply": 20063865.0,
       "max_supply": 21000000.0
     },
-    "fetched_at": 1785444417.2552185
+    "fetched_at": 1785525164.937418
   }
 }

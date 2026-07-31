@@ -1,0 +1,17 @@
+[Unit]
+Description=CodeSage MCP server (RAG for OpenTrader)
+After=network.target
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/.local/bin/codesage mcp serve /home/mrc/opentrader
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,17 @@
+[Unit]
+Description=LLM server GPU0 - Qwen2.5-7B-Instruct (fast/bear/risk) on NVIDIA RTX 3070
+After=network.target
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/src/modelai-llama.cpp/build-cuda/bin/llama-server --model /home/mrc/models/qwen2.5-7b-instruct/Qwen2.5-7B-Instruct-Q4_K_M.gguf --alias qwen2.5-7b-instruct --host 127.0.0.1 --port 5803 --ctx-size 16384 --cache-type-k q8_0 --cache-type-v q8_0 --jinja --parallel 4 --cont-batching --n-gpu-layers 99 --threads 8 --batch-size 4096 --ubatch-size 1024 --n-predict 2048 --reasoning off --spec-type none
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+Environment=LD_LIBRARY_PATH=/home/mrc/src/modelai-llama.cpp/build-cuda/bin:/opt/cuda/lib64
+
+[Install]
+WantedBy=default.target

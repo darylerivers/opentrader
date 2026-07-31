@@ -5,17 +5,17 @@
     "\u2705 Win rate 50% < 65% \u2192 training needed",
     "\u274c 18 examples < 20 \u2192 insufficient data",
     "\u2705 F&G 50 in [20,55] \u2192 moderate volatility",
-    "\u274c Hour 20 UTC outside windows \u2192 normal volume",
-    "\u2705 5815 cycles since last train >= 50",
+    "\u274c Hour 18 UTC outside windows \u2192 normal volume",
+    "\u2705 6461 cycles since last train >= 50",
     "\u26a0\ufe0f  Positions open \u2014 TP/SL active, no new entries during train"
   ],
   "metrics": {
     "win_rate": 0.5,
     "examples": 18,
     "fear_greed": 50,
-    "hour_utc": 20,
-    "cycles_since_train": 5815,
+    "hour_utc": 18,
+    "cycles_since_train": 6461,
     "has_positions": true
   },
-  "timestamp": "2026-07-30T20:05:10.762757+00:00"
+  "timestamp": "2026-07-31T18:32:50.830050+00:00"
 }

@@ -43,7 +43,9 @@ def _pgrep(pattern: str) -> list:
     try:
         result = subprocess.run(
             ["pgrep", "-f", pattern],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         if result.returncode == 0:
             return [int(p) for p in result.stdout.strip().split("\n") if p]
@@ -63,7 +65,9 @@ def check_lock() -> dict:
     try:
         r = subprocess.run(
             ["fuser", str(LOCKFILE)],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         for part in r.stdout.strip().split():
             try:
@@ -93,37 +97,20 @@ def check_lock() -> dict:
 
 
 def check_harness() -> dict:
-    """3b. SIGSTOP'd harness recovery. 3c. Dead harness restart."""
+    """3b. SIGSTOP'd harness recovery. 3c. Dead harness restart (systemd).
+
+    Since the harness now runs as a systemd user unit (Restart=always),
+    the watchdog no longer restarts it directly — it only resumes a
+    SIGSTOP'd harness (eval gate pauses it to free VRAM).
+    """
     result = {"harness_state": "absent", "harness_pid": None, "harness_restart": None}
 
     pids = _pgrep("harness.py")
     if not pids:
-        # 3c. Dead harness — try restart
+        # 3c. Dead harness — systemd Restart= handles relaunching. Only
+        # report; do not duplicate-restart (would fight systemd).
         result["harness_state"] = "dead"
-        if HARNESS_CMD.exists():
-            try:
-                cmd = HARNESS_CMD.read_text().strip()
-                logger.info(f"Restarting harness: {cmd}")
-                subprocess.Popen(
-                    f"setsid {cmd} >> {PROJECT / 'data' / 'harness.log'} 2>&1",
-                    shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                    cwd=str(PROJECT),
-                )
-                time.sleep(5)
-                new_pids = _pgrep("harness.py")
-                if new_pids:
-                    result["harness_state"] = "running"
-                    result["harness_pid"] = new_pids[0]
-                    result["harness_restart"] = f"restarted:{new_pids[0]}"
-                    logger.info(f"Harness restarted: PID {new_pids[0]}")
-                else:
-                    result["harness_restart"] = "failed:no_new_pid"
-                    logger.warning("Harness restart failed")
-            except Exception as e:
-                result["harness_restart"] = f"failed:{e}"
-                logger.warning(f"Harness restart error: {e}")
-        else:
-            logger.warning("No harness_cmd.txt — cannot restart")
+        result["harness_restart"] = "systemd-managed"
         return result
 
     # Harness is alive — check for SIGSTOP'd state
@@ -166,7 +153,8 @@ def check_scheduler() -> dict:
                 subprocess.run(
                     [PYTHON, "-m", "training.harness_scheduler", "auto"],
                     cwd=str(PROJECT),
-                    capture_output=True, timeout=600,
+                    capture_output=True,
+                    timeout=600,
                 )
                 result["scheduler"] = "stale_triggered"
                 logger.info("Scheduler auto tick completed")

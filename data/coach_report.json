@@ -1,38 +1,72 @@
 {
   "grade": "D",
-  "grade_reason": "Single-symbol concentration with only 25% win rate and no regime detection capability.",
+  "grade_reason": "The agent has generated significant losses on BTC, SOL, and ETH despite a high frequency of successful manual exits, indicating a critical disconnect between the ADIR model's predictions and the agent's actual execution logic.",
   "winning_patterns": [
-    "Quick scalps in tight $1-3 range on SOL/USDT when Bull signal >80%",
-    "Exiting before Bear consensus reaches 75%+ confidence",
-    "Holding through ADIR HOLD signals with evq < 0.45"
+    "Manual exits on SOL/USDT during early volatility spikes generated positive PnL before the ADIR model could intervene.",
+    "The ADIR model correctly identified a bullish HOLD signal for ETH/USDT at $4146.62, which was successfully exited via a trailing stop.",
+    "Manual exits on BTC/USDT occasionally captured minor moves before the ADIR model's aggressive HOLD signals caused drawdowns."
   ],
   "failure_patterns": [
-    "Entering trades without regime context (all 20 labeled 'unknown')",
-    "Over-concentration on single symbol SOL/USDT creating correlation risk",
-    "Manual exits dominating suggests signal confidence thresholds too low for automation"
+    "The ADIR model's 'Bull(HOLD)' signals are systematically ignored by the manual exit logic, leading to large unrealized losses on BTC and SOL.",
+    "The agent fails to exit losing positions on AAPL, NVDA, and TSLA entirely, resulting in 0% win rates and zero PnL.",
+    "Gate-skipped exits on BTC/USDT occurred precisely when the ADIR model was holding, suggesting the manual exit logic is overwriting the model's valid predictions."
   ],
   "symbol_advice": {
-    "SOL/USDT": "neutral",
-    "BTC/USDT": "hot",
-    "ETH/USDT": "hot"
+    "BTC/USDT": "cold",
+    "ETH/USDT": "hot",
+    "SOL/USDT": "cold",
+    "AAPL": "neutral",
+    "NVDA": "neutral",
+    "TSLA": "neutral",
+    "XRP/USDT": "neutral"
   },
-  "position_sizing": "decrease - reduce by 50% until win rate exceeds 40% and regime detection is functional",
+  "position_sizing": "decrease",
   "retrain_recommended": true,
-  "retrain_focus": "Prioritize regime classification training with crypto market state labels (trending/ranging/volatile), then diversify signal generation across BTC/ETH/SOL to reduce single-asset bias.",
-  "data_curation_advice": "Include: failed entries that were gate-skipped for analysis, trades during high volatility periods. Exclude: manual override trades from training set as they represent human judgment not model learning",
-  "confidence": 0.72,
-  "cycle": 5809,
-  "trades_reviewed": 20,
-  "win_rate": 25.0,
+  "retrain_focus": "Retrain the ADIR model to prioritize manual exit signals over HOLD signals, specifically teaching it that when the agent manually exits, the trade is closed and no further action is needed, while ensuring it respects trailing stops on ETH.",
+  "data_curation_advice": "Include all manual exit trades where the ADIR model predicted HOLD but the agent closed the position (e.g., BTC, SOL). Exclude trades where the agent used the trailing stop successfully (ETH) as they represent a different decision path.",
+  "confidence": 0.85,
+  "cycle": 6461,
+  "trades_reviewed": 50,
+  "win_rate": 30.0,
   "symbol_stats": {
-    "SOL/USDT": {
-      "pnl": 42.18000000000001,
+    "ETH/USDT": {
+      "pnl": 51.14,
       "wins": 5,
-      "count": 20
+      "count": 10
+    },
+    "NVDA": {
+      "pnl": 0.0,
+      "wins": 0,
+      "count": 6
+    },
+    "BTC/USDT": {
+      "pnl": -39.94,
+      "wins": 5,
+      "count": 8
+    },
+    "SOL/USDT": {
+      "pnl": -48.19,
+      "wins": 5,
+      "count": 11
+    },
+    "XRP/USDT": {
+      "pnl": 0.0,
+      "wins": 0,
+      "count": 5
+    },
+    "AAPL": {
+      "pnl": 0.0,
+      "wins": 0,
+      "count": 9
+    },
+    "TSLA": {
+      "pnl": 0.0,
+      "wins": 0,
+      "count": 1
     }
   },
   "regime_counts": {
-    "unknown": 20
+    "unknown": 50
   },
-  "timestamp": "2026-07-30T18:01:27.663115"
+  "timestamp": "2026-07-31T18:33:12.356370"
 }

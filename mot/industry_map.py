@@ -272,8 +272,13 @@ _UNIVERSE_CACHE = None
 def get_universe_tickers() -> List[str]:
     global _UNIVERSE_CACHE
     if _UNIVERSE_CACHE is None:
-        all_tickers = set()
+        from mot.tradable_universe import TRADABLE_UNIVERSE
+        registered = set()
         for tickers in INDUSTRY_REGISTRY.values():
-            all_tickers.update(t.upper() for t in tickers)
+            registered.update(t.upper() for t in tickers)
+        tradeable = set(s.upper() for s in TRADABLE_UNIVERSE)
+        all_tickers = registered & tradeable
+        if not all_tickers:
+            all_tickers = registered
         _UNIVERSE_CACHE = sorted(all_tickers)
     return _UNIVERSE_CACHE

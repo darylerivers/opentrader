@@ -98,7 +98,17 @@ class AccountContext:
 
     def get_fees(self, symbol: str) -> FeeSchedule:
         """Get the fee schedule for a specific symbol."""
-        route = self.route_map.get(symbol, self.exchange)
+        route = self.route_map.get(symbol)
+        if route is None or route not in FEE_TABLES:
+            # Determine route by symbol convention when not explicitly mapped
+            if symbol and '/' in symbol:
+                quote = symbol.split('/')[-1].upper()
+                if quote == 'USDT':
+                    route = "kraken"
+                else:
+                    route = "ibkr"  # forex pairs → IBKR spread-based fees
+            else:
+                route = "finnhub"
         table = FEE_TABLES.get(route, FEE_TABLES["paper"])
         # Try symbol-specific, then default
         return table.get(symbol.lower() if symbol else "default", table.get("default", FeeSchedule()))

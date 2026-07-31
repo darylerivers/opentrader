@@ -3,6 +3,7 @@
 
 Clears __pycache__ on each restart to prevent stale bytecode bugs.
 """
+
 import subprocess, sys, os, signal, time, argparse, shutil, threading, queue
 from pathlib import Path
 
@@ -20,7 +21,15 @@ WATCH_PATHS = [
     str(HARNESS_DIR / "tools"),
 ]
 
-EXCLUDED = {"__pycache__", ".pyc", ".git", ".venv", "rocm_venv", "history", "training/checkpoints"}
+EXCLUDED = {
+    "__pycache__",
+    ".pyc",
+    ".git",
+    ".venv",
+    "rocm_venv",
+    "history",
+    "training/checkpoints",
+}
 
 
 def clear_pycache(root: Path = None) -> tuple[int, int]:
@@ -44,24 +53,46 @@ def clear_pycache(root: Path = None) -> tuple[int, int]:
 
 def main():
     parser = argparse.ArgumentParser(description="Auto-restarting harness launcher")
-    parser.add_argument("--cooldown", type=int, default=2, help="Debounce seconds after change")
-    parser.add_argument("--no-reload", action="store_true", help="Run once, do not watch for changes")
+    parser.add_argument(
+        "--cooldown", type=int, default=2, help="Debounce seconds after change"
+    )
+    parser.add_argument(
+        "--no-reload", action="store_true", help="Run once, do not watch for changes"
+    )
     # ── New: wall-clock timeout ────────────────────────────────────
-    parser.add_argument("--max-hours", type=int, default=0, help="Max hours before auto-terminate (0=unlimited)")
+    parser.add_argument(
+        "--max-hours",
+        type=int,
+        default=0,
+        help="Max hours before auto-terminate (0=unlimited)",
+    )
     args, unknown = parser.parse_known_args()
 
-    harness_args = unknown if unknown else [
-        "--exchange", "ibkr",
-        "--stage", "2",
-        "--cash", "100000",
-        "--max-cycles", "0",
-        "--mot-force", "increase",
-        "--max-daily-trades", "500",
-        "--debate-mode", "adir",
-        "--llama-host", "http://127.0.0.1:5801",
-        "--parallel-debate",
-        "--interval", "10",
-    ]
+    harness_args = (
+        unknown
+        if unknown
+        else [
+            "--exchange",
+            "ibkr",
+            "--stage",
+            "2",
+            "--cash",
+            "100000",
+            "--max-cycles",
+            "0",
+            "--mot-force",
+            "increase",
+            "--max-daily-trades",
+            "500",
+            "--debate-mode",
+            "adir",
+            "--llama-host",
+            "http://127.0.0.1:5801",
+            "--parallel-debate",
+            "--interval",
+            "10",
+        ]
+    )
 
     cmd = [sys.executable, str(HARNESS_DIR / "harness.py")] + harness_args
 
@@ -98,9 +129,9 @@ def main():
         dirs, files = clear_pycache()
         if dirs or files:
             print(f"  🧹 Cleared {dirs} __pycache__ dirs, {files} .pyc files")
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"🚀 Starting: {' '.join(cmd)}")
-        print(f"{'='*50}\n")
+        print(f"{'=' * 50}\n")
         os.environ["WATCHFILES_RUNNING"] = "1"
         proc = subprocess.Popen(cmd, env=os.environ)
 
@@ -122,8 +153,9 @@ def main():
     def _watcher():
         """Run watchfiles in a daemon thread, push changes to queue."""
         try:
-            for changes in watch(*WATCH_PATHS, debounce=args.cooldown * 1000,
-                                 stop_event=stop_event):
+            for changes in watch(
+                *WATCH_PATHS, debounce=args.cooldown * 1000, stop_event=stop_event
+            ):
                 if stop_event.is_set():
                     break
                 py_changes = []
@@ -151,7 +183,9 @@ def main():
 
             # ── Wall-clock timeout ──
             if max_seconds > 0 and (now - start_time) >= max_seconds:
-                print(f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down.")
+                print(
+                    f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down."
+                )
                 stop_event.set()
                 break
 
@@ -163,8 +197,10 @@ def main():
                     print(f"\n❌ {MAX_CRASH_RESTARTS} consecutive crashes — giving up.")
                     stop_event.set()
                     break
-                print(f"\n💥 Harness exited (code={exit_code}, crash #{crash_count}). "
-                      f"Restarting in {args.cooldown}s...")
+                print(
+                    f"\n💥 Harness exited (code={exit_code}, crash #{crash_count}). "
+                    f"Restarting in {args.cooldown}s..."
+                )
                 time.sleep(args.cooldown)
                 start_harness()
                 last_restart = time.time()
@@ -185,7 +221,9 @@ def main():
 
             now = time.time()
             if max_seconds > 0 and (now - start_time) >= max_seconds:
-                print(f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down.")
+                print(
+                    f"\n⏱  Wall-clock timeout reached ({args.max_hours}h). Shutting down."
+                )
                 stop_event.set()
                 break
 

@@ -91,7 +91,9 @@ class BackendPool:
                                 self._model_to_backend[bs.model] = bs
                                 logger.info(f"{bs.name} ({bs.url}): model={bs.model}")
                 except Exception as e:
-                    logger.warning(f"{bs.name} ({bs.url}): model discovery failed — {e}")
+                    logger.warning(
+                        f"{bs.name} ({bs.url}): model discovery failed — {e}"
+                    )
 
     async def health_check_all(self) -> None:
         """Ping /health on all backends and update status."""
@@ -108,7 +110,9 @@ class BackendPool:
                 + ", ".join(f"{b.name}({b.url}):{b.last_error}" for b in unhealthy)
             )
 
-    async def _check_one(self, session: aiohttp.ClientSession, bs: BackendStats) -> None:
+    async def _check_one(
+        self, session: aiohttp.ClientSession, bs: BackendStats
+    ) -> None:
         was_healthy = bs.healthy
         try:
             t0 = time.monotonic()
@@ -136,7 +140,9 @@ class BackendPool:
             state = "HEALTHY" if bs.healthy else "UNHEALTHY"
             logger.info(f"GPU state change: {bs.name} ({bs.url}) → {state}")
 
-    async def _get_fallback(self, skip: Optional[BackendStats] = None) -> Optional[BackendStats]:
+    async def _get_fallback(
+        self, skip: Optional[BackendStats] = None
+    ) -> Optional[BackendStats]:
         """Get any healthy backend, optionally skipping one (for retry)."""
         for b in self._backends:
             if b.healthy and b is not skip:
@@ -191,7 +197,9 @@ class BackendPool:
                 continue
             tried.add(bs.url)
 
-            result, status, error, latency = await self._send_to(bs, session, path, payload)
+            result, status, error, latency = await self._send_to(
+                bs, session, path, payload
+            )
             if status != 503 and result is not None:
                 return result, status, error, latency
 
@@ -249,7 +257,9 @@ class BackendPool:
                     "total_failures": b.total_failures,
                     "avg_latency_ms": round(b.avg_latency_ms, 1),
                     "last_error": b.last_error,
-                    "last_health": datetime.fromtimestamp(b.last_health, tz=timezone.utc).isoformat()
+                    "last_health": datetime.fromtimestamp(
+                        b.last_health, tz=timezone.utc
+                    ).isoformat()
                     if b.last_health
                     else None,
                 }
@@ -265,12 +275,14 @@ class BackendPool:
         for b in self._backends:
             if b.healthy and b.model and b.model not in seen:
                 seen.add(b.model)
-                models.append({
-                    "id": b.model,
-                    "object": "model",
-                    "created": int(time.time()),
-                    "owned_by": f"gpu_sync ({b.name})",
-                })
+                models.append(
+                    {
+                        "id": b.model,
+                        "object": "model",
+                        "created": int(time.time()),
+                        "owned_by": f"gpu_sync ({b.name})",
+                    }
+                )
         return models
 
 
@@ -278,12 +290,17 @@ class BackendPool:
 
 
 async def health_check_loop(pool: BackendPool, interval: float):
-    """Periodically health-check all GPU backends."""
+    """Periodically health-check all GPU backends. Rediscover models until
+    every backend is identified (GPUs may still be loading at startup)."""
     logger.info(f"Health check loop started (interval={interval}s)")
     while True:
         await asyncio.sleep(interval)
         try:
             await pool.health_check_all()
+            # Model discovery only runs once at startup; if a GPU was still
+            # loading then, re-run discovery until every backend is known.
+            if any(b.model == "unknown" for b in pool._backends):
+                await pool.discover_models()
         except Exception as e:
             logger.error(f"Health check loop error: {e}")
 
@@ -307,7 +324,10 @@ class GPUSyncApp:
     async def handle_health(self, request: web.Request) -> web.Response:
         healthy = await self.pool.any_healthy()
         return web.json_response(
-            {"status": "ok" if healthy else "degraded", "backends": len(self.pool._backends)},
+            {
+                "status": "ok" if healthy else "degraded",
+                "backends": len(self.pool._backends),
+            },
             status=200 if healthy else 503,
         )
 
@@ -330,7 +350,12 @@ class GPUSyncApp:
             return web.json_response(data, status=status)
         else:
             return web.json_response(
-                {"error": {"message": error or "No healthy GPU available", "type": "gpu_sync_error"}},
+                {
+                    "error": {
+                        "message": error or "No healthy GPU available",
+                        "type": "gpu_sync_error",
+                    }
+                },
                 status=503,
             )
 
@@ -387,9 +412,7 @@ async def main():
     site = web.TCPSite(runner, args.host, args.port)
     await site.start()
 
-    health_task = asyncio.create_task(
-        health_check_loop(pool, args.health_interval)
-    )
+    health_task = asyncio.create_task(health_check_loop(pool, args.health_interval))
 
     logger.info(f"GPU Sync listening on http://{args.host}:{args.port}")
     logger.info(f"Backends: {', '.join(b.url for b in pool._backends)}")

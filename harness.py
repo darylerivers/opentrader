@@ -32,7 +32,12 @@ from exchange.paper import PaperExchange
 from exchange.multi_router import MultiExchangeRouter
 from data.synthetic import generate_bars, generate_trending_bars
 from mot.tradable_universe import TRADABLE_UNIVERSE, DEFAULT_START_PRICES, SCOUT_PROMPT
-from mot.dynamic_discovery import resolve_discovery, get_sector_list, PRICE_ESTIMATES, refresh_from_exchange
+from mot.dynamic_discovery import (
+    resolve_discovery,
+    get_sector_list,
+    PRICE_ESTIMATES,
+    refresh_from_exchange,
+)
 from mot.monitors import CommitteeChair
 from data.regime_classifier import classify_regime
 from risk.manager import RiskManager, RiskConfig
@@ -151,9 +156,9 @@ class OpenTraderHarness:
         self.llama_host = llama_host or cfg.get("llama_host", "http://127.0.0.1:5801")
         self.gpu0_host = cfg.get("gpu0_host", "http://127.0.0.1:5801")
         self.mcp_url = mcp_url or cfg.get("mcp_url", "http://127.0.0.1:8092")
-        self.debate_model = model or cfg.get("debate_model", "ptolemy-s1")
-        self.fast_model = fast_model or cfg.get("fast_model", "gemma-4-12b-agentic")
-        self.risk_model = cfg.get("risk_model", "qwen2.5-7b-instruct")
+        self.debate_model = model or cfg.get("debate_model", "qwythos-9b-mtp")
+        self.fast_model = fast_model or cfg.get("fast_model", "qwythos-9b-mtp")
+        self.risk_model = cfg.get("risk_model", "qwythos-9b-mtp")
         if parallel_debate is None:
             parallel_debate = cfg.get("parallel_debate", False)
         if debate_mode is None:
@@ -167,7 +172,7 @@ class OpenTraderHarness:
         self.universe_mode = universe_mode
         self.universe_focus = universe_focus
         self._universe_loaded = False
-        self._tradable_universe: List[str] = [s for s in TRADABLE_UNIVERSE if "/" in s]
+        self._tradable_universe: List[str] = list(TRADABLE_UNIVERSE)
         self.symbol = symbol  # kept for backward compat
         self.symbols: List[str] = [symbol]  # active symbols for current stage
         self.timeframe = timeframe
@@ -843,7 +848,11 @@ class OpenTraderHarness:
             self.symbols = list(STAGES[self.stage]["symbols"])
             # Only restore _initial_cash if matching the CLI arg (prevent $100K overwriting --cash 100)
             saved_cash = state.get("_initial_cash")
-            if saved_cash and abs(saved_cash - self.initial_cash) / max(abs(self.initial_cash), 1) < 0.05:
+            if (
+                saved_cash
+                and abs(saved_cash - self.initial_cash) / max(abs(self.initial_cash), 1)
+                < 0.05
+            ):
                 self.initial_cash = saved_cash
             if self.backtest and "_backtest_bar_index" in state:
                 self._backtest_bar_index = state["_backtest_bar_index"]
@@ -899,20 +908,53 @@ class OpenTraderHarness:
             # Positions format: list of dicts with symbol, quantity, entry_price, current_price, etc.
             restored_positions = {}
             restored_cost_basis = {}
+            restored_entries = {}
             for p in saved_positions:
                 sym = p.get("symbol", "")
                 qty = float(p.get("quantity", 0) or 0)
                 entry = float(p.get("entry_price", 0) or p.get("current_price", 0) or 0)
                 if sym and qty > 0 and entry > 0:
                     restored_positions[sym] = qty
+                    restored_entries[sym] = entry
 
-            # Reconstruct cost basis from fills (accurate for multi-buy accumulation)
-            for f in saved_fills:
+            # Reconstruct cost basis by replaying fills chronologically,
+            # mirroring the live exchange logic: BUY adds cost, SELL reduces
+            # it proportionally by the realized average entry.
+            fills_sorted = sorted(
+                saved_fills,
+                key=lambda f: f.get("timestamp", ""),
+            )
+            replay_positions = {}
+            replay_cost = {}
+            for f in fills_sorted:
                 sym = f.get("symbol", "")
-                if f.get("side") == "buy" and f.get("cost"):
-                    restored_cost_basis[sym] = restored_cost_basis.get(sym, 0) + float(
-                        f["cost"]
-                    )
+                side = (f.get("side") or "").lower()
+                qty = float(f.get("quantity", 0) or 0)
+                cost = float(f.get("cost", 0) or 0)
+                if not sym or qty <= 0:
+                    continue
+                if side == "buy":
+                    replay_positions[sym] = replay_positions.get(sym, 0) + qty
+                    replay_cost[sym] = replay_cost.get(sym, 0) + cost
+                elif side == "sell":
+                    pos = replay_positions.get(sym, 0)
+                    if pos > 0:
+                        sell_qty = min(qty, pos)
+                        avg_entry = replay_cost.get(sym, 0) / max(pos, 1e-12)
+                        replay_positions[sym] = pos - sell_qty
+                        replay_cost[sym] = max(
+                            0.0, replay_cost.get(sym, 0) - avg_entry * sell_qty
+                        )
+                        if replay_positions[sym] <= 0:
+                            replay_positions.pop(sym, None)
+                            replay_cost.pop(sym, None)
+            restored_cost_basis = replay_cost
+
+            # Fill cost-basis gaps with the saved entry price (fills are
+            # truncated to the last 50, so old positions may lack fills).
+            for sym, qty in restored_positions.items():
+                if sym not in restored_cost_basis and sym in restored_entries:
+                    restored_cost_basis[sym] = restored_entries[sym] * qty
 
             self.exchange._cash = saved_cash
             self.exchange._positions = restored_positions
@@ -933,7 +975,11 @@ class OpenTraderHarness:
 
             # Update initial_cash and risk manager baseline
             if saved_initial and saved_initial > 0:
-                if abs(saved_initial - self.initial_cash) / max(abs(self.initial_cash), 1) < 0.05:
+                if (
+                    abs(saved_initial - self.initial_cash)
+                    / max(abs(self.initial_cash), 1)
+                    < 0.05
+                ):
                     self.initial_cash = saved_initial
                     self.risk.set_initial(saved_initial)
                 else:
@@ -1345,6 +1391,12 @@ class OpenTraderHarness:
                             pos_qty = float(
                                 pos
                             )  # use actual sold qty, not potentially stale SL/TP stored qty
+                            notional = pos_qty * entry_price
+                            rt_fee = self.exchange.get_fee_schedule(
+                                sym
+                            ).round_trip_cost(notional)
+                            pnl_dollar = pnl_pct * notional - rt_fee
+                            pnl_pct = pnl_dollar / notional if notional > 0 else 0
                             self._trade_journal.append(
                                 {
                                     "symbol": sym,
@@ -1352,9 +1404,8 @@ class OpenTraderHarness:
                                     "exit_price": round(price, 2),
                                     "quantity": round(pos_qty, 8),
                                     "pnl_pct": round(pnl_pct, 4),
-                                    "pnl_dollar": round(
-                                        pnl_pct * (pos_qty * entry_price), 2
-                                    ),
+                                    "pnl_dollar": round(pnl_dollar, 2),
+                                    "fees_paid": round(rt_fee, 2),
                                     "entry_cycle": self._sl_tp_levels.get(sym, {}).get(
                                         "cycle_opened", self.cycle
                                     ),
@@ -1430,12 +1481,19 @@ class OpenTraderHarness:
                 continue
             p = prices.get(sym, 0)
             guard = self._sl_tp_levels.get(sym, {})
+            entry = guard.get("entry_price")
+            if not entry:
+                cost = getattr(self.exchange, "_cost_basis", {}).get(sym, 0)
+                if cost and float(qty) > 0:
+                    entry = cost / float(qty)
+                else:
+                    entry = p
             positions_list.append(
                 {
                     "symbol": sym,
                     "quantity": round(float(qty), 8),
                     "current_price": p,
-                    "entry_price": guard.get("entry_price"),
+                    "entry_price": entry,
                     "stop_loss": guard.get("stop_loss"),
                     "take_profit": guard.get("take_profit"),
                     "highest_price": guard.get("highest_price"),
@@ -1488,6 +1546,9 @@ class OpenTraderHarness:
                 "agent": self.agent.name,
                 "stage": self.stage,
                 "symbols": self.symbols,
+                "llama_available": bool(getattr(self, "_llama_available", False)),
+                "llama_host": self.llama_host,
+                "debate_model": self.debate_model,
             },
             metrics={
                 "cycle_time_s": round(cycle_time, 3),
@@ -1835,7 +1896,9 @@ class OpenTraderHarness:
                 if val:
                     val_ctx = valuation_to_context(val)
                     ctx.valuation_json = val_ctx
-                    mtf_context = fund_ctx + "\n" + val_ctx + "\n\n" + (mtf_context or "")
+                    mtf_context = (
+                        fund_ctx + "\n" + val_ctx + "\n\n" + (mtf_context or "")
+                    )
                 else:
                     mtf_context = fund_ctx + "\n\n" + (mtf_context or "")
         except Exception as e:
@@ -1887,6 +1950,7 @@ class OpenTraderHarness:
         signal = Signal(
             action="HOLD", symbol=sym, confidence=0.0, reason="debate unavailable"
         )
+        debate_result = None
         if self.debate:
             try:
                 # ── Fee-aware account context ──────────────────
@@ -2171,9 +2235,7 @@ class OpenTraderHarness:
         try:
             picks = self._llm_json_array(prompt, key="symbol", max_n=focus, min_score=5)
             if picks:
-                return [
-                    p["symbol"] for p in picks if p.get("symbol") in universe
-                ]
+                return [p["symbol"] for p in picks if p.get("symbol") in universe]
         except Exception:
             pass
         scored = []
@@ -2279,6 +2341,11 @@ class OpenTraderHarness:
                 )
         else:
             active_symbols = list(self.symbols)
+        # Sync self.symbols to the active set so every symbol in the debate
+        # universe gets new bars pushed each cycle (stocks were previously
+        # frozen at their initial price → 0% P&L on all stock trades).
+        if active_symbols and self.symbols != active_symbols:
+            self.symbols = list(active_symbols)
         multi_symbol = len(active_symbols) > 1
         logger.info(
             f"── Cycle {self.cycle} [Stage {self.stage}: {len(active_symbols)} symbols] ──"
@@ -2336,28 +2403,38 @@ class OpenTraderHarness:
 
         def _debate_wrapper(sym):
             try:
-                _, signal, ctx, regime_dict, debate_result = (
-                    self._debate_one_symbol(
-                        sym,
-                        self.cycle,
-                        self.timeframe,
-                        bal,
-                    )
+                _, signal, ctx, regime_dict, debate_result = self._debate_one_symbol(
+                    sym,
+                    self.cycle,
+                    self.timeframe,
+                    bal,
                 )
                 self._cycle_debates[sym] = {
                     "bull": {
-                        "action": debate_result.bull_vote.action,
-                        "conf": debate_result.bull_vote.confidence,
-                        "evq": getattr(debate_result.bull_vote, "evq", None),
+                        "action": debate_result.bull_vote.action
+                        if debate_result
+                        else "HOLD",
+                        "conf": debate_result.bull_vote.confidence
+                        if debate_result
+                        else 0,
+                        "evq": getattr(debate_result.bull_vote, "evq", None)
+                        if debate_result
+                        else None,
                     },
                     "bear": {
-                        "action": debate_result.bear_vote.action,
-                        "conf": debate_result.bear_vote.confidence,
-                        "evq": getattr(debate_result.bear_vote, "evq", None),
+                        "action": debate_result.bear_vote.action
+                        if debate_result
+                        else "HOLD",
+                        "conf": debate_result.bear_vote.confidence
+                        if debate_result
+                        else 0,
+                        "evq": getattr(debate_result.bear_vote, "evq", None)
+                        if debate_result
+                        else None,
                     },
                     "risk": {
-                        "action": debate_result.action,
-                        "conf": debate_result.confidence,
+                        "action": debate_result.action if debate_result else "HOLD",
+                        "conf": debate_result.confidence if debate_result else 0,
                         "evq": None,
                     },
                 }
@@ -2422,7 +2499,9 @@ class OpenTraderHarness:
                 signal, ctx, regime_dict = result_entry
             all_signals.append(signal)
             signal_contexts[sym] = ctx
-            logger.debug(f"  DBG-FOR-APPEND: {sym}={signal.action}({signal.confidence:.2f}) → all_signals len={len(all_signals)}")
+            logger.debug(
+                f"  DBG-FOR-APPEND: {sym}={signal.action}({signal.confidence:.2f}) → all_signals len={len(all_signals)}"
+            )
             # Store per-symbol regime overrides (applied per-check, not globally)
             if regime_dict:
                 ov = get_regime_risk_overrides(regime_dict)
@@ -2536,18 +2615,20 @@ class OpenTraderHarness:
         portfolio_result = None
         # Build signal map keyed by signal's own symbol (preserves debate-order attribution)
         _sig_map = {}
-        logger.debug(f"  DBG-PRE-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}' for s in all_signals]}")
+        logger.debug(
+            f"  DBG-PRE-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}' for s in all_signals]}"
+        )
         for sig in all_signals:
             _sig_map.setdefault(sig.symbol, sig)
         all_signals = list(_sig_map.values())
-        logger.debug(f"  DBG-POST-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}({s.confidence:.2f})' for s in all_signals]}")
+        logger.debug(
+            f"  DBG-POST-DEDUP: {len(all_signals)} signals: {[f'{s.symbol}={s.action}({s.confidence:.2f})' for s in all_signals]}"
+        )
         # DBG: log all signals pre-optimizer
         _dbg_signals = ", ".join(
             f"{s.symbol}={s.action}({s.confidence:.2f})" for s in all_signals
         )
-        logger.info(
-            f"  PRE-OPTIMIZER: {len(all_signals)} signals → {_dbg_signals}"
-        )
+        logger.info(f"  PRE-OPTIMIZER: {len(all_signals)} signals → {_dbg_signals}")
 
         if (
             multi_symbol
@@ -2692,7 +2773,9 @@ class OpenTraderHarness:
                     risk_data = debate.get("risk", {})
                     risk_action = risk_data.get("action", "")
                     risk_conf = risk_data.get("conf", 0)
-                    if bear_conf >= 0.40 or (risk_action == "SELL" and risk_conf >= 0.4):
+                    if bear_conf >= 0.40 or (
+                        risk_action == "SELL" and risk_conf >= 0.4
+                    ):
                         logger.info(
                             f"  {sym}: high-conviction SELL override "
                             f"(bear={bear_conf:.2f}, risk={risk_conf:.2f}) — clearing SL/TP"
@@ -2874,7 +2957,9 @@ class OpenTraderHarness:
                                     old_entry = existing.get("entry_price", 0)
                                     if old_qty > 0 and old_entry > 0:
                                         new_qty = old_qty + order.quantity
-                                        avg_price = (old_entry * old_qty + price * order.quantity) / new_qty
+                                        avg_price = (
+                                            old_entry * old_qty + price * order.quantity
+                                        ) / new_qty
                                         entry_price_val = avg_price
                                         if atr > 0:
                                             sl_atr = avg_price - (atr * atr_mult)
@@ -2937,8 +3022,13 @@ class OpenTraderHarness:
                                         )
                                     if entry_price and entry_price > 0:
                                         pnl_pct = (price - entry_price) / entry_price
-                                        pnl_dollar = pnl_pct * (
-                                            order.quantity * entry_price
+                                        notional = order.quantity * entry_price
+                                        rt_fee = self.exchange.get_fee_schedule(
+                                            sym
+                                        ).round_trip_cost(notional)
+                                        pnl_dollar = pnl_pct * notional - rt_fee
+                                        pnl_pct = (
+                                            pnl_dollar / notional if notional > 0 else 0
                                         )
                                         self._trade_journal.append(
                                             {
@@ -2948,6 +3038,7 @@ class OpenTraderHarness:
                                                 "quantity": round(order.quantity, 8),
                                                 "pnl_pct": round(pnl_pct, 4),
                                                 "pnl_dollar": round(pnl_dollar, 2),
+                                                "fees_paid": round(rt_fee, 2),
                                                 "entry_cycle": entry_cycle
                                                 or self.cycle,
                                                 "exit_cycle": self.cycle,
@@ -3002,7 +3093,9 @@ class OpenTraderHarness:
                                                 f"  Reflection resolved: BUY on {sym} → {pnl_pct:+.4%}"
                                             )
                                     if sym in self._sl_tp_levels:
-                                        pos = self.exchange.get_balance().positions.get(sym, 0)
+                                        pos = self.exchange.get_balance().positions.get(
+                                            sym, 0
+                                        )
                                         if float(pos) <= 0:
                                             del self._sl_tp_levels[sym]
                 except Exception as e:
@@ -3419,6 +3512,12 @@ class OpenTraderHarness:
             f"Agent: {self.agent.name} "
             f"{'(model)' if self.agent.config.get('use_model') else '(heuristic)'}"
         )
+        if not self._llama_available:
+            logger.warning(
+                "MODEL UNAVAILABLE: llama endpoint %s unreachable — trading on "
+                "heuristic MA signals. This is NOT model-driven trading.",
+                self.llama_host,
+            )
 
         # ── Apply MoT force immediately (don't wait 6 hours) ──
         if self._mot_force and self._mot_force != "auto":
@@ -3529,7 +3628,9 @@ class OpenTraderHarness:
                 )
                 self._save_agent_state()
                 if self._consecutive_crashes >= 10:
-                    logger.error("10 consecutive in-process crashes — exiting so run_harness watchdog can act.")
+                    logger.error(
+                        "10 consecutive in-process crashes — exiting so run_harness watchdog can act."
+                    )
                     break
                 time.sleep(5)
 
@@ -3731,9 +3832,7 @@ def main():
         for stage_num in STAGES:
             STAGES[stage_num]["symbols"] = custom_syms
         _custom_symbols = True
-        logger.info(
-            f"Custom symbols override all stages: {custom_syms}"
-        )
+        logger.info(f"Custom symbols override all stages: {custom_syms}")
 
     # ── Live mode: shortcut for real prices + paper settlement ──
     if args.live:

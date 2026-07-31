@@ -151,6 +151,14 @@ class PaperExchange(ExchangeBase):
             fill_pct = effective_qty / max(quantity, 1e-12)
             self._cash += fill_price * effective_qty
             self._positions[symbol] -= effective_qty
+            # Decrement cost basis proportionally to the fraction sold, using
+            # the realized average entry — otherwise avg entry inflates after
+            # partial sells (cost basis would sum ALL buys against residual qty).
+            avg_entry = self._cost_basis.get(symbol, 0) / max(pos, 1e-12)
+            self._cost_basis[symbol] = max(
+                0.0,
+                self._cost_basis.get(symbol, 0) - avg_entry * effective_qty,
+            )
             if self._positions[symbol] <= 0:
                 del self._positions[symbol]
                 self._cost_basis.pop(

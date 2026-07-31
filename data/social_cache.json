@@ -1,26 +1,47 @@
 {
   "sentiment": {
     "BTC/USDT": {
-      "score": 0.28,
-      "raw_score": -0.43999999999999995,
+      "score": 0.25,
+      "raw_score": -0.5,
+      "mentions": 0,
+      "sentiment": "fear",
+      "source": "fng_only"
+    },
+    "NVDA": {
+      "score": 0.25,
+      "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
     "ETH/USDT": {
-      "score": 0.28,
-      "raw_score": -0.43999999999999995,
+      "score": 0.25,
+      "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     },
     "SOL/USDT": {
-      "score": 0.28,
-      "raw_score": -0.43999999999999995,
+      "score": 0.25,
+      "raw_score": -0.5,
+      "mentions": 0,
+      "sentiment": "fear",
+      "source": "fng_only"
+    },
+    "DOGE/USDT": {
+      "score": 0.25,
+      "raw_score": -0.5,
+      "mentions": 0,
+      "sentiment": "fear",
+      "source": "fng_only"
+    },
+    "AAPL": {
+      "score": 0.25,
+      "raw_score": -0.5,
       "mentions": 0,
       "sentiment": "fear",
       "source": "fng_only"
     }
   },
-  "fetched_at": 1785443703.7617924
+  "fetched_at": 1785524609.0007493
 }

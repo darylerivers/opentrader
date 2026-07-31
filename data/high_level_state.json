@@ -1,22 +1,22 @@
 {
-  "regime": "SELL",
-  "confidence": 0.83,
-  "thesis": "ADIR: Bull(HOLD,15%,evq=0.22) vs Bear(SELL,75%,evq=0.80) \u2192 RISK(SELL,82%)",
-  "posture": "defensive",
+  "regime": "BUY",
+  "confidence": 0.17,
+  "thesis": "[GATE-SKIPPED] vs ADIR: Bull(HOLD,32%,evq=0.66) \u2192 Bear(HOLD,35%,evq=0.60)",
+  "posture": "offensive",
   "available": true,
-  "updated": "2026-07-30T20:44:38.159933+00:00",
+  "updated": "2026-07-31T19:13:19.928329+00:00",
   "models": {},
   "portfolio": {
-    "diversification_ratio": 1.0,
-    "portfolio_var": 7.22,
-    "total_exposure_pct": 0.0153,
+    "diversification_ratio": 2.1475,
+    "portfolio_var": 96.03,
+    "total_exposure_pct": 0.3062,
     "kelly_fractions": {
-      "XRP/USDT": 0.0,
-      "ETH/USDT": 0,
-      "SOL/USDT": 0,
-      "BTC/USDT": 0.0153,
-      "SUI/USDT": 0.0,
-      "ATOM/USDT": 0.0
+      "BTC/USDT": 0.0423,
+      "NVDA": 0.0763,
+      "SOL/USDT": 0.0562,
+      "ETH/USDT": 0.047,
+      "TSLA": 0.0327,
+      "AAPL": 0.0516
     }
   }
 }

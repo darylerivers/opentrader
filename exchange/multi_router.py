@@ -105,6 +105,31 @@ class MultiExchangeRouter(ExchangeBase):
     def get_current_price(self, symbol: str) -> Optional[float]:
         return self._route(symbol).get_current_price(symbol)
 
+    def get_fee_schedule(self, symbol: str = "default"):
+        return self._route(symbol).get_fee_schedule(symbol)
+
+    def get_prices_batch(self, symbols: list) -> dict:
+        result = {}
+        crypto_syms = [s for s in symbols if self._is_crypto(s)]
+        stock_syms = [s for s in symbols if self._is_stock(s)]
+
+        for sym_list, ex in [(crypto_syms, self._crypto), (stock_syms, self._stock)]:
+            if not sym_list or ex is None:
+                continue
+            if hasattr(ex, "get_prices_batch"):
+                batch = ex.get_prices_batch(sym_list)
+                result.update(batch)
+            else:
+                for sym in sym_list:
+                    try:
+                        price = ex.get_current_price(sym)
+                        if price:
+                            result[sym] = price
+                    except Exception:
+                        pass
+
+        return result
+
     def load_bars(self, symbol: str, bars: List[dict]) -> None:
         self._route(symbol).load_bars(symbol, bars)
 

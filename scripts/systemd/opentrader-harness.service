@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenTrader Trading Harness
+After=network.target opentrader-gpu-sync.service opentrader-mcp-server.service
+Wants=opentrader-gpu-sync.service opentrader-mcp-server.service
+
+[Service]
+Type=simple
+User=mrc
+WorkingDirectory=/home/mrc/opentrader
+ExecStart=/home/mrc/rocm_venv/bin/python3 /home/mrc/opentrader/harness.py --exchange paper --stage 2 --cash 100000 --max-cycles 0 --mot-force increase --max-daily-trades 500 --debate-mode adir --llama-host http://127.0.0.1:5801 --parallel-debate --interval 10
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

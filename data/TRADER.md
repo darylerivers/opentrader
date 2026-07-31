@@ -4,8 +4,8 @@
 > ATDL lifecycle events capture lessons. It is injected into every debate cycle
 > as institutional memory. Pruned and consolidated automatically.
 
-Last updated: 2026-07-30T06:03:01Z
-Total entries: 19
+Last updated: 2026-07-31T18:33:12Z
+Total entries: 24
 
 ## Patterns — reproducible market behaviors
 - **[PATTERN]** (c259, conf=70%): Portfolio earned grade B with 60% win rate at cycle 259. Strategy is working — preserve current risk parameters and debate configuration.  _2026-07-16T04:16:24_
@@ -45,6 +45,16 @@ Total entries: 19
 - **[LESSON]** (c3913, conf=85%): Portfolio earned failing grade F with 25% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-30T05:21:06_
 
 - **[LESSON]** (c3931, conf=85%): Portfolio earned failing grade D with 25% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-30T06:03:01_
+
+- **[LESSON]** (c6201, conf=85%): Portfolio earned failing grade D with 22% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-31T14:06:51_
+
+- **[LESSON]** (c6204, conf=85%): Portfolio earned failing grade F with 22% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-31T14:18:15_
+
+- **[LESSON]** (c6321, conf=85%): Portfolio earned failing grade D with 26% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-31T16:32:37_
+
+- **[LESSON]** (c6389, conf=85%): Portfolio earned failing grade D with 24% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-31T17:30:13_
+
+- **[LESSON]** (c6461, conf=85%): Portfolio earned failing grade D with 30% win rate. Current strategy is NOT working — retraining or parameter adjustment needed.  _2026-07-31T18:33:12_
 
 - **[LESSON]** (c1700, conf=70%): ADIR risk agent sometimes fails HTTP calls to llama-server (oversized prompts). Heuristic synthesis fallback provides adequate risk voting when this occurs.  _2026-07-13T02:14:58_
 
