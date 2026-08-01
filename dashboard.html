@@ -571,11 +571,11 @@ body{
   /* Trades: hide Cycles(7) */
   #tab-trades .data-table th:nth-child(7),
   #tab-trades .data-table td:nth-child(7){display:none}
-  /* Signals: hide Position%(4), Time(6) */
+  /* Signals: hide Position%(4), Time(7) */
   #tab-signals .data-table th:nth-child(4),
   #tab-signals .data-table td:nth-child(4),
-  #tab-signals .data-table th:nth-child(6),
-  #tab-signals .data-table td:nth-child(6){display:none}
+  #tab-signals .data-table th:nth-child(7),
+  #tab-signals .data-table td:nth-child(7){display:none}
 
   .data-table th,.data-table td{padding:6px 8px;font-size:11px}
   .data-table th{font-size:8px}
@@ -790,7 +790,7 @@ body{
               <thead>
                 <tr>
                   <th>Symbol</th><th>Action</th><th>Confidence</th>
-                  <th>Position %</th><th>Reason</th><th>Time</th>
+                  <th>Position %</th><th>Fundamentals</th><th>Reason</th><th>Time</th>
                 </tr>
               </thead>
               <tbody id="tb-signals"></tbody>
@@ -1386,11 +1386,18 @@ function renderSignals(){
     var confColor = conf>=60?'pos':(conf>=30?'':'neutral');
     var reason = (s.reason||'').substring(0,60);
     var time = String(s.timestamp||'').substring(11,19);
+    var fc = (FULL.fundamentals_coverage||{})[s.symbol];
+    var fundBadge = fc==='ok'
+      ? '<td class="num" style="color:var(--green);font-size:10px">FUND ✓</td>'
+      : (fc
+        ? '<td class="num" style="color:var(--yellow);font-size:10px" title="fundamentals '+fc+'">FUND '+fc.toUpperCase()+'</td>'
+        : '<td class="num" style="color:var(--text-dim);font-size:10px">FUND —</td>');
     return '<tr>'+
       '<td><div class="sym">'+(s.symbol||'?')+'</div></td>'+
       '<td class="num '+aColor+'" style="font-weight:700">'+action+'</td>'+
       '<td class="num '+confColor+'">'+conf.toFixed(0)+'%</td>'+
       '<td class="num neutral">'+posPct.toFixed(1)+'%</td>'+
+      fundBadge+
       '<td style="font-size:10px;color:var(--text-dim);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+reason+'</td>'+
       '<td class="num neutral" style="font-size:10px">'+time+'</td>'+
       '</tr>';

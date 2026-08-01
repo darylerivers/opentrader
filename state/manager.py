@@ -51,6 +51,7 @@ class StateManager:
         symbol_regimes: dict = None,
         skip_history: bool = False,
         data_provenance: dict = None,
+        fundamentals_coverage: dict = None,
     ) -> dict:
         now = datetime.now(timezone.utc).isoformat()
         state = self._build_state(
@@ -72,6 +73,7 @@ class StateManager:
             symbol_regimes,
             now,
             data_provenance,
+            fundamentals_coverage,
         )
         self._write_state(state)
         if not skip_history:
@@ -98,6 +100,7 @@ class StateManager:
         symbol_regimes,
         now,
         data_provenance: dict = None,
+        fundamentals_coverage: dict = None,
     ) -> dict:
         state = {
             "cycle": cycle,
@@ -109,6 +112,7 @@ class StateManager:
             "prices": prices,
             "fills": fills[-50:] if fills else [],
             "data_provenance": data_provenance or {},
+            "fundamentals_coverage": fundamentals_coverage or {},
             "signals": [
                 {
                     "symbol": s.get("symbol", "")

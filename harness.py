@@ -442,9 +442,11 @@ class OpenTraderHarness:
         self._sl_tp_levels: Dict[
             str, dict
         ] = {}  # symbol -> {stop_loss, take_profit, entry_price, qty, highest_price, cycle_opened}
+        self._fundamentals_coverage: Dict[str, str] = {}  # symbol -> ok|missing|no_cik
         if reset_portfolio:
             self.exchange.reset(initial_cash=float(self.initial_cash))
             self._sl_tp_levels.clear()
+            self._fundamentals_coverage.clear()
             logger.info(
                 "Portfolio reset: positions cleared, SL/TP levels wiped, cash restored"
             )
@@ -1625,6 +1627,7 @@ class OpenTraderHarness:
                 "llama_host": self.llama_host,
                 "debate_model": self.debate_model,
             },
+            fundamentals_coverage=dict(self._fundamentals_coverage),
             data_provenance={
                 "mode": "live" if self.live_mode else "synthetic",
                 "exchange": getattr(self.exchange, "name", ""),
@@ -1987,8 +1990,15 @@ class OpenTraderHarness:
                     )
                 else:
                     mtf_context = fund_ctx + "\n\n" + (mtf_context or "")
+                self._fundamentals_coverage[sym] = "ok"
+            else:
+                self._fundamentals_coverage[sym] = "missing"
         except Exception as e:
             logger.debug(f"Fundamentals/valuation skipped for {sym}: {e}")
+            if "CIK" in str(e):
+                self._fundamentals_coverage[sym] = "no_cik"
+            else:
+                self._fundamentals_coverage.setdefault(sym, "missing")
 
         # ── Multi-timeframe context (4h + primary) ──
         mtf_signal_bias = 0.0  # weighted composite: 1h×0.5 + 4h×0.3 = bias adjustment
@@ -2179,19 +2189,23 @@ class OpenTraderHarness:
             ind_prices = [(t, price_batch[t]) for t in tickers if price_batch.get(t)]
             if not ind_prices:
                 continue
+            # Show up to 4 tickers per industry (highest + mid + lowest priced)
+            # instead of only the single best — otherwise the LLM sees one
+            # name per industry and falls back to name-recognition (bias toward
+            # familiar tickers, e.g. A-names) rather than momentum.
             ind_prices.sort(key=lambda x: x[1])
-            best_t, best_p = ind_prices[-1]
-            avg_p = sum(p for _, p in ind_prices) / len(ind_prices)
-            radar.append(
-                f"  {ind_name}: best={best_t} ${best_p:.0f} avg=${avg_p:.0f} ({len(ind_prices)}t)"
-            )
+            shown = ind_prices[-4:]
+            shown_str = ", ".join(f"{t}=${p:.0f}" for t, p in shown)
+            radar.append(f"  {ind_name}: {shown_str} ({len(ind_prices)}t)")
 
         if len(radar) < 10:
             return self._scout_flat(focus), self._scout_flat(focus)
 
         prompt = (
             f"Market radar - {len(radar)} industries, {len(price_batch)} tickers.\n"
-            f"Pick top 20 tickers with strongest trading potential.\n\n"
+            f"Pick top 20 tickers with the STRONGEST SHORT-TERM TRADING POTENTIAL. "
+            f"Do not just pick well-known mega-caps — consider the full breadth "
+            f"of the radar.\n\n"
             + "\n".join(radar[:50])
             + f'\n\nJSON: [{{"symbol":"NVDA","score":8,"reason":"..."}}, ...]'
         )
