@@ -109,7 +109,27 @@ class StateManager:
             "prices": prices,
             "fills": fills[-50:] if fills else [],
             "data_provenance": data_provenance or {},
-            "signals": [s.get("signal") for s in (signals or [])],
+            "signals": [
+                {
+                    "symbol": s.get("symbol", "")
+                    if isinstance(s, dict)
+                    else getattr(s, "symbol", ""),
+                    "action": s.get("action", "")
+                    if isinstance(s, dict)
+                    else getattr(s, "action", ""),
+                    "confidence": s.get("confidence", 0)
+                    if isinstance(s, dict)
+                    else getattr(s, "confidence", 0),
+                    "position_pct": s.get("position_pct", 0)
+                    if isinstance(s, dict)
+                    else getattr(s, "position_pct", 0),
+                    "reason": s.get("reason", "")
+                    if isinstance(s, dict)
+                    else getattr(s, "reason", ""),
+                    "timestamp": s.get("timestamp", "") if isinstance(s, dict) else "",
+                }
+                for s in (signals or [])
+            ],
             "models": models or {},
             "metrics": {
                 "cycle_time_s": metrics.get("cycle_time_s", 0) if metrics else 0,
