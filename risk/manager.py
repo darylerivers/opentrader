@@ -5,6 +5,7 @@ Merged from OpenTrader + ATLANTIS risk engines.
 Adds: Kelly criterion, correlation check, VaR, max-drawdown circuit breaker,
       daily trade limits, and multi-venue position tracking.
 """
+
 import json
 import logging
 import math
@@ -19,40 +20,49 @@ logger = logging.getLogger("opentrader.risk")
 @dataclass
 class RiskConfig:
     """Risk parameters — tune these for your risk tolerance."""
+
     # Per-position limits
-    max_position_pct: float = 0.20        # Max single position as % of portfolio
-    max_total_exposure: float = 0.60       # Max all positions combined
-    max_positions: int = 50                # Max concurrent positions
-    max_order_value: float = 50000         # Max $ per single order
+    max_position_pct: float = 0.20  # Max single position as % of portfolio
+    max_total_exposure: float = 0.60  # Max all positions combined
+    max_positions: int = 50  # Max concurrent positions
+    max_order_value: float = 50000  # Max $ per single order
 
     # Portfolio protection
-    stop_loss_pct: float = 0.04            # Default stop-loss per trade (4%)
-    take_profit_pct: float = 0.08          # Default take-profit per trade (8%, 2:1 ratio)
-    portfolio_stop_pct: float = 0.15       # Max drawdown from peak (circuit breaker)
-    min_cash_reserve: float = 5              # Minimum cash to keep (small = accommodate micro accounts)
+    stop_loss_pct: float = 0.04  # Default stop-loss per trade (4%)
+    take_profit_pct: float = 0.08  # Default take-profit per trade (8%, 2:1 ratio)
+    portfolio_stop_pct: float = 0.15  # Max drawdown from peak (circuit breaker)
+    min_cash_reserve: float = (
+        5  # Minimum cash to keep (small = accommodate micro accounts)
+    )
 
     # ATLANTIS additions
-    max_daily_trades: int = 500            # Max trades per day
-    max_correlation: float = 0.80          # Max allowed correlation between positions
-    kelly_fraction: float = 0.35           # Fraction of Kelly (0.35 = fractional Kelly)
-    default_win_prob: float = 0.55         # Default win prob for Kelly calc
-    default_wl_ratio: float = 1.5          # Default win/loss ratio for Kelly
+    max_daily_trades: int = 500  # Max trades per day
+    max_correlation: float = 0.80  # Max allowed correlation between positions
+    kelly_fraction: float = 0.35  # Fraction of Kelly (0.35 = fractional Kelly)
+    default_win_prob: float = 0.55  # Default win prob for Kelly calc
+    default_wl_ratio: float = 1.5  # Default win/loss ratio for Kelly
 
     # Advanced position guardrails (Phase 6)
-    trailing_stop_pct: float = 0.02        # Trail stop 2% behind highest price
-    trailing_stop_activation: float = 0.015 # Activate trailing after 1.5% profit
-    max_position_cycles: int = 0            # Auto-close after N cycles (0 = disabled)
-    position_stop_pct: float = 0.05         # Per-position max drawdown (0 = disabled)
+    trailing_stop_pct: float = 0.02  # Trail stop 2% behind highest price
+    trailing_stop_activation: float = 0.015  # Activate trailing after 1.5% profit
+    max_position_cycles: int = 0  # Auto-close after N cycles (0 = disabled)
+    position_stop_pct: float = 0.05  # Per-position max drawdown (0 = disabled)
+
+    # Exchange whose fee schedule applies (set by the harness; '' = paper).
+    # Drives the fee-aware sizing guard: ''/paper = zero fees, 'multi' =
+    # route-aware kraken % (crypto) / IBKR fixed (stocks), etc.
+    _exchange: str = ""
 
     # VaR
-    var_confidence: float = 0.95           # VaR confidence level
-    var_window_days: int = 30              # VaR lookback window
-    daily_vol_assumption: float = 0.02     # 2% daily vol for VaR
+    var_confidence: float = 0.95  # VaR confidence level
+    var_window_days: int = 30  # VaR lookback window
+    daily_vol_assumption: float = 0.02  # 2% daily vol for VaR
 
 
 @dataclass
 class RiskResult:
     """Result of a risk check."""
+
     approved: bool
     reason: str = ""
     adjusted_size: float = 0.0
@@ -74,9 +84,14 @@ class RiskManager:
         self._peak_value: float = 0.0
         self._initial_cash: float = 0.0
         self._daily_trades: int = 0
+        self._daily_fee_drag: float = 0.0
         self._last_reset_date: str = ""
-        self._seen_trade_keys: set = set()  # dedup same signal through pre_trade_check + check
-        self._config_lock = threading.Lock()  # serializes override save/restore in check()
+        self._seen_trade_keys: set = (
+            set()
+        )  # dedup same signal through pre_trade_check + check
+        self._config_lock = (
+            threading.Lock()
+        )  # serializes override save/restore in check()
 
     # ── Lifecycle ──────────────────────────────────────────────────
 
@@ -86,7 +101,7 @@ class RiskManager:
 
     # ── Per-symbol parameter overrides from optimizer ──────────
 
-    _opt_params_cache: dict = {}   # {mtime_ns: {symbol: {param: value}}}
+    _opt_params_cache: dict = {}  # {mtime_ns: {symbol: {param: value}}}
     _opt_path: str = ""
 
     def _load_symbol_params(self, state_dir: str = "") -> Dict[str, dict]:
@@ -96,6 +111,7 @@ class RiskManager:
         Returns {symbol: {param_name: value}}.
         """
         import os
+
         if not state_dir:
             return {}
         path = os.path.join(state_dir, "optimal_params.json")
@@ -132,11 +148,21 @@ class RiskManager:
         sym_params = params.get(symbol, {})
         if not sym_params or sym_params.get("sample_size", 0) < 5:
             return {}
-        return {k: v for k, v in sym_params.items()
-                if k in ("stop_loss_pct", "take_profit_pct", "max_position_cycles",
-                         "kelly_fraction", "trailing_stop_pct",
-                         "trailing_stop_activation", "position_stop_pct")
-                and isinstance(v, (int, float))}
+        return {
+            k: v
+            for k, v in sym_params.items()
+            if k
+            in (
+                "stop_loss_pct",
+                "take_profit_pct",
+                "max_position_cycles",
+                "kelly_fraction",
+                "trailing_stop_pct",
+                "trailing_stop_activation",
+                "position_stop_pct",
+            )
+            and isinstance(v, (int, float))
+        }
 
     def update_peak(self, portfolio_value: float) -> None:
         if portfolio_value > self._peak_value:
@@ -147,6 +173,7 @@ class RiskManager:
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         if today != self._last_reset_date:
             self._daily_trades = 0
+            self._daily_fee_drag = 0.0
             self._last_reset_date = today
             self._seen_trade_keys.clear()
 
@@ -180,10 +207,9 @@ class RiskManager:
 
     # ── ATLANTIS Additions ─────────────────────────────────────────
 
-    
-
-    def kelly_criterion(self, win_prob: float = None,
-                        win_loss_ratio: float = None) -> float:
+    def kelly_criterion(
+        self, win_prob: float = None, win_loss_ratio: float = None
+    ) -> float:
         """Kelly Criterion: optimal fraction of capital to risk.
 
         f* = (p * b - (1 - p)) / b
@@ -192,7 +218,11 @@ class RiskManager:
         Returns fraction of capital (0.0 to 1.0).
         """
         p = win_prob if win_prob is not None else self.config.default_win_prob
-        b = win_loss_ratio if win_loss_ratio is not None else self.config.default_wl_ratio
+        b = (
+            win_loss_ratio
+            if win_loss_ratio is not None
+            else self.config.default_wl_ratio
+        )
 
         if b <= 0:
             return 0.0
@@ -203,8 +233,12 @@ class RiskManager:
         fraction = self.config.kelly_fraction
         return round(kelly * fraction, 6)
 
-    def check_correlation(self, new_symbol: str, existing_positions: Dict[str, float],
-                          price_history: Dict[str, List[float]]) -> float:
+    def check_correlation(
+        self,
+        new_symbol: str,
+        existing_positions: Dict[str, float],
+        price_history: Dict[str, List[float]],
+    ) -> float:
         """Compute max Pearson correlation between new asset and existing positions.
 
         Returns the maximum correlation found. > 0.80 flags concentration risk.
@@ -225,10 +259,10 @@ class RiskManager:
             n = min(len(new_prices), len(existing_prices))
             x, y = new_prices[-n:], existing_prices[-n:]
 
-            mx, my = sum(x)/n, sum(y)/n
-            cov = sum((x[i]-mx)*(y[i]-my) for i in range(n)) / n
-            sx = math.sqrt(sum((v-mx)**2 for v in x) / n)
-            sy = math.sqrt(sum((v-my)**2 for v in y) / n)
+            mx, my = sum(x) / n, sum(y) / n
+            cov = sum((x[i] - mx) * (y[i] - my) for i in range(n)) / n
+            sx = math.sqrt(sum((v - mx) ** 2 for v in x) / n)
+            sy = math.sqrt(sum((v - my) ** 2 for v in y) / n)
 
             if sx == 0 or sy == 0:
                 continue
@@ -236,8 +270,9 @@ class RiskManager:
 
         return max_corr
 
-    def var_calculation(self, portfolio_value: float,
-                        confidence: float = None) -> float:
+    def var_calculation(
+        self, portfolio_value: float, confidence: float = None
+    ) -> float:
         """Simple historical Value-at-Risk using daily volatility assumption.
 
         VaR = portfolio_value * daily_vol * sqrt(window_days) * z_score
@@ -248,9 +283,14 @@ class RiskManager:
         var = portfolio_value * daily_vol * math.sqrt(self.config.var_window_days) * z
         return var
 
-    def pre_trade_check(self, signal, portfolio: dict, prices: dict,
-                        current_positions: dict = None,
-                        price_history: dict = None) -> tuple:
+    def pre_trade_check(
+        self,
+        signal,
+        portfolio: dict,
+        prices: dict,
+        current_positions: dict = None,
+        price_history: dict = None,
+    ) -> tuple:
         """Run ALL risk checks in sequence. Returns (approved, reason).
 
         Combines: circuit breaker, correlation, position limits, Kelly, VaR.
@@ -277,9 +317,14 @@ class RiskManager:
 
     # ── Core Order Check (existing OpenTrader interface) ──────────
 
-    def check(self, signal, portfolio: dict, prices: dict,
-              current_positions: dict = None,
-              overrides: Dict[str, float] = None) -> RiskResult:
+    def check(
+        self,
+        signal,
+        portfolio: dict,
+        prices: dict,
+        current_positions: dict = None,
+        overrides: Dict[str, float] = None,
+    ) -> RiskResult:
         """Validate and adjust a signal against risk rules.
 
         This is the primary entry point used by the harness.
@@ -313,8 +358,9 @@ class RiskManager:
                 for attr, original in saved.items():
                     setattr(self.config, attr, original)
 
-    def _check_inner(self, signal, portfolio: dict, prices: dict,
-                     current_positions: dict = None) -> RiskResult:
+    def _check_inner(
+        self, signal, portfolio: dict, prices: dict, current_positions: dict = None
+    ) -> RiskResult:
         """Internal check logic (extracted for override save/restore pattern)."""
         self._reset_daily()
 
@@ -332,8 +378,23 @@ class RiskManager:
         # ── Fee-aware minimum position check ────────────────────
         notional = signal.position_pct * total_value
         try:
-            from state.context import AccountContext, FEE_TABLES
-            fees = FEE_TABLES.get(getattr(self.config, '_exchange', 'paper'), {}).get("default")
+            from state.context import AccountContext, FEE_TABLES, FeeSchedule
+
+            fees = FEE_TABLES.get(getattr(self.config, "_exchange", "paper"), {})
+            # Route-aware: crypto -> %-based, stocks -> fixed. The multi
+            # router exposes the per-symbol route; fall back to the table's
+            # "default" when the exchange isn't a router or route is unknown.
+            if isinstance(fees, dict):
+                route = (
+                    "stock"
+                    if not getattr(signal, "is_crypto", False)
+                    and "/" not in (signal.symbol or "")
+                    else "crypto"
+                )
+                fees = fees.get(route) or fees.get("default")
+            elif not isinstance(fees, FeeSchedule):
+                fees = None
+
             if fees:
                 round_trip = fees.round_trip_cost(notional)
                 fee_pct = round_trip / notional if notional > 0 else 999
@@ -342,6 +403,35 @@ class RiskManager:
                         approved=False,
                         reason=f"fees too high: ${round_trip:.2f} = {fee_pct:.0%} of ${notional:.2f} position (max 20%)",
                     )
+                # Hard min-notional floor: ~$5 (exchange minimums) OR the
+                # 20%-fee break-even, whichever is larger.
+                min_floor = max(5.0, fees.min_notional(max_cost_pct=0.20))
+                if notional < min_floor:
+                    return RiskResult(
+                        approved=False,
+                        reason=f"position too small: ${notional:.2f} < ${min_floor:.2f} min notional (fee-aware)",
+                    )
+        except Exception:
+            pass
+
+        # ── Daily fee-drag ceiling (small-account guard) ───────
+        # On a $50–300 account, one day of fees must not meaningfully dent
+        # capital. Track cumulative round-trip fees today vs total_value.
+        try:
+            from state.context import FEE_TABLES as _FT, FeeSchedule as _FS
+
+            _fees2 = _FT.get(getattr(self.config, "_exchange", "paper"), {})
+            if isinstance(_fees2, dict):
+                _route = "stock" if "/" not in (signal.symbol or "") else "crypto"
+                _fees2 = _fees2.get(_route) or _fees2.get("default")
+            if isinstance(_fees2, _FS):
+                _rt = _fees2.round_trip_cost(notional)
+                _total_drag = getattr(self, "_daily_fee_drag", 0.0) + _rt
+                if total_value > 0 and _total_drag > 0.05 * total_value:
+                    return RiskResult(
+                        approved=False,
+                        reason=f"daily fee drag ${_total_drag:.2f} exceeds 5% of account (${total_value:.2f})",
+                    )
         except Exception:
             pass
 
@@ -349,7 +439,7 @@ class RiskManager:
         if self._daily_trades >= self.config.max_daily_trades:
             return RiskResult(
                 approved=False,
-                reason=f"daily trade limit ({self.config.max_daily_trades}) reached"
+                reason=f"daily trade limit ({self.config.max_daily_trades}) reached",
             )
 
         # ── Position sizing ───────────────────────────────────
@@ -357,12 +447,16 @@ class RiskManager:
         _inpct = size_pct
         size_pct = min(size_pct, self.config.max_position_pct)
         if size_pct != _inpct:
-            logger.debug(f"  Risk[{signal.symbol}]: max_position_pct cap: {_inpct:.3f}→{size_pct:.3f}")
+            logger.debug(
+                f"  Risk[{signal.symbol}]: max_position_pct cap: {_inpct:.3f}→{size_pct:.3f}"
+            )
         proposed_value = total_value * size_pct
         if proposed_value > self.config.max_order_value:
             _prev = size_pct
             size_pct = self.config.max_order_value / max(total_value, 1)
-            logger.debug(f"  Risk[{signal.symbol}]: max_order cap: {_prev:.4f}→{size_pct:.4f}")
+            logger.debug(
+                f"  Risk[{signal.symbol}]: max_order cap: {_prev:.4f}→{size_pct:.4f}"
+            )
 
         # ── Cash check (BUY only) ─────────────────────────────
         if signal.action.upper() == "BUY":
@@ -372,16 +466,21 @@ class RiskManager:
                     return RiskResult(approved=False, reason="insufficient cash")
                 _prev = size_pct
                 size_pct = available / total_value
-                logger.debug(f"  Risk[{signal.symbol}]: cash cap: {_prev:.4f}→{size_pct:.4f}")
+                logger.debug(
+                    f"  Risk[{signal.symbol}]: cash cap: {_prev:.4f}→{size_pct:.4f}"
+                )
 
             # Max positions
-            existing = sum(1 for qty in positions.values()
-                          if (isinstance(qty, (int, float)) and qty > 0) or
-                             (isinstance(qty, dict) and qty.get("quantity", 0) > 0))
+            existing = sum(
+                1
+                for qty in positions.values()
+                if (isinstance(qty, (int, float)) and qty > 0)
+                or (isinstance(qty, dict) and qty.get("quantity", 0) > 0)
+            )
             if existing >= self.config.max_positions:
                 return RiskResult(
                     approved=False,
-                    reason=f"max positions ({self.config.max_positions}) reached"
+                    reason=f"max positions ({self.config.max_positions}) reached",
                 )
 
             # Total exposure — validated upstream by Committee (monitors.py)
@@ -397,7 +496,9 @@ class RiskManager:
             if size_pct > kelly:
                 _prev = size_pct
                 size_pct = kelly
-                logger.debug(f"  Risk[{signal.symbol}]: kelly cap: {_prev:.4f}→{size_pct:.4f} (kelly={kelly:.4f})")
+                logger.debug(
+                    f"  Risk[{signal.symbol}]: kelly cap: {_prev:.4f}→{size_pct:.4f} (kelly={kelly:.4f})"
+                )
 
         elif signal.action.upper() == "SELL":
             pos_qty = 0
@@ -407,7 +508,9 @@ class RiskManager:
             else:
                 pos_qty = float(pos or 0)
             if pos_qty <= 0:
-                return RiskResult(approved=False, reason=f"no position in {signal.symbol}")
+                return RiskResult(
+                    approved=False, reason=f"no position in {signal.symbol}"
+                )
 
         # ── Stop-loss / Take-profit ──────────────────────────
         stop_loss = signal.stop_loss
@@ -428,18 +531,35 @@ class RiskManager:
         if trade_key not in self._seen_trade_keys:
             self._seen_trade_keys.add(trade_key)
             self._daily_trades += 1
-        logger.info(f"  RiskDBG[{signal.symbol}]: FINAL adj_size={size_pct:.4f} "
-                     f"sig_in={signal.position_pct:.4f} "
-                     f"caps=[max_pos={self.config.max_position_pct:.3f} "
-                     f"max_ord={self.config.max_order_value:.0f} "
-                     f"cash_r={self.config.min_cash_reserve:.0f} "
-                     f"max_exp={self.config.max_total_exposure:.3f} "
-                     f"klly_f={self.config.kelly_fraction:.3f}] "
-                     f"state=[tv={total_value:.0f} cash={cash:.0f} "
-                     f"price={price:.2f} npos={len(positions)} "
-                     f"prop_v={proposed_value:.0f}]")
+            # Accumulate fee drag for the daily 5% ceiling (small-account guard)
+            try:
+                from state.context import FEE_TABLES as _FT2, FeeSchedule as _FS2
+
+                _f = _FT2.get(getattr(self.config, "_exchange", "paper"), {})
+                if isinstance(_f, dict):
+                    _r = "stock" if "/" not in (signal.symbol or "") else "crypto"
+                    _f = _f.get(_r) or _f.get("default")
+                if isinstance(_f, _FS2):
+                    self._daily_fee_drag = getattr(self, "_daily_fee_drag", 0.0) + (
+                        _f.round_trip_cost(notional)
+                    )
+            except Exception:
+                pass
+        logger.info(
+            f"  RiskDBG[{signal.symbol}]: FINAL adj_size={size_pct:.4f} "
+            f"sig_in={signal.position_pct:.4f} "
+            f"caps=[max_pos={self.config.max_position_pct:.3f} "
+            f"max_ord={self.config.max_order_value:.0f} "
+            f"cash_r={self.config.min_cash_reserve:.0f} "
+            f"max_exp={self.config.max_total_exposure:.3f} "
+            f"klly_f={self.config.kelly_fraction:.3f}] "
+            f"state=[tv={total_value:.0f} cash={cash:.0f} "
+            f"price={price:.2f} npos={len(positions)} "
+            f"prop_v={proposed_value:.0f}]"
+        )
         return RiskResult(
-            approved=True, reason="ok",
+            approved=True,
+            reason="ok",
             adjusted_size=round(size_pct, 4),
             adjusted_stop=round(stop_loss, 2),
             adjusted_tp=round(take_profit, 2),
@@ -463,12 +583,13 @@ class RiskManager:
         """
         from risk.portfolio_optimizer import PortfolioOptimizer
         import logging
+
         _log = logging.getLogger(__name__)
         _log.debug(
             f"  MGR-ALLOCATE: signals={len(signals)} "
             f"({', '.join(f'{s.symbol}={s.action}' for s in signals)}), "
             f"prices={list(prices.keys())[:5]}, "
-            f"pos={list(portfolio.get('positions',{}).keys())[:5]}"
+            f"pos={list(portfolio.get('positions', {}).keys())[:5]}"
             f"  max_pos_pct={self.config.max_position_pct}"
             f"  kelly_frac={self.config.kelly_fraction}"
             f"  max_exposure={self.config.max_total_exposure}"
@@ -493,7 +614,9 @@ class RiskManager:
 
     @staticmethod
     def extract_price_history(
-        exchange: Any, symbols: list, lookback: int = 50,
+        exchange: Any,
+        symbols: list,
+        lookback: int = 50,
         timeframe: str = "1h",
     ) -> Dict[str, list]:
         """Extract price history from exchange bars for correlation computation.
@@ -531,6 +654,7 @@ class RiskManager:
         Delegates to PortfolioOptimizer's static compute_portfolio_metrics.
         """
         from risk.portfolio_optimizer import PortfolioOptimizer
+
         return PortfolioOptimizer.compute_portfolio_metrics(
             positions=positions,
             prices=prices,

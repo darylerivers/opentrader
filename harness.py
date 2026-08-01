@@ -390,6 +390,9 @@ class OpenTraderHarness:
             take_profit_pct=opt.get("take_profit_pct", 0.10),
             max_total_exposure=opt.get("max_total_exposure", 0.60),
         )
+        risk_cfg._exchange = (
+            self.exchange.name if hasattr(self.exchange, "name") else exchange
+        )
         if sidecar:
             from risk.sidecar_adapter import RiskSidecarAdapter
 
