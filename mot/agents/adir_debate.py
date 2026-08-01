@@ -81,8 +81,9 @@ from mot.agents.debate import (
 # Prevents concurrent-request flooding when the harness runs 3 symbols × 2 agents
 # simultaneously via nested ThreadPoolExecutors. llama-server --parallel 8 handles
 # up to 8 concurrent slots, but HTTP queue backpressure causes 502s at higher fan-out.
-# This semaphore caps concurrent API calls at 2, forcing staggered execution.
-_API_SEMAPHORE = threading.Semaphore(2)
+# This semaphore caps concurrent API calls; 2 servers × parallel 2 = 4 slots, so 4 lets
+# two symbols' bull+bear debates overlap without queueing.
+_API_SEMAPHORE = threading.Semaphore(4)
 
 logger = logging.getLogger("opentrader.adir")
 
@@ -756,26 +757,51 @@ class AdirDebateEngine:
         risk_reasoning = "Heuristic synthesis"
 
         # ── Final synthesis ──
+        # A directional trade REQUIRES at least one side to actually vote for
+        # it. Two HOLD votes — even with inflated Toulmin evidence quality —
+        # must never synthesize into a BUY/SELL: the score-weighted fallback
+        # used to fabricate phantom entries from models sitting on the fence,
+        # which churned fees via instant buy->sell->buy flip-flops (last night
+        # all 50 trades carried "Bull(HOLD) vs Bear(HOLD)" reasons).
+        both_hold = bull.action == "HOLD" and bear.action == "HOLD"
+
         # When both agents agree on action, use their consensus
-        if bull.action == bear.action and bull.action in ("BUY", "SELL"):
+        if (
+            not both_hold
+            and bull.action == bear.action
+            and bull.action in ("BUY", "SELL")
+        ):
             final_action = bull.action
             final_conf = (
                 max(bull.confidence, bear.confidence) * (bull_score + bear_score) / 2
             )
-        elif risk_conf >= 0.6:
+        elif not both_hold and risk_conf >= 0.6:
             final_action = verdict.upper()
             final_conf = risk_conf
         else:
-            # When risk uncertain, use score-weighted combination
+            # When risk uncertain, use score-weighted combination — but only
+            # take a direction the winning side actually voted for.
             score_sum = max(
                 0.1, bull_score + bear_score
             )  # prevent division blowup from negative scores
-            if bull_score > bear_score:
-                final_action = "BUY"
+            if (
+                not both_hold
+                and bull_score > bear_score
+                and bull.action in ("BUY", "SELL")
+            ):
+                final_action = bull.action
                 final_conf = bull.confidence * (bull_score / score_sum)
-            else:
+            elif (
+                not both_hold
+                and bear_score >= bull_score
+                and bear.action in ("BUY", "SELL")
+            ):
                 final_action = bear.action
                 final_conf = bear.confidence * (bear_score / score_sum)
+            else:
+                # Neither side voted to trade → stay flat (no phantom entry).
+                final_action = "HOLD"
+                final_conf = max(0.0, risk_conf)
 
         # Position sizing: conviction × evidence quality
         pos_pct = round(final_conf * 0.25, 4)

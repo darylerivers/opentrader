@@ -38,6 +38,9 @@ class AgentContext:
     news_json: str = ""  # Crypto news & sentiment JSON
     fundamentals_json: str = ""  # Fundamentals (SEC EDGAR) context
     valuation_json: str = ""  # DCF/EPV/Quality valuation context
+    funding_json: str = ""  # Perp funding rates context (wayfinder #22)
+    depth_json: str = ""  # Order-book depth context (wayfinder #22)
+    fred_json: str = ""  # FRED macro context block (wayfinder #20)
     # Typed data for heuristic fallback (avoids json.loads round-trip on text fields)
     ohlcv_bars: Optional[List[Any]] = (
         None  # List[OHLCV] raw bars for heuristic computation

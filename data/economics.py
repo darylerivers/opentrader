@@ -269,6 +269,51 @@ def fetch_economics(force_fred: bool = False) -> dict:
     return simulated
 
 
+def fred_to_context(bundle: dict) -> str:
+    """Render an economics bundle as a compact [FRED] context block for the
+    debate engine (wayfinder #20). Empty string when nothing usable is present.
+    """
+    indicators = bundle.get("indicators") if isinstance(bundle, dict) else None
+    if not indicators:
+        return ""
+    labels = {
+        "GDP": "GDP",
+        "UNRATE": "Unemployment",
+        "CPIAUCSL": "CPI (index)",
+        "FEDFUNDS": "Fed Funds Rate",
+        "DFF": "Fed Funds Rate",
+        "DGS10": "10Y Treasury",
+        "DGS2": "2Y Treasury",
+        "T10YIE": "10Y Breakeven Inflation",
+        "SP500": "S&P 500",
+    }
+
+    def _fmt(name, value):
+        try:
+            fv = float(value)
+        except (TypeError, ValueError):
+            return str(value), ""
+        if name == "GDP":
+            return f"${fv / 1000:.1f}T", ""
+        if name in ("CPIAUCSL", "SP500"):
+            return f"{fv:,.1f}", ""
+        return f"{fv:g}", "%"
+
+    lines = []
+    for ind in indicators:
+        name = ind.get("name", "?")
+        value = ind.get("value")
+        if value is None:
+            continue
+        value_s, unit = _fmt(name, value)
+        date = ind.get("date", "")[:10]
+        lines.append(f"  {labels.get(name, name)}: {value_s}{unit}  ({date})")
+    if not lines:
+        return ""
+    source = bundle.get("source", "?")
+    return "[FRED]\n" + "\n".join(lines) + f"\n  source: {source}\n"
+
+
 # ── CLI test ────────────────────────────────────────────────────
 
 if __name__ == "__main__":

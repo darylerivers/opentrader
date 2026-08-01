@@ -233,6 +233,7 @@ class TrainingCoach:
             report["regime_counts"] = regime_counts
             report["timestamp"] = datetime.utcnow().isoformat()
             self.reports.append(report)
+            self.reports = self.reports[-100:]
             self._last_review_cycle = cycle
             self._current_grade = report.get("grade", "F")
             self._retrain_queued = report.get("retrain_recommended", False)

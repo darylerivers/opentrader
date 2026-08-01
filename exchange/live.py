@@ -281,6 +281,47 @@ class LiveExchange(ExchangeBase):
             logger.error(f"Ticker fetch failed for {symbol}: {e}")
             return None
 
+    def get_order_book_depth(self, symbol: str, limit: int = 10) -> Optional[dict]:
+        """Spot order-book depth: best bid/ask, spread, volume imbalance.
+
+        Spot-only guard: returns None for non-crypto (no '/') symbols or on
+        any failure. Prototype per wayfinder #22 — model-sees-data only.
+        """
+        if not self._connected or not self._ccxt:
+            return None
+        if "/" not in symbol:
+            return None
+        try:
+            self._rate_limit_wait()
+            market = self._ensure_market_symbol(symbol)
+            ob = self._ccxt.fetch_order_book(market, limit=limit)
+            bids = ob.get("bids") or []
+            asks = ob.get("asks") or []
+            if not bids or not asks:
+                return None
+            best_bid = float(bids[0][0])
+            best_ask = float(asks[0][0])
+            bid_vol = sum(float(b[1]) for b in bids)
+            ask_vol = sum(float(a[1]) for a in asks)
+            spread = best_ask - best_bid
+            spread_pct = spread / best_ask if best_ask > 0 else 0.0
+            imbalance = (bid_vol - ask_vol) / max(bid_vol + ask_vol, 1e-9)
+            return {
+                "symbol": symbol,
+                "best_bid": best_bid,
+                "best_ask": best_ask,
+                "spread": spread,
+                "spread_pct": round(spread_pct, 6),
+                "bid_vol": round(bid_vol, 4),
+                "ask_vol": round(ask_vol, 4),
+                "imbalance": round(imbalance, 4),
+                "n_bids": len(bids),
+                "n_asks": len(asks),
+            }
+        except Exception as e:
+            logger.error(f"Order book depth failed for {symbol}: {e}")
+            return None
+
     def place_order(self, symbol: str, side: str, quantity: float,
                     order_type: str = "market", price: Optional[float] = None) -> OrderResult:
         """Paper execution — matches PaperExchange logic.

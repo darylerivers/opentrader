@@ -130,6 +130,15 @@ class MultiExchangeRouter(ExchangeBase):
 
         return result
 
+    def get_order_book_depth(self, symbol: str, limit: int = 10) -> Optional[dict]:
+        """Spot order-book depth for crypto symbols (delegates to kraken backend)."""
+        if not self._is_crypto(symbol):
+            return None
+        ex = self._route(symbol)
+        if hasattr(ex, "get_order_book_depth"):
+            return ex.get_order_book_depth(symbol, limit)
+        return None
+
     def load_bars(self, symbol: str, bars: List[dict]) -> None:
         self._route(symbol).load_bars(symbol, bars)
 

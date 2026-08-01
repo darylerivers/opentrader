@@ -673,8 +673,74 @@ class DebateEngine:
         if position_qty > 0 and position_entry > 0 and current > 0:
             position_pnl = (current / position_entry - 1) * 100
 
-        context = (
-            f"SYMBOL: {symbol}  |  Price: ${current:,.2f}\n"
+        # ── Shared cycle-level context FIRST (identical across symbols within a
+        #    cycle → llama.cpp KV-cache prefix reuse across bull calls and
+        #    across bear calls, cutting redundant re-tokenization). ──
+        shared = ""
+        if econ:
+            try:
+                from data.economics import fred_to_context
+
+                _fred = fred_to_context(econ)
+            except Exception:
+                _fred = ""
+            shared += _fred or f"\nMacro: {json.dumps(econ, indent=1)[:200]}\n"
+        if news.get("sources"):
+            fg = news["sources"].get("fear_greed", {})
+            gl = news["sources"].get("coingecko_global", {})
+            btc = news["sources"].get("btc_stats", {})
+            fg_val = fg.get("value", 50)
+            fg_hint = ""
+            if fg_val <= 25:
+                fg_hint = " ← CONTRARIAN BUY SIGNAL (Extreme Fear = opportunity)"
+            elif fg_val >= 75:
+                fg_hint = " ← CONTRARIAN SELL SIGNAL (Extreme Greed = caution)"
+            shared += (
+                f"\nCRYPTO SENTIMENT:\n"
+                f"  Fear & Greed: {fg_val}/100 ({fg.get('classification', '?')}){fg_hint}\n"
+                f"  Total Market Cap: ${gl.get('total_market_cap_usd', 0) / 1e12:.2f}T "
+                f"(24h: {gl.get('market_cap_change_24h_pct', 0):+.1f}%)\n"
+                f"  BTC Dominance: {gl.get('btc_dominance_pct', 0):.1f}%\n"
+            )
+            if btc:
+                shared += (
+                    f"  BTC: ${btc.get('price_usd', 0):,.0f} "
+                    f"(24h: {btc.get('price_change_24h_pct', 0):+.1f}% "
+                    f"7d: {btc.get('price_change_7d_pct', 0):+.1f}% "
+                    f"ATH: ${btc.get('ath_usd', 0):,.0f} [{btc.get('ath_change_pct', 0):+.1f}%])\n"
+                )
+            trending = (
+                news["sources"].get("coingecko_trending", {}).get("top_trending", [])
+            )
+            if trending:
+                names = ", ".join(c["symbol"] for c in trending[:5])
+                shared += f"  Trending: {names}\n"
+        # ── Equity market data ──
+        equity = (
+            news.get("sources", {}).get("equity_markets", {})
+            if isinstance(news, dict)
+            else {}
+        )
+        if equity:
+            sp = equity.get("sp500", {})
+            ix = equity.get("nasdaq", {})
+            vx = equity.get("vix", {})
+            shared += (
+                f"\nEQUITY MARKETS:\n"
+                f"  S&P 500: {sp.get('price', 0):,.0f} ({sp.get('change_pct', 0):+.1f}%)\n"
+                f"  NASDAQ: {ix.get('price', 0):,.0f} ({ix.get('change_pct', 0):+.1f}%)\n"
+                f"  VIX: {vx.get('price', 0):,.0f}"
+            )
+            if vx.get("price", 0) > 25:
+                shared += " (ELEVATED FEAR)"
+            elif vx.get("price", 0) < 15:
+                shared += " (COMPLACENCY)"
+            shared += "\n"
+
+        # ── Symbol-specific context AFTER the shared block ──
+        context = shared
+        context += (
+            f"\nSYMBOL: {symbol}  |  Price: ${current:,.2f}\n"
             f"Portfolio: ${float(portfolio.get('total_value', 0)):,.2f} "
             f"(cash: ${float(portfolio.get('cash', 0)):,.2f})\n"
         )
@@ -692,59 +758,6 @@ class DebateEngine:
             f"\nRecent closes: "
             f"{' → '.join(f'${p:,.0f}' for p in prices[-10:])}\n"
         )
-        if econ:
-            context += f"\nMacro: {json.dumps(econ, indent=1)[:200]}\n"
-        if news.get("sources"):
-            fg = news["sources"].get("fear_greed", {})
-            gl = news["sources"].get("coingecko_global", {})
-            btc = news["sources"].get("btc_stats", {})
-            fg_val = fg.get("value", 50)
-            fg_hint = ""
-            if fg_val <= 25:
-                fg_hint = " ← CONTRARIAN BUY SIGNAL (Extreme Fear = opportunity)"
-            elif fg_val >= 75:
-                fg_hint = " ← CONTRARIAN SELL SIGNAL (Extreme Greed = caution)"
-            context += (
-                f"\nCRYPTO SENTIMENT:\n"
-                f"  Fear & Greed: {fg_val}/100 ({fg.get('classification', '?')}){fg_hint}\n"
-                f"  Total Market Cap: ${gl.get('total_market_cap_usd', 0) / 1e12:.2f}T "
-                f"(24h: {gl.get('market_cap_change_24h_pct', 0):+.1f}%)\n"
-                f"  BTC Dominance: {gl.get('btc_dominance_pct', 0):.1f}%\n"
-            )
-            if btc:
-                context += (
-                    f"  BTC: ${btc.get('price_usd', 0):,.0f} "
-                    f"(24h: {btc.get('price_change_24h_pct', 0):+.1f}% "
-                    f"7d: {btc.get('price_change_7d_pct', 0):+.1f}% "
-                    f"ATH: ${btc.get('ath_usd', 0):,.0f} [{btc.get('ath_change_pct', 0):+.1f}%])\n"
-                )
-            trending = (
-                news["sources"].get("coingecko_trending", {}).get("top_trending", [])
-            )
-            if trending:
-                names = ", ".join(c["symbol"] for c in trending[:5])
-                context += f"  Trending: {names}\n"
-        # ── Equity market data ──
-        equity = (
-            news.get("sources", {}).get("equity_markets", {})
-            if isinstance(news, dict)
-            else {}
-        )
-        if equity:
-            sp = equity.get("sp500", {})
-            ix = equity.get("nasdaq", {})
-            vx = equity.get("vix", {})
-            context += (
-                f"\nEQUITY MARKETS:\n"
-                f"  S&P 500: {sp.get('price', 0):,.0f} ({sp.get('change_pct', 0):+.1f}%)\n"
-                f"  NASDAQ: {ix.get('price', 0):,.0f} ({ix.get('change_pct', 0):+.1f}%)\n"
-                f"  VIX: {vx.get('price', 0):,.0f}"
-            )
-            if vx.get("price", 0) > 25:
-                context += " (ELEVATED FEAR)"
-            elif vx.get("price", 0) < 15:
-                context += " (COMPLACENCY)"
-            context += "\n"
         # ── Multi-Timeframe Indicators ──
         tf_context = self._compute_tf_indicators(bars)
         context += tf_context

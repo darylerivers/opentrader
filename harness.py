@@ -1917,6 +1917,12 @@ class OpenTraderHarness:
                 self._econ_cycle = self.cycle
                 self._econ_cache = json.dumps(self.mcp.get_economics())
             ctx.economics_json = self._econ_cache or json.dumps({"source": "pending"})
+            try:
+                from data.economics import fred_to_context
+
+                ctx.fred_json = fred_to_context(json.loads(ctx.economics_json))
+            except Exception:
+                ctx.fred_json = ""
         except Exception:
             ctx.economics_json = json.dumps({"source": "unavailable"})
 
@@ -1999,6 +2005,30 @@ class OpenTraderHarness:
                 self._fundamentals_coverage[sym] = "no_cik"
             else:
                 self._fundamentals_coverage.setdefault(sym, "missing")
+
+        # ── Crypto microstructure (funding + depth) — wayfinder #22 ──
+        # Crypto symbols carry "/" (e.g. BTC/USDT). Model-sees-data only.
+        try:
+            if "/" in sym:
+                from data.market_ctx import (
+                    fetch_funding,
+                    funding_to_context,
+                    depth_to_context,
+                )
+
+                funding = fetch_funding([sym])
+                fctx = funding_to_context(funding)
+                depth = None
+                if hasattr(self.exchange, "get_order_book_depth"):
+                    depth = self.exchange.get_order_book_depth(sym, limit=10)
+                dctx = depth_to_context(depth)
+                if fctx or dctx:
+                    block = (fctx + dctx).strip() + "\n\n"
+                    mtf_context = block + (mtf_context or "")
+                    ctx.funding_json = fctx
+                    ctx.depth_json = dctx
+        except Exception as e:
+            logger.debug(f"Funding/depth context skipped for {sym}: {e}")
 
         # ── Multi-timeframe context (4h + primary) ──
         mtf_signal_bias = 0.0  # weighted composite: 1h×0.5 + 4h×0.3 = bias adjustment
@@ -2176,11 +2206,7 @@ class OpenTraderHarness:
             return self._scout_flat(focus), self._scout_flat(focus)
 
         try:
-            price_batch = (
-                self.exchange.get_prices_batch(all_tickers)
-                if hasattr(self.exchange, "get_prices_batch")
-                else {}
-            )
+            price_batch = self._get_cached_price_batch(all_tickers)
         except Exception:
             price_batch = {}
 
@@ -2215,6 +2241,9 @@ class OpenTraderHarness:
             pick_dicts = self._llm_json_array(
                 prompt, key="symbol", max_n=20, min_score=1
             )
+            pick_dicts = sorted(
+                pick_dicts, key=lambda d: d.get("score", 0), reverse=True
+            )
             top20 = [d["symbol"] for d in pick_dicts if d.get("symbol")][:20]
         except Exception:
             pass
@@ -2223,53 +2252,9 @@ class OpenTraderHarness:
             f = self._scout_flat(focus)
             return f, f
 
-        # ── Tier 2: Agent Rating — Bull/Bear rate all 20 candidates ──
-        price_lines = "\n".join(
-            f"  {t}: ${price_batch.get(t, '?')}" for t in top20[:20]
-        )
-        bull_prompt = (
-            f"You are a MOMENTUM ANALYST. Rate these {len(top20)} tickers for BUY potential "
-            f"(1-10). Consider price momentum, sector, market context.\n\n"
-            f"{price_lines}\n\n"
-            f'JSON: [{{"symbol":"NVDA","score":8,"reason":"strong breakout"}}, ...]'
-        )
-        bear_prompt = (
-            f"You are a RISK ANALYST. Rate these {len(top20)} tickers for SELL risk "
-            f"(1-10). Consider overbought, sector weakness, headwinds.\n\n"
-            f"{price_lines}\n\n"
-            f'JSON: [{{"symbol":"NVDA","score":3,"reason":"overbought RSI"}}, ...]'
-        )
-
-        bull_scores = {}
-        bear_scores = {}
-        try:
-            bull_scores = {
-                d["symbol"]: d.get("score", 5)
-                for d in self._llm_json_array(
-                    bull_prompt, key="symbol", max_n=20, min_score=1
-                )
-            }
-        except Exception:
-            pass
-        try:
-            bear_scores = {
-                d["symbol"]: d.get("score", 5)
-                for d in self._llm_json_array(
-                    bear_prompt, key="symbol", max_n=20, min_score=1
-                )
-            }
-        except Exception:
-            pass
-
-        # Composite score: high BUY rating + low SELL risk = best candidate
-        composite = []
-        for t in top20:
-            b = bull_scores.get(t, 5)
-            s = bear_scores.get(t, 5)
-            composite.append((b - s, t, b, s))
-
-        composite.sort(reverse=True)
-        top6 = [t for _, t, _, _ in composite[:focus]]
+        # ── Tier 2 (simplified): rank by the radar momentum score, skipping the
+        #    two serial LLM bull/bear rating calls (saves ~2 LLM calls / scout) ──
+        top6 = top20[:focus]
 
         self._last_universe_pick = pick_dicts if pick_dicts else []
         logger.info(f"Scout: top20={len(top20)}, top6={top6}")
@@ -2307,6 +2292,22 @@ class OpenTraderHarness:
                     d for d in data if d.get("score", 0) >= min_score and d.get(key)
                 ]
         return []
+
+    def _get_cached_price_batch(self, all_tickers: list, ttl: int = 1800) -> dict:
+        """Batch price fetch cached for `ttl` seconds — the yfinance sweep over
+        the full universe is the single biggest per-cycle cost (~100s), and a
+        daily-bar strategy does not need fresher than ~30min quotes."""
+        now = time.time()
+        cached = getattr(self, "_price_batch_cache", None)
+        if cached and now - cached.get("ts", 0) < ttl:
+            return cached.get("data", {})
+        data = (
+            self.exchange.get_prices_batch(all_tickers)
+            if hasattr(self.exchange, "get_prices_batch")
+            else {}
+        )
+        self._price_batch_cache = {"ts": now, "data": data}
+        return data
 
     def _scout_flat(self, focus: int = 6) -> List[str]:
         import json as _json, re
@@ -2427,11 +2428,18 @@ class OpenTraderHarness:
                 all_hold = all(
                     last_sigs.get(s, {}).get("action", "") == "HOLD" for s in cached
                 )
+            # Rescout only every `_scout_interval` cycles, or after a sustained
+            # HOLD streak (>= 8) — a single HOLD cycle no longer forces the
+            # expensive full-universe sweep every cycle.
+            if all_hold:
+                self._hold_streak = getattr(self, "_hold_streak", 0) + 1
+            else:
+                self._hold_streak = 0
             if (
                 self.cycle % _scout_interval == 0
                 or not cached
                 or len(cached) < 4
-                or all_hold
+                or (all_hold and getattr(self, "_hold_streak", 0) >= 8)
             ):
                 top20, top6 = self._scout_universe(6)
                 # Guard: deduplicate and validate

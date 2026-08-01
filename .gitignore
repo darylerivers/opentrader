@@ -65,3 +65,5 @@ exchange_engine/
 *.bak
 data/paper_state.json.synthetic-era-bak
 *.bak-*
+*.pkl
+data/shadow_aab/

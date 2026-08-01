@@ -81,7 +81,7 @@ class FinnhubExchange(ExchangeBase):
         # Cache
         self._bar_cache: Dict[str, List[OHLCV]] = {}
         self._price_cache: Dict[str, float] = {}
-        self._cache_ttl: float = config.get("cache_ttl", 30.0)
+        self._cache_ttl: float = config.get("cache_ttl", 1200.0)
         self._last_fetch: Dict[str, float] = {}
         self._last_api_call: float = 0.0
         self._rate_limit: float = float(config.get("rate_limit", DEFAULT_RATE_LIMIT))

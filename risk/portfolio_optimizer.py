@@ -72,6 +72,7 @@ class PortfolioOptimizer:
         max_order_value: float = 50000.0,
         correlation_lookback: int = 50,  # bars for correlation calc
         correlation_penalty_strength: float = 0.5,  # how much to penalize correlated pairs
+        trim_deadband: float = 0.30,  # skip SELL-trims until target is 30% below holding
     ):
         self.max_position_pct = max_position_pct
         self.max_total_exposure = max_total_exposure
@@ -82,6 +83,7 @@ class PortfolioOptimizer:
         self.max_order_value = max_order_value
         self.correlation_lookback = correlation_lookback
         self.correlation_penalty_strength = correlation_penalty_strength
+        self.trim_deadband = max(0.0, min(0.90, trim_deadband))
 
     # ── Correlation Matrix ──────────────────────────────────────
 
@@ -428,11 +430,23 @@ class PortfolioOptimizer:
                 if target_qty > pos_qty:
                     qty = target_qty - pos_qty
                     side = "BUY"
+                    reason = f"kelly={weight:.2%} corr-adjusted"
                 else:
-                    qty = pos_qty - target_qty
-                    side = "SELL" if qty > 0 else "HOLD"
+                    # Hysteresis: don't SELL-trim on small Kelly drift. A trim
+                    # here is a fee-costly exit that often reverses the very next
+                    # cycle (buy->sell->buy churn). Only trim when the target is
+                    # materially below the current holding (>deadband relative).
+                    if pos_qty > 0 and target_qty >= pos_qty * (
+                        1 - self.trim_deadband
+                    ):
+                        qty = 0
+                        side = "HOLD"
+                        reason = f"holding (target within {self.trim_deadband:.0%} deadband)"
+                    else:
+                        qty = pos_qty - target_qty
+                        side = "SELL" if qty > 0 else "HOLD"
+                        reason = f"kelly={weight:.2%} corr-adjusted"
                 alloc_conf = sig.confidence
-                reason = f"kelly={weight:.2%} corr-adjusted"
             elif sig.action.upper() == "SELL":
                 qty = pos_qty
                 side = "SELL" if qty > 0 else "HOLD"
