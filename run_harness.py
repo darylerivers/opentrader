@@ -78,7 +78,7 @@ def main():
             "--stage",
             "2",
             "--cash",
-            "100000",
+            "500",
             "--max-cycles",
             "0",
             "--mot-force",

@@ -6,7 +6,7 @@
   "gpu0_host": "http://127.0.0.1:5801",
   "mcp_url": "http://127.0.0.1:8092",
   "default_exchange": "finnhub",
-  "default_cash": 100000,
+  "default_cash": 500,
   "stage": 2,
   "debate_mode": "adir",
   "parallel_debate": true,

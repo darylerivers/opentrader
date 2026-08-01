@@ -862,6 +862,28 @@ class OpenTraderHarness:
                 )
                 self.peak_value = self.initial_cash
                 self.risk.set_initial(self.initial_cash)
+            # If the restored ledger's initial_cash differs from the CLI --cash
+            # by more than 5%, the capital was hardcoded/rescaled — wipe the
+            # per-cycle history so the equity curve starts fresh at the new
+            # scale instead of showing the old account's trajectory.
+            saved_cash = state.get("_initial_cash")
+            if (
+                saved_cash
+                and abs(saved_cash - self.initial_cash) / max(abs(self.initial_cash), 1)
+                >= 0.05
+            ):
+                try:
+                    import shutil as _shutil
+
+                    hist_dir = os.path.join(self.state_dir, "history")
+                    if os.path.isdir(hist_dir):
+                        _shutil.rmtree(hist_dir)
+                        logger.info(
+                            f"Capital rescaled ${saved_cash:,.0f}→${self.initial_cash:,.0f}: "
+                            f"wiped history, equity curve starts fresh"
+                        )
+                except Exception as e:
+                    logger.warning(f"Could not wipe history on capital change: {e}")
             self.stage = (
                 self._force_stage if self._force_stage > 0 else state.get("_stage", 1)
             )
@@ -924,6 +946,27 @@ class OpenTraderHarness:
 
             if saved_cash is None:
                 return
+
+            # Capital-rescale guard: if the CLI --cash differs significantly
+            # from the saved ledger's initial_cash, the account was hardcoded
+            # to a new scale (e.g. $100k paper -> $500 real). Reset the ledger
+            # to the CLI cash and drop old positions — restoring a $100k
+            # ledger into a $500 account would be meaningless.
+            saved_initial = saved.get("initial_cash")
+            if (
+                saved_initial
+                and abs(saved_initial - self.initial_cash)
+                / max(abs(self.initial_cash), 1)
+                >= 0.05
+            ):
+                logger.info(
+                    f"Ledger rescaled ${saved_initial:,.0f}→${self.initial_cash:,.0f}: "
+                    f"resetting cash, dropping old positions"
+                )
+                saved_cash = float(self.initial_cash)
+                saved_positions = []
+                saved_fills = []
+                saved_initial = float(self.initial_cash)
 
             # Restore exchange ledger
             # Positions format: list of dicts with symbol, quantity, entry_price, current_price, etc.
