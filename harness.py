@@ -343,10 +343,28 @@ class OpenTraderHarness:
         # exchange directly rather than relying on pre-loaded synthetic bars.
         if self.universe_mode and not self._universe_loaded:
             self._universe_loaded = True
-            self._tradable_universe = list(TRADABLE_UNIVERSE)
-            logger.info(
-                f"Universe mode: {len(self._tradable_universe)} symbols available for scout"
-            )
+            # Prefer the curated industry registry (511 vetted names across 49
+            # sectors); raw exchange discovery returns alphabetically-sorted
+            # obscure NYSE names and isn't a good trading universe. The scout's
+            # radar already uses get_universe_tickers() = the registry.
+            from mot.industry_map import get_universe_tickers
+
+            try:
+                registry = get_universe_tickers()
+            except Exception:
+                registry = []
+            if registry:
+                self._tradable_universe = list(registry)
+                logger.info(
+                    f"Universe mode: {len(self._tradable_universe)} symbols "
+                    f"(curated industry registry)"
+                )
+            else:
+                self._tradable_universe = list(TRADABLE_UNIVERSE)
+                logger.info(
+                    f"Universe mode: {len(self._tradable_universe)} symbols "
+                    f"(static fallback)"
+                )
 
         # Load backtest data
         if backtest:
@@ -2234,9 +2252,21 @@ class OpenTraderHarness:
         import json as _json, re
         from urllib.request import Request, urlopen
 
-        universe = self._tradable_universe
+        # Radar fallback: use the full curated universe (industry registry),
+        # not the crypto-only discovered set — otherwise the fallback scout
+        # only ever sees crypto and never surfaces stocks.
+        try:
+            from mot.industry_map import get_universe_tickers
+
+            universe = get_universe_tickers()
+        except Exception:
+            universe = self._tradable_universe
         lines = []
-        for sym in universe:
+        # Bounded scan: per-symbol get_current_price (finnhub ~1s) + get_bars
+        # (yfinance) over 500+ names is minutes-long. Price a representative
+        # sample — the LLM only needs enough to pick a focus set.
+        scan_list = universe[:80] + [s for s in universe if s in self.symbols]
+        for sym in scan_list:
             try:
                 price = self.exchange.get_current_price(sym)
             except Exception:
@@ -2261,7 +2291,7 @@ class OpenTraderHarness:
         except Exception:
             pass
         scored = []
-        for sym in universe:
+        for sym in scan_list:
             bars = self.exchange.get_bars(sym, limit=20)
             if len(bars) >= 5:
                 cp = [b.close for b in bars[-5:]]

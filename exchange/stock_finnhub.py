@@ -11,6 +11,7 @@ Usage:
 This adapter follows the same ExchangeBase interface as LiveExchange (crypto).
 Once registered, use --exchange finnhub exactly like --exchange kraken.
 """
+
 import json
 import logging
 import os
@@ -33,13 +34,13 @@ FINNHUB_BASE = "https://finnhub.io/api/v1"
 
 # Finnhub resolution string -> candlestick resolution code
 _RESOLUTION_MAP = {
-    "1m":  "1",
-    "5m":  "5",
+    "1m": "1",
+    "5m": "5",
     "15m": "15",
     "30m": "30",
-    "1h":  "60",
-    "1d":  "D",
-    "1w":  "W",
+    "1h": "60",
+    "1d": "D",
+    "1w": "W",
 }
 
 # Default rate limit for free tier (60 calls/min -> 1 call/sec safe)
@@ -94,6 +95,7 @@ class FinnhubExchange(ExchangeBase):
     def _read_key_from_store() -> str:
         try:
             from connections import get_api_key
+
             return get_api_key("finnhub")
         except ImportError:
             return ""
@@ -129,9 +131,7 @@ class FinnhubExchange(ExchangeBase):
         try:
             from .realtime_finnhub import FinnhubRealtimeFeed
 
-            self._realtime = FinnhubRealtimeFeed(
-                self, self._watchlist, self.config
-            )
+            self._realtime = FinnhubRealtimeFeed(self, self._watchlist, self.config)
             self._realtime.start()
             logger.info("FinnhubExchange: realtime feed started")
         except ImportError:
@@ -141,9 +141,7 @@ class FinnhubExchange(ExchangeBase):
             )
             self._use_realtime = False
         except Exception as exc:
-            logger.warning(
-                "FinnhubExchange: realtime feed failed to start: %s", exc
-            )
+            logger.warning("FinnhubExchange: realtime feed failed to start: %s", exc)
             self._use_realtime = False
 
     def _api_get(self, path: str, params: dict = None) -> dict:
@@ -180,20 +178,33 @@ class FinnhubExchange(ExchangeBase):
         """Compute 'from' unix timestamp for N candles back."""
         now = int(time.time())
         tf_minutes = {
-            "1m": 1, "5m": 5, "15m": 15, "30m": 30,
-            "1h": 60, "1d": 1440, "1w": 10080,
+            "1m": 1,
+            "5m": 5,
+            "15m": 15,
+            "30m": 30,
+            "1h": 60,
+            "1d": 1440,
+            "1w": 10080,
         }
         minutes = tf_minutes.get(timeframe, 60)
         return now - (limit * minutes * 60)
 
     # yfinance interval mapping for OHLCV fallback
     _YF_INTERVAL_MAP = {
-        "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
-        "1h": "1h", "4h": "1h", "1d": "1d", "1w": "1wk", "1M": "1mo",
+        "1m": "1m",
+        "5m": "5m",
+        "15m": "15m",
+        "30m": "30m",
+        "1h": "1h",
+        "4h": "1h",
+        "1d": "1d",
+        "1w": "1wk",
+        "1M": "1mo",
     }
 
-    def get_bars(self, symbol: str = "AAPL", timeframe: str = "1h",
-                 limit: int = 100) -> List[OHLCV]:
+    def get_bars(
+        self, symbol: str = "AAPL", timeframe: str = "1h", limit: int = 100
+    ) -> List[OHLCV]:
         cache_key = f"{symbol}:{timeframe}:{limit}"
         now_ts = time.time()
         if cache_key in self._bar_cache:
@@ -208,10 +219,15 @@ class FinnhubExchange(ExchangeBase):
             if resolution:
                 from_ts = self._compute_from_timestamp(timeframe, limit)
                 try:
-                    data = self._api_get("/stock/candle", {
-                        "symbol": symbol, "resolution": resolution,
-                        "from": str(from_ts), "to": str(int(time.time())),
-                    })
+                    data = self._api_get(
+                        "/stock/candle",
+                        {
+                            "symbol": symbol,
+                            "resolution": resolution,
+                            "from": str(from_ts),
+                            "to": str(int(time.time())),
+                        },
+                    )
                     if data.get("s") == "ok":
                         bars = self._parse_candle_bars(data)
                 except Exception:
@@ -241,25 +257,43 @@ class FinnhubExchange(ExchangeBase):
         volumes = data.get("v", [])
         bars = []
         for i in range(len(timestamps)):
-            bars.append(OHLCV(
-                timestamp=timestamps[i],
-                open=float(opens[i]), high=float(highs[i]),
-                low=float(lows[i]), close=float(closes[i]),
-                volume=float(volumes[i]),
-            ))
+            bars.append(
+                OHLCV(
+                    timestamp=timestamps[i],
+                    open=float(opens[i]),
+                    high=float(highs[i]),
+                    low=float(lows[i]),
+                    close=float(closes[i]),
+                    volume=float(volumes[i]),
+                )
+            )
         return bars
 
-    def _fetch_yfinance_bars(self, symbol: str, timeframe: str,
-                             limit: int) -> List[OHLCV]:
+    def _fetch_yfinance_bars(
+        self, symbol: str, timeframe: str, limit: int
+    ) -> List[OHLCV]:
         import yfinance as yf
+
         yf_interval = self._YF_INTERVAL_MAP.get(timeframe, "1h")
         period_map = {
-            "1m": "7d", "5m": "1mo", "15m": "1mo", "30m": "1mo",
-            "1h": "1mo", "4h": "3mo", "1d": "6mo", "1w": "1y", "1M": "2y",
+            "1m": "7d",
+            "5m": "1mo",
+            "15m": "1mo",
+            "30m": "1mo",
+            "1h": "1mo",
+            "4h": "3mo",
+            "1d": "6mo",
+            "1w": "1y",
+            "1M": "2y",
         }
         period = period_map.get(timeframe, "1mo")
-        df = yf.download(symbol, period=period, interval=yf_interval,
-                         progress=False, auto_adjust=True)
+        df = yf.download(
+            symbol,
+            period=period,
+            interval=yf_interval,
+            progress=False,
+            auto_adjust=True,
+        )
         if df.empty:
             return []
         # Handle multi-level columns from yfinance (e.g. ('Open', 'AAPL'))
@@ -268,12 +302,16 @@ class FinnhubExchange(ExchangeBase):
         bars = []
         for idx, row in df.tail(limit + 5).iterrows():
             ts = int(idx.timestamp())
-            bars.append(OHLCV(
-                timestamp=ts,
-                open=float(row["Open"]), high=float(row["High"]),
-                low=float(row["Low"]), close=float(row["Close"]),
-                volume=float(row["Volume"]),
-            ))
+            bars.append(
+                OHLCV(
+                    timestamp=ts,
+                    open=float(row["Open"]),
+                    high=float(row["High"]),
+                    low=float(row["Low"]),
+                    close=float(row["Close"]),
+                    volume=float(row["Volume"]),
+                )
+            )
         return bars
 
     def get_current_price(self, symbol: str) -> Optional[float]:
@@ -315,12 +353,27 @@ class FinnhubExchange(ExchangeBase):
 
         try:
             import yfinance as yf
-            df = yf.download(
-                " ".join(remaining), period="1d", interval="1m",
-                progress=False, auto_adjust=True, threads=True,
-            )
-            if not df.empty:
-                for sym in list(remaining):
+
+            # Bounded chunks: yfinance is unreliable handing 500 tickers at
+            # once (partial/empty returns, rate limiting). Chunk to ~60.
+            chunk = 60
+            for i in range(0, len(remaining), chunk):
+                batch = remaining[i : i + chunk]
+                try:
+                    df = yf.download(
+                        " ".join(batch),
+                        period="1d",
+                        interval="1d",
+                        progress=False,
+                        auto_adjust=True,
+                        threads=True,
+                    )
+                except Exception as e:
+                    logger.debug(f"yfinance batch chunk failed: {e}")
+                    continue
+                if df is None or df.empty:
+                    continue
+                for sym in batch:
                     try:
                         if isinstance(df.columns, pd.MultiIndex):
                             price = float(df["Close"][sym].dropna().iloc[-1])
@@ -335,11 +388,18 @@ class FinnhubExchange(ExchangeBase):
         except Exception as e:
             logger.warning(f"yfinance batch failed: {e}")
 
+        # Bounded fallback: per-symbol finnhub quote is ~1s/call (free tier).
+        # Don't burn minutes+429s pricing hundreds of yfinance misses — the
+        # radar needs representative prices, not every ticker.
+        fallback_attempts = 0
         for sym in remaining:
+            if fallback_attempts >= 40:
+                break
             try:
                 price = self.get_current_price(sym)
                 if price:
                     result[sym] = price
+                    fallback_attempts += 1
             except Exception:
                 pass
 
@@ -347,14 +407,23 @@ class FinnhubExchange(ExchangeBase):
 
     # ── Paper execution ──────────────────────────────────────
 
-    def place_order(self, symbol: str, side: str, quantity: float,
-                    order_type: str = "market",
-                    price: Optional[float] = None) -> OrderResult:
+    def place_order(
+        self,
+        symbol: str,
+        side: str,
+        quantity: float,
+        order_type: str = "market",
+        price: Optional[float] = None,
+    ) -> OrderResult:
         fill_price = price or self.get_current_price(symbol)
         if not fill_price or fill_price <= 0:
             return OrderResult(
-                order_id="", symbol=symbol, side=side,
-                quantity=quantity, price=0, status="rejected",
+                order_id="",
+                symbol=symbol,
+                side=side,
+                quantity=quantity,
+                price=0,
+                status="rejected",
                 timestamp=datetime.now(timezone.utc).isoformat(),
                 raw={"error": "no price data"},
             )
@@ -376,8 +445,11 @@ class FinnhubExchange(ExchangeBase):
                 if affordable_qty <= 0:
                     return OrderResult(
                         order_id=f"fh_{self._order_counter}",
-                        symbol=symbol, side=side, quantity=quantity,
-                        price=fill_price, status="rejected",
+                        symbol=symbol,
+                        side=side,
+                        quantity=quantity,
+                        price=fill_price,
+                        status="rejected",
                         timestamp=datetime.now(timezone.utc).isoformat(),
                         raw={"error": "insufficient cash"},
                     )
@@ -393,8 +465,11 @@ class FinnhubExchange(ExchangeBase):
             if pos <= 0:
                 return OrderResult(
                     order_id=f"fh_{self._order_counter}",
-                    symbol=symbol, side=side, quantity=quantity,
-                    price=fill_price, status="rejected",
+                    symbol=symbol,
+                    side=side,
+                    quantity=quantity,
+                    price=fill_price,
+                    status="rejected",
                     timestamp=datetime.now(timezone.utc).isoformat(),
                     raw={"error": "no position"},
                 )
@@ -408,17 +483,26 @@ class FinnhubExchange(ExchangeBase):
         order_id = f"fh_{self._order_counter}"
         self._order_counter += 1
         fill = {
-            "order_id": order_id, "symbol": symbol, "side": side,
-            "quantity": round(quantity, 8), "price": fill_price,
-            "cost": round(cost, 2), "fee": round(fee, 2),
+            "order_id": order_id,
+            "symbol": symbol,
+            "side": side,
+            "quantity": round(quantity, 8),
+            "price": fill_price,
+            "cost": round(cost, 2),
+            "fee": round(fee, 2),
             "cash_after": round(self._cash, 2),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         self._fills.append(fill)
         return OrderResult(
-            order_id=order_id, symbol=symbol, side=side,
-            quantity=round(quantity, 8), price=fill_price,
-            status="filled", timestamp=fill["timestamp"], raw=fill,
+            order_id=order_id,
+            symbol=symbol,
+            side=side,
+            quantity=round(quantity, 8),
+            price=fill_price,
+            status="filled",
+            timestamp=fill["timestamp"],
+            raw=fill,
         )
 
     def get_balance(self) -> Balance:
@@ -458,14 +542,15 @@ class FinnhubExchange(ExchangeBase):
         self._fills.clear()
         self._order_counter = 1
 
-    def discover_symbols(self) -> List[str]:
+    def discover_symbols(self, max_symbols: int = 20) -> List[str]:
         """Return US stock symbols from Finnhub."""
         if not self._connected or not self._api_key:
             return []
         try:
             data = self._api_get("/stock/symbol", {"exchange": "US", "mic": "XNYS"})
             if data and isinstance(data, list):
-                return [item.get("symbol", "") for item in data if item.get("symbol")]
+                syms = [item.get("symbol", "") for item in data if item.get("symbol")]
+                return syms[:max_symbols] if max_symbols and max_symbols > 0 else syms
             return []
         except Exception as e:
             logger.warning(f"Finnhub symbol discovery failed: {e}")

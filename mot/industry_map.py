@@ -22,73 +22,533 @@ CACHE_DB = PROJECT / "data" / "ticker_industry_cache.db"
 
 INDUSTRY_REGISTRY: Dict[str, List[str]] = {
     # GICS 10 — Energy
-    "petroleum_producers": ["XOM", "CVX", "COP", "EOG", "OXY", "DVN", "MPC", "PSX", "VLO", "HES", "PXD", "FANG", "MRO", "APA", "OVV", "CTRA", "CHK"],
+    "petroleum_producers": [
+        "XOM",
+        "CVX",
+        "COP",
+        "EOG",
+        "OXY",
+        "DVN",
+        "MPC",
+        "PSX",
+        "VLO",
+        "HES",
+        "PXD",
+        "FANG",
+        "MRO",
+        "APA",
+        "OVV",
+        "CTRA",
+        "CHK",
+    ],
     "refiners": ["VLO", "MPC", "PSX", "DK", "PBF", "CLNE", "DINO", "CVI"],
-    "oil_services": ["SLB", "HAL", "BKR", "NOV", "FTI", "WFRD", "CHX", "OII", "HP", "TDW", "RES"],
-    "natural_gas": ["LNG", "AR", "RRC", "EQT", "CTRA", "SWN", "UNG", "NFG", "CNX", "CRK"],
+    "oil_services": [
+        "SLB",
+        "HAL",
+        "BKR",
+        "NOV",
+        "FTI",
+        "WFRD",
+        "CHX",
+        "OII",
+        "HP",
+        "TDW",
+        "RES",
+    ],
+    "natural_gas": [
+        "LNG",
+        "AR",
+        "RRC",
+        "EQT",
+        "CTRA",
+        "SWN",
+        "UNG",
+        "NFG",
+        "CNX",
+        "CRK",
+    ],
     "coal": ["BTU", "ARCH", "CEIX", "HCC", "KOL", "CNX", "ARLP", "NRP"],
-
     # GICS 15 — Materials
-    "copper_miners": ["FCX", "SCCO", "BHP", "RIO", "TECK", "FM", "HBM", "PICK", "FCX", "TGB", "CS", "LUN"],
-    "gold_miners": ["NEM", "GOLD", "AEM", "GFI", "KGC", "AU", "WPM", "GDX", "BTG", "RGLD", "OR", "SAND", "AGI"],
+    "copper_miners": [
+        "FCX",
+        "SCCO",
+        "BHP",
+        "RIO",
+        "TECK",
+        "FM",
+        "HBM",
+        "PICK",
+        "FCX",
+        "TGB",
+        "CS",
+        "LUN",
+    ],
+    "gold_miners": [
+        "NEM",
+        "GOLD",
+        "AEM",
+        "GFI",
+        "KGC",
+        "AU",
+        "WPM",
+        "GDX",
+        "BTG",
+        "RGLD",
+        "OR",
+        "SAND",
+        "AGI",
+    ],
     "iron_miners": ["BHP", "RIO", "VALE", "CLF", "NUE", "AA", "SID", "TX", "SIM"],
     "lithium": ["ALB", "SQM", "LAC", "SGML", "PLL", "LIT", "LTHM", "SLI", "LI"],
-    "uranium_miners": ["CCJ", "UEC", "DNN", "UUUU", "NXE", "URNM", "URA", "EU", "UROY", "U.L"],
-    "chemicals": ["LIN", "APD", "DOW", "DD", "LYB", "NTR", "CF", "MOS", "EMN", "FMC", "AVNT", "WLK", "AXTA"],
-    "steel_producers": ["NUE", "STLD", "CLF", "X", "CMC", "RS", "SLX", "GGB", "SID", "MT", "TX", "PKX"],
-
+    "uranium_miners": [
+        "CCJ",
+        "UEC",
+        "DNN",
+        "UUUU",
+        "NXE",
+        "URNM",
+        "URA",
+        "EU",
+        "UROY",
+        "U.L",
+    ],
+    "chemicals": [
+        "LIN",
+        "APD",
+        "DOW",
+        "DD",
+        "LYB",
+        "NTR",
+        "CF",
+        "MOS",
+        "EMN",
+        "FMC",
+        "AVNT",
+        "WLK",
+        "AXTA",
+    ],
+    "steel_producers": [
+        "NUE",
+        "STLD",
+        "CLF",
+        "X",
+        "CMC",
+        "RS",
+        "SLX",
+        "GGB",
+        "SID",
+        "MT",
+        "TX",
+        "PKX",
+    ],
     # GICS 20 — Industrials
-    "aerospace_defense": ["LMT", "RTX", "BA", "NOC", "GD", "HWM", "TDG", "LHX", "HII", "AXON", "CW", "SPR", "HEI"],
-    "construction_machinery": ["CAT", "DE", "CMI", "PCAR", "ALSN", "VMC", "URI", "OSK", "TEX", "MTW"],
-    "industrial_conglomerates": ["GE", "MMM", "HON", "ITW", "ETN", "PH", "ROK", "DOV", "IR", "XYL", "AOS", "MSA"],
+    "aerospace_defense": [
+        "LMT",
+        "RTX",
+        "BA",
+        "NOC",
+        "GD",
+        "HWM",
+        "TDG",
+        "LHX",
+        "HII",
+        "AXON",
+        "CW",
+        "SPR",
+        "HEI",
+    ],
+    "construction_machinery": [
+        "CAT",
+        "DE",
+        "CMI",
+        "PCAR",
+        "ALSN",
+        "VMC",
+        "URI",
+        "OSK",
+        "TEX",
+        "MTW",
+    ],
+    "industrial_conglomerates": [
+        "GE",
+        "MMM",
+        "HON",
+        "ITW",
+        "ETN",
+        "PH",
+        "ROK",
+        "DOV",
+        "IR",
+        "XYL",
+        "AOS",
+        "MSA",
+    ],
     "airlines": ["DAL", "UAL", "AAL", "LUV", "JETS", "ALK", "JBLU", "SAVE", "AZUL"],
     "railroads": ["UNP", "CSX", "NSC", "CP", "CNI", "WAB", "GBX", "TRN", "RAIL"],
     "waste_management": ["WM", "RSG", "WCN", "GFL", "CLH", "PESI", "CWST"],
-    "electrical_equipment": ["AME", "ETN", "EMR", "ABB", "SIE", "SU", "VRT", "HUBB", "ENS", "AEIS"],
-
+    "electrical_equipment": [
+        "AME",
+        "ETN",
+        "EMR",
+        "ABB",
+        "SIE",
+        "SU",
+        "VRT",
+        "HUBB",
+        "ENS",
+        "AEIS",
+    ],
     # GICS 25 — Consumer Discretionary
-    "automobiles": ["TSLA", "F", "GM", "RIVN", "LCID", "TM", "HMC", "STLA", "HMC", "NIO", "XPEV", "LI", "GGR"],
-    "luxury_retail": ["LVMUY", "KERING", "RACE", "LULU", "TPR", "RL", "BURBY", "CPRI", "TIF", "EL"],
-    "ecommerce": ["AMZN", "BABA", "JD", "MELI", "ETSY", "W", "CPNG", "SE", "SHOP", "PDD", "CART"],
-    "casinos_gaming": ["LVS", "WYNN", "MGM", "CZR", "DKNG", "PENN", "CHDN", "SRAD", "BALY"],
-    "restaurants": ["MCD", "SBUX", "CMG", "YUM", "DRI", "DPZ", "QSR", "WEN", "TXRH", "CAKE", "PLAY", "WING"],
-    "home_builders": ["DHI", "LEN", "PHM", "TOL", "NVR", "XHB", "KBH", "MDC", "TMHC", "MHO"],
-
+    "automobiles": [
+        "TSLA",
+        "F",
+        "GM",
+        "RIVN",
+        "LCID",
+        "TM",
+        "HMC",
+        "STLA",
+        "HMC",
+        "NIO",
+        "XPEV",
+        "LI",
+        "GGR",
+    ],
+    "luxury_retail": [
+        "LVMUY",
+        "KERING",
+        "RACE",
+        "LULU",
+        "TPR",
+        "RL",
+        "BURBY",
+        "CPRI",
+        "TIF",
+        "EL",
+    ],
+    "ecommerce": [
+        "AMZN",
+        "BABA",
+        "JD",
+        "MELI",
+        "ETSY",
+        "W",
+        "CPNG",
+        "SE",
+        "SHOP",
+        "PDD",
+        "CART",
+    ],
+    "casinos_gaming": [
+        "LVS",
+        "WYNN",
+        "MGM",
+        "CZR",
+        "DKNG",
+        "PENN",
+        "CHDN",
+        "SRAD",
+        "BALY",
+    ],
+    "restaurants": [
+        "MCD",
+        "SBUX",
+        "CMG",
+        "YUM",
+        "DRI",
+        "DPZ",
+        "QSR",
+        "WEN",
+        "TXRH",
+        "CAKE",
+        "PLAY",
+        "WING",
+    ],
+    "home_builders": [
+        "DHI",
+        "LEN",
+        "PHM",
+        "TOL",
+        "NVR",
+        "XHB",
+        "KBH",
+        "MDC",
+        "TMHC",
+        "MHO",
+    ],
     # GICS 30 — Consumer Staples
-    "consumer_staples": ["PG", "KO", "PEP", "WMT", "COST", "PM", "MO", "CL", "KMB", "HSY", "MDLZ", "KHC", "GIS", "K", "CAG", "SJM", "CPB"],
-    "food_retail": ["KR", "ACI", "SFM", "BJ", "BBY", "DLTR", "DG", "COST", "WMT", "TGT"],
-
+    "consumer_staples": [
+        "PG",
+        "KO",
+        "PEP",
+        "WMT",
+        "COST",
+        "PM",
+        "MO",
+        "CL",
+        "KMB",
+        "HSY",
+        "MDLZ",
+        "KHC",
+        "GIS",
+        "K",
+        "CAG",
+        "SJM",
+        "CPB",
+    ],
+    "food_retail": [
+        "KR",
+        "ACI",
+        "SFM",
+        "BJ",
+        "BBY",
+        "DLTR",
+        "DG",
+        "COST",
+        "WMT",
+        "TGT",
+    ],
     # GICS 35 — Health Care
-    "pharmaceuticals": ["JNJ", "PFE", "MRK", "ABBV", "LLY", "BMY", "GILD", "AMGN", "BIIB", "VRTX", "BAX", "TMO", "DHR"],
-    "biotech": ["MRNA", "BNTX", "REGN", "ILMN", "CRSP", "NTLA", "ALNY", "BBIO", "XBI", "INCY", "EXAS", "SRPT", "IONS"],
-    "health_equipment": ["ABT", "SYK", "BSX", "BDX", "MDT", "EW", "ISRG", "DXCM", "ZBH", "PODD", "HOLX", "IDXX"],
+    "pharmaceuticals": [
+        "JNJ",
+        "PFE",
+        "MRK",
+        "ABBV",
+        "LLY",
+        "BMY",
+        "GILD",
+        "AMGN",
+        "BIIB",
+        "VRTX",
+        "BAX",
+        "TMO",
+        "DHR",
+    ],
+    "biotech": [
+        "MRNA",
+        "BNTX",
+        "REGN",
+        "ILMN",
+        "CRSP",
+        "NTLA",
+        "ALNY",
+        "BBIO",
+        "XBI",
+        "INCY",
+        "EXAS",
+        "SRPT",
+        "IONS",
+    ],
+    "health_equipment": [
+        "ABT",
+        "SYK",
+        "BSX",
+        "BDX",
+        "MDT",
+        "EW",
+        "ISRG",
+        "DXCM",
+        "ZBH",
+        "PODD",
+        "HOLX",
+        "IDXX",
+    ],
     "managed_care": ["UNH", "CI", "HUM", "CNC", "ELV", "MOH", "OSCR", "ALHC", "HQY"],
-
     # GICS 40 — Financials
-    "banks_major": ["JPM", "BAC", "WFC", "C", "GS", "MS", "USB", "PNC", "SCHW", "TFC", "COF", "BK", "STT"],
-    "regional_banks": ["TFC", "CFG", "KEY", "FITB", "HBAN", "RF", "KRE", "ZION", "EWBC", "WAL", "CMA", "FHB", "PB", "OZK"],
-    "insurance": ["BRK.B", "AIG", "MET", "PRU", "ALL", "TRV", "PGR", "CB", "AFL", "HIG", "LNC", "GL", "MMC", "AJG"],
-    "fintech": ["SQ", "PYPL", "COIN", "AFRM", "SOFI", "HOOD", "NU", "FIS", "FI", "TOST", "BILL", "MQ", "FOUR", "ADYEN"],
-
+    "banks_major": [
+        "JPM",
+        "BAC",
+        "WFC",
+        "C",
+        "GS",
+        "MS",
+        "USB",
+        "PNC",
+        "SCHW",
+        "TFC",
+        "COF",
+        "BK",
+        "STT",
+    ],
+    "regional_banks": [
+        "TFC",
+        "CFG",
+        "KEY",
+        "FITB",
+        "HBAN",
+        "RF",
+        "KRE",
+        "ZION",
+        "EWBC",
+        "WAL",
+        "CMA",
+        "FHB",
+        "PB",
+        "OZK",
+    ],
+    "insurance": [
+        "BRK.B",
+        "AIG",
+        "MET",
+        "PRU",
+        "ALL",
+        "TRV",
+        "PGR",
+        "CB",
+        "AFL",
+        "HIG",
+        "LNC",
+        "GL",
+        "MMC",
+        "AJG",
+    ],
+    "fintech": [
+        "SQ",
+        "PYPL",
+        "COIN",
+        "AFRM",
+        "SOFI",
+        "HOOD",
+        "NU",
+        "FIS",
+        "FI",
+        "TOST",
+        "BILL",
+        "MQ",
+        "FOUR",
+        "ADYEN",
+    ],
     # GICS 45 — Information Technology
-    "semiconductors": ["NVDA", "AMD", "INTC", "TSM", "AVGO", "QCOM", "MU", "TXN", "AMAT", "LRCX", "ASML", "ADI", "SMH", "MRVL", "ON", "MCHP", "MPWR", "NXPI"],
-    "software": ["MSFT", "ORCL", "ADBE", "CRM", "NOW", "SNOW", "PLTR", "ANET", "PANW", "CRWD", "ZS", "DDOG", "MDB", "WDAY", "TEAM", "SPLK", "OKTA", "DT"],
-    "cloud_infra": ["AMZN", "GOOGL", "MSFT", "ORCL", "IBM", "NET", "FSLY", "MDB", "RXT", "HCP"],
-    "consumer_electronics": ["AAPL", "SONY", "SAMSUNG", "LG", "GRMN", "SONO", "ROKU", "VUZI"],
-    "enterprise_it": ["ACN", "IBM", "CSCO", "HPQ", "DELL", "CDW", "INFY", "CTSH", "WIT", "EPAM", "GLOB", "COHR"],
-
+    "semiconductors": [
+        "NVDA",
+        "AMD",
+        "INTC",
+        "TSM",
+        "AVGO",
+        "QCOM",
+        "MU",
+        "TXN",
+        "AMAT",
+        "LRCX",
+        "ASML",
+        "ADI",
+        "SMH",
+        "MRVL",
+        "ON",
+        "MCHP",
+        "MPWR",
+        "NXPI",
+    ],
+    "software": [
+        "MSFT",
+        "ORCL",
+        "ADBE",
+        "CRM",
+        "NOW",
+        "SNOW",
+        "PLTR",
+        "ANET",
+        "PANW",
+        "CRWD",
+        "ZS",
+        "DDOG",
+        "MDB",
+        "WDAY",
+        "TEAM",
+        "SPLK",
+        "OKTA",
+        "DT",
+    ],
+    "cloud_infra": [
+        "AMZN",
+        "GOOGL",
+        "MSFT",
+        "ORCL",
+        "IBM",
+        "NET",
+        "FSLY",
+        "MDB",
+        "RXT",
+        "HCP",
+    ],
+    "consumer_electronics": [
+        "AAPL",
+        "SONY",
+        "SAMSUNG",
+        "LG",
+        "GRMN",
+        "SONO",
+        "ROKU",
+        "VUZI",
+    ],
+    "enterprise_it": [
+        "ACN",
+        "IBM",
+        "CSCO",
+        "HPQ",
+        "DELL",
+        "CDW",
+        "INFY",
+        "CTSH",
+        "WIT",
+        "EPAM",
+        "GLOB",
+        "COHR",
+    ],
     # GICS 50 — Communication Services
     "social_media": ["META", "SNAP", "PINS", "MTCH", "BILI", "RDDT", "NEGG"],
     "telecom": ["T", "VZ", "TMUS", "CMCSA", "CHTR", "LUMN", "AMT", "CCI", "IRDM"],
     "gaming_online": ["EA", "TTWO", "RBLX", "NTES", "GME", "U", "SE", "PLTK"],
-
     # GICS 55 — Utilities
-    "electric_utilities": ["NEE", "DUK", "SO", "D", "AEP", "EXC", "SRE", "ED", "XEL", "WEC", "PPL", "FE", "EIX", "ES"],
-    "renewable_energy": ["ENPH", "SEDG", "FSLR", "RUN", "NOVA", "ICLN", "NEP", "TAN", "BE", "PLUG", "BLDP", "FCEL", "ARRY"],
-
+    "electric_utilities": [
+        "NEE",
+        "DUK",
+        "SO",
+        "D",
+        "AEP",
+        "EXC",
+        "SRE",
+        "ED",
+        "XEL",
+        "WEC",
+        "PPL",
+        "FE",
+        "EIX",
+        "ES",
+    ],
+    "renewable_energy": [
+        "ENPH",
+        "SEDG",
+        "FSLR",
+        "RUN",
+        "NOVA",
+        "ICLN",
+        "NEP",
+        "TAN",
+        "BE",
+        "PLUG",
+        "BLDP",
+        "FCEL",
+        "ARRY",
+    ],
     # GICS 60 — Real Estate
-    "reits": ["O", "SPG", "PLD", "AMT", "CCI", "EQIX", "DLR", "PSA", "WELL", "AVB", "EQR", "ESS", "UDR", "MAA", "CPT"],
-
+    "reits": [
+        "O",
+        "SPG",
+        "PLD",
+        "AMT",
+        "CCI",
+        "EQIX",
+        "DLR",
+        "PSA",
+        "WELL",
+        "AVB",
+        "EQR",
+        "ESS",
+        "UDR",
+        "MAA",
+        "CPT",
+    ],
     # Agriculture + Mining cross-sector ETFs
     "agriculture_corn": ["CORN", "DE", "ADM", "BG", "INGR", "DBA", "TAGS", "RJA"],
     "agriculture_wheat": ["WEAT", "ADM", "BG", "DBA", "TAGS"],
@@ -204,7 +664,10 @@ def expand_industry(industry: str, n_top: int = 20) -> List[str]:
     if not tickers:
         # Try partial match
         for ind_name, tks in INDUSTRY_REGISTRY.items():
-            if industry.lower() in ind_name.lower() or ind_name.lower() in industry.lower():
+            if (
+                industry.lower() in ind_name.lower()
+                or ind_name.lower() in industry.lower()
+            ):
                 tickers = tks
                 break
     return tickers[:n_top]
@@ -217,6 +680,7 @@ def load_industry_alt_data() -> dict:
     if yaml_path.exists():
         try:
             import yaml
+
             bindings = yaml.safe_load(yaml_path.read_text()) or {}
         except ImportError:
             try:
@@ -234,15 +698,27 @@ def load_industry_alt_data() -> dict:
         "uranium_miners": {"tools": [{"get_minerals": "uranium"}]},
         "lithium": {"tools": [{"get_minerals": "lithium"}]},
         "coal": {"tools": [{"get_minerals": "coal"}]},
-        "agriculture_corn": {"tools": [
-            {"get_weather": "corn_belt"}, {"get_crop_progress": "CORN"}, {"get_drought_signal": "us"}
-        ]},
-        "agriculture_wheat": {"tools": [
-            {"get_weather": "corn_belt"}, {"get_crop_progress": "WHEAT"}, {"get_drought_signal": "us"}
-        ]},
-        "agriculture_soybean": {"tools": [
-            {"get_weather": "corn_belt"}, {"get_crop_progress": "SOYBEANS"}, {"get_drought_signal": "us"}
-        ]},
+        "agriculture_corn": {
+            "tools": [
+                {"get_weather": "corn_belt"},
+                {"get_crop_progress": "CORN"},
+                {"get_drought_signal": "us"},
+            ]
+        },
+        "agriculture_wheat": {
+            "tools": [
+                {"get_weather": "corn_belt"},
+                {"get_crop_progress": "WHEAT"},
+                {"get_drought_signal": "us"},
+            ]
+        },
+        "agriculture_soybean": {
+            "tools": [
+                {"get_weather": "corn_belt"},
+                {"get_crop_progress": "SOYBEANS"},
+                {"get_drought_signal": "us"},
+            ]
+        },
         "electric_utilities": {"tools": [{"get_eia_inventory": "natural_gas"}]},
     }
 
@@ -252,7 +728,10 @@ def load_industry_alt_data() -> dict:
             bindings[ind] = defaults.get(ind, {"tools": []})
         elif ind in defaults:
             # YAML takes precedence, defaults fill gaps
-            existing_tools = {(list(t.keys())[0] if t else ""): t for t in bindings[ind].get("tools", [])}
+            existing_tools = {
+                (list(t.keys())[0] if t else ""): t
+                for t in bindings[ind].get("tools", [])
+            }
             for dt in defaults[ind].get("tools", []):
                 key = list(dt.keys())[0]
                 if key not in existing_tools:
@@ -269,16 +748,17 @@ def load_industry_alt_data() -> dict:
 
 _UNIVERSE_CACHE = None
 
+
 def get_universe_tickers() -> List[str]:
     global _UNIVERSE_CACHE
     if _UNIVERSE_CACHE is None:
-        from mot.tradable_universe import TRADABLE_UNIVERSE
+        # Radar spans the full curated industry registry (511 tickers), not
+        # just the 66-symbol TRADABLE_UNIVERSE. The 66 was the synthetic-data
+        # era's start-price table; on real prices (kraken+finnhub) every
+        # registered name is priceable, and the scout LLM-curates 511→20→6
+        # each cycle anyway. See docs/agents/research/alpha-*.md.
         registered = set()
         for tickers in INDUSTRY_REGISTRY.values():
             registered.update(t.upper() for t in tickers)
-        tradeable = set(s.upper() for s in TRADABLE_UNIVERSE)
-        all_tickers = registered & tradeable
-        if not all_tickers:
-            all_tickers = registered
-        _UNIVERSE_CACHE = sorted(all_tickers)
+        _UNIVERSE_CACHE = sorted(registered)
     return _UNIVERSE_CACHE
