@@ -80,7 +80,33 @@ def load_month(month: str):
     return closes, highs, lows, vols
 
 
-def collect(closes, highs, lows, vols, cfg, fred=None):
+def load_vix():
+    """Daily VIX (market-fear/sentiment proxy) -> daily Series."""
+    try:
+        import yfinance as yf
+        v = yf.download("^VIX", period="2y", interval="1d", auto_adjust=True, progress=False)
+        close = v["Close"]
+        s = close["^VIX"] if hasattr(close, "columns") and "^VIX" in close else close
+        s = s.dropna()
+        s.index = pd.to_datetime(s.index, utc=True)
+        return s
+    except Exception as e:
+        print(f"[v1m] VIX load skipped: {e}")
+        return None
+
+
+def breadth_series(closes, window=50):
+    """Market breadth: fraction of the universe above its `window`-bar MA."""
+    master = next(iter(closes.values())).index
+    above = {}
+    for sym, c in closes.items():
+        ma = c.rolling(window, min_periods=window).mean()
+        above[sym] = (c > ma).reindex(master)
+    frame = pd.DataFrame(above)
+    return frame.mean(axis=1, skipna=True)
+
+
+def collect(closes, highs, lows, vols, cfg, fred=None, vix=None, breadth=None):
     feat = _features(closes, highs, lows, vols, cfg)
     spy = closes.get(REGIME_SYM)
     spy_ma200 = spy.rolling(200, min_periods=60).mean() if spy is not None else None
@@ -109,6 +135,12 @@ def collect(closes, highs, lows, vols, cfg, fred=None):
         if fred:
             for key, s in fred.items():
                 fred_arr[key] = s.reindex(c.index, method="ffill").values
+        vix_arr = None
+        if vix is not None:
+            vix_arr = vix.reindex(c.index.normalize(), method="ffill").values
+        breadth_arr = None
+        if breadth is not None:
+            breadth_arr = breadth.reindex(c.index, method="ffill").values
         n = len(c) - FORWARD
         spy_arr = None
         if spy is not None and spy_ma200 is not None:
@@ -125,6 +157,8 @@ def collect(closes, highs, lows, vols, cfg, fred=None):
             for key in FRED_SERIES:
                 vv = fred_arr.get(key)
                 extra.append(float(vv[t]) if vv is not None and vv[t] == vv[t] else 0.0)
+            extra.append(float(vix_arr[t]) if vix_arr is not None and vix_arr[t] == vix_arr[t] else 20.0)
+            extra.append(float(breadth_arr[t]) if breadth_arr is not None and breadth_arr[t] == breadth_arr[t] else 0.5)
             v = np.concatenate([vals[t], [s, spy_ratio], extra])
             rows.append({
                 "sym": sym, "ts": c.index[t], "x": v.astype(np.float32),
@@ -151,12 +185,17 @@ def main():
     np.random.seed(SEED)
     base = clamp_config(json.loads((PROJECT / "data/setup_search/best.json").read_text())["config"])
     fred = load_fred()
-    print(f"[v1m] FRED macro features: {list(fred.keys())}")
+    vix = load_vix()
+    print(f"[v1m] FRED macro features: {list(fred.keys())} | VIX: {vix is not None}")
 
     train_rows = []
     for m in TRAIN_MONTHS:
-        train_rows += collect(*load_month(m), base, fred)
-    test_sets = [(lbl, collect(*load_month(m), base, fred)) for m, lbl in TEST_MONTHS]
+        m_closes = load_month(m)[0]
+        train_rows += collect(*load_month(m), base, fred, vix, breadth_series(m_closes))
+    test_sets = []
+    for m, lbl in TEST_MONTHS:
+        m_closes = load_month(m)[0]
+        test_sets.append((lbl, collect(*load_month(m), base, fred, vix, breadth_series(m_closes))))
     print(f"[v1m] train: {len(train_rows)} (Dec-25) | tests: "
           + ", ".join(f"{lbl}={len(r)}" for lbl, r in test_sets))
 
