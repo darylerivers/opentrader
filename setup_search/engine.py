@@ -66,6 +66,8 @@ def _features(closes: dict, highs: dict, lows: dict, vols: dict, cfg: dict) -> d
             if vr_n
             else 0.0
         )
+        mf_n = int(cfg.get("mom_filter_n", 0))
+        f["momfilt"] = (c.pct_change(mf_n) if mf_n else 0.0)
         out[sym] = f
     return out
 
@@ -176,6 +178,12 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
             ):
                 exit_price = close_t[s]
                 exit_reason = "signal"
+            if exit_price is None and (
+                (cfg["rsi_exit_hi"] > 0 and float(bar_feat[s]["rsi"]) > cfg["rsi_exit_hi"])
+                or (cfg["rsi_exit_lo"] > 0 and float(bar_feat[s]["rsi"]) < cfg["rsi_exit_lo"])
+            ):
+                exit_price = close_t[s]
+                exit_reason = "rsi_exit"
             if exit_price is not None:
                 proceeds = p["qty"] * exit_price - FEE_PER_SIDE
                 fees_total += FEE_PER_SIDE
@@ -191,6 +199,7 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
                         "pnl_pct": pnl_pct,
                         "bars": p["bars"],
                         "reason": exit_reason,
+                        "entry_date": p["entry_date"],
                         "exit_date": idx,
                     }
                 )
@@ -220,6 +229,14 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
                 continue
             if cfg["vol_spike_n"] > 0 and float(bar_feat[s]["vol_spike"]) > cfg["vol_spike_mult"]:
                 continue
+            if cfg["rsi_filter_n"] > 0:
+                _r = float(bar_feat[s]["rsi"])
+                if _r > cfg["rsi_filter_hi"] or _r < cfg["rsi_filter_lo"]:
+                    continue
+            if cfg["mom_filter_n"] > 0:
+                _m = float(bar_feat[s]["momfilt"])
+                if _m > cfg["mom_filter_max"] or _m < cfg["mom_filter_min"]:
+                    continue
             candidates.append((s, sc))
         candidates.sort(key=lambda x: -x[1])
 
@@ -253,6 +270,7 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
                 "cost": cost,
                 "peak": close_t[s],
                 "bars": 0,
+                "entry_date": idx,
             }
 
     if not equity_curve:
@@ -312,4 +330,5 @@ def _metrics(eq: pd.Series, trades: list, fees_total: float) -> dict:
         "avg_hold": round(avg_hold, 2),
         "final_equity": round(end_eq, 2),
         "equity": eq,
+        "trades": trades,
     }

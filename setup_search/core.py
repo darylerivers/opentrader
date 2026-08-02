@@ -44,6 +44,14 @@ CONFIG_BOUNDS: Dict[str, tuple] = {
     "vol_reduce_thr": (0.0, 0.2),
     "vol_reduce_frac": (0.0, 1.0),
     "impact_cap_pct": (0.0, 0.5),  # 0=off; cap order notional to pct of equity
+    "rsi_filter_n": (0, 30),       # 0=off; reject entry if RSI > hi or < lo
+    "rsi_filter_hi": (0.0, 100.0),
+    "rsi_filter_lo": (0.0, 100.0),
+    "mom_filter_n": (0, 120),      # 0=off; reject entry if N-d ret > max or < min
+    "mom_filter_max": (0.0, 10.0),
+    "mom_filter_min": (0.0, 10.0),
+    "rsi_exit_hi": (0.0, 100.0),   # 0=off; exit when RSI > hi
+    "rsi_exit_lo": (0.0, 100.0),   # 0=off; exit when RSI < lo
 }
 
 DEFAULT_CONFIG: Dict[str, float] = {
@@ -79,12 +87,20 @@ DEFAULT_CONFIG: Dict[str, float] = {
     "vol_reduce_thr": 0.0,
     "vol_reduce_frac": 0.0,
     "impact_cap_pct": 0.0,
+    "rsi_filter_n": 0,
+    "rsi_filter_hi": 0.0,
+    "rsi_filter_lo": 0.0,
+    "mom_filter_n": 0,
+    "mom_filter_max": 0.0,
+    "mom_filter_min": 0.0,
+    "rsi_exit_hi": 0.0,
+    "rsi_exit_lo": 0.0,
 }
 
 INT_KEYS = {
     "mom_lb", "rev_lb", "rsi_period", "breakout_lb", "z_period",
     "rank_on", "regime_filter", "regime_window", "max_positions", "max_hold",
-    "ma_reject_n", "vol_spike_n", "vol_reduce_n",
+    "ma_reject_n", "vol_spike_n", "vol_reduce_n", "rsi_filter_n", "mom_filter_n",
 }
 
 FEE_PER_SIDE = 0.35

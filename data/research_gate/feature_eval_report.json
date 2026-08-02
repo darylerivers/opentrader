@@ -1,0 +1,339 @@
+{
+ "n_features": 129,
+ "n_encodable": 18,
+ "n_not_encodable": 111,
+ "not_encodable_reasons": {
+  "exotic metric": 53,
+  "unmapped": 44,
+  "drawdown": 4,
+  "entry-signal": 10
+ },
+ "n_promoted": 0,
+ "promoted": [],
+ "results": [
+  {
+   "id": "Reject if price > 20% above 30d MA",
+   "type": "entry_filter",
+   "gate": "ma_reject",
+   "params": {
+    "ma_reject_n": 30,
+    "ma_reject_pct": 0.2
+   },
+   "rule": "IF price > MA_30d * 1.20 THEN REJECT_TRADE",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "Reject on 24h volume spike",
+   "type": "entry_filter",
+   "gate": "vol_spike",
+   "params": {
+    "vol_spike_n": 24,
+    "vol_spike_mult": 2.5
+   },
+   "rule": "IF 24h_volume > 2.5 * avg_24h_volume THEN REJECT",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.0053,
+   "delta_sharpe": -0.078,
+   "delta_dd": -0.0014,
+   "promote": false
+  },
+  {
+   "id": "Block bootstrap for non-IID crypto returns",
+   "type": "risk_management",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 20,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF tsbootstrap block-resampling p-value < 0.05 THEN use block-resampled volatility estimate ELSE use IID volatility estimate",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "Reject on 24h volatility spike",
+   "type": "entry_filter",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 24,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF 24h_price_range > 2.5 * avg_24h_price_range THEN REJECT",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "SDF-scaled volatility entry filter",
+   "type": "entry_filter",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 20,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF SDF_scaled_volatility > 1.2 THEN BUY",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "Impact-Aware Execution",
+   "type": "market_microstructure",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF estimated market impact > 0.05% THEN split order into 3 child orders with 50ms stagger",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "Impact-aware execution sizing",
+   "type": "position_sizing",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF estimated_market_impact > 0.002 THEN LIMIT_ORDER_SIZE_TO_0.5_AVG",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "Impact-Aware Sizing",
+   "type": "position_sizing",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF estimated market impact > 0.05% THEN reduce order size by 50%",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "Market Impact Execution",
+   "type": "position_sizing",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF estimated market impact > 0.05% THEN split order into chunks of 0.02% size",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "GARCH Volatility Regime Switch",
+   "type": "position_sizing",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 20,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF GARCH(1,1) predicted volatility > 95th percentile THEN reduce position size to 0.25 normal allocation",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "Pathwise Impact Execution",
+   "type": "position_sizing",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF estimated market impact > 0.1% THEN split order into 5 chunks over 5 minutes",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "rough volatility regime filter",
+   "type": "regime_detection",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 20,
+    "vol_reduce_thr": 0.4,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF 1m OHLCV Hurst exponent < 0.15 THEN reduce position size by 40%",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "hierarchical volatility coherence check",
+   "type": "entry_filter",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 20,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF 5m volatility > 3x 1h volatility AND 1h volatility > 3x 24h volatility THEN reject trade",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "Reject if 24h volatility spike",
+   "type": "entry_filter",
+   "gate": "vol_reduce",
+   "params": {
+    "vol_reduce_n": 30,
+    "vol_reduce_thr": 0.03,
+    "vol_reduce_frac": 0.5
+   },
+   "rule": "IF 24h realized volatility > 2x 30d avg THEN REJECT",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.004,
+   "delta_sharpe": -0.068,
+   "delta_dd": -0.0008,
+   "promote": false
+  },
+  {
+   "id": "Exponential passive impact limit",
+   "type": "entry_filter",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF order book imbalance > 0.02 THEN set limit order distance from midprice to ceil(1.5 * decay_rate * imbalance)",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "parsimonious implied vol calibration",
+   "type": "entry_filter",
+   "gate": "rsi_exit",
+   "params": {
+    "rsi_exit_hi": 75.0
+   },
+   "rule": "IF implied volatility curve shape parameters are fitted via parsimonious localized control THEN use term structure interpolation t",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  },
+  {
+   "id": "Weak loss aversion filter",
+   "type": "entry_filter",
+   "gate": "rsi_filter",
+   "params": {
+    "rsi_filter_n": 14,
+    "rsi_filter_hi": 75.0,
+    "rsi_filter_lo": 25.0
+   },
+   "rule": "IF weak loss aversion metric > strong loss aversion metric THEN REJECT ENTRY",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": -0.0508,
+   "delta_sharpe": -1.88,
+   "delta_dd": -0.0173,
+   "promote": false
+  },
+  {
+   "id": "martingale depth process hedge",
+   "type": "risk_management",
+   "gate": "impact_cap",
+   "params": {
+    "impact_cap_pct": 0.15
+   },
+   "rule": "IF order_book_depth_matrix < 0.1 AND price_impact_estimate > 0.002 THEN REDUCE_SIZE_BY_0.5",
+   "mean_gap": 0.0,
+   "pos_folds": "0/3",
+   "bull_gap": null,
+   "bear_gap": null,
+   "delta_net_yr": 0.0,
+   "delta_sharpe": 0.0,
+   "delta_dd": 0.0,
+   "promote": false
+  }
+ ]
+}
