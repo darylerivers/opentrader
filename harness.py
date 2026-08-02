@@ -142,6 +142,7 @@ class OpenTraderHarness:
         debate_mode: str = None,  # "fast" (composite) | "adir" (independent agents)
         rule_gate: bool = False,  # gate BUY signals behind the validated rule screen
         mixture: bool = False,  # MoT experts: route decisions through the regime router (rule-floor prior)
+        rule_primary: bool = False,  # the validated rule config is the PRIMARY signal source
         stage: int = 0,  # 0 = auto (from state/progression), >0 = force
         universe_mode: bool = True,  # agent picks symbols from 50+ universe vs hardcoded list
         universe_focus: int = 6,  # number of symbols to deep-debate per cycle
@@ -173,6 +174,7 @@ class OpenTraderHarness:
         self._rule_gate_cache = {}
         self._rule_gate_cfg = None
         self.mixture = mixture
+        self.rule_primary = rule_primary
         self._mot_router = None
         self._mot_experts = {}
         self._force_stage = stage  # 0 = use state/progression, >0 = override
@@ -2375,6 +2377,57 @@ class OpenTraderHarness:
         scored.sort(reverse=True)
         return [s[1] for s in scored[:focus]] or list(self.symbols)
 
+    def _rule_primary_signals(self, active_symbols: list) -> dict:
+        """Generate signals from the validated rule config (the proven edge).
+
+        BUY when the rule screen passes (regime ok AND score >= buy_thresh) for a
+        symbol not held; SELL when a held symbol's score drops below sell_thresh;
+        else HOLD (SL/TP manages risk). Daily-bar based, like the validated config.
+        """
+        from setup_search.rule_gate import screen, load_rule_config
+
+        if self._rule_gate_cfg is None:
+            self._rule_gate_cfg = load_rule_config()
+        cfg = self._rule_gate_cfg
+        import pandas as pd
+
+        syms = list(set(active_symbols) | {"SPY"})
+        closes, highs, lows, vols = {}, {}, {}, {}
+        for s in syms:
+            bars = self.exchange.get_bars(s, "1d", limit=150)
+            if not bars:
+                continue
+            idx = [datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars]
+            closes[s] = pd.Series([b.close for b in bars], index=idx)
+            highs[s] = pd.Series([b.high for b in bars], index=idx)
+            lows[s] = pd.Series([b.low for b in bars], index=idx)
+            vols[s] = pd.Series([b.volume for b in bars], index=idx)
+        held = set(self.exchange.get_balance().positions.keys())
+        out = {}
+        for sym in active_symbols:
+            if sym not in closes or "SPY" not in closes:
+                out[sym] = (Signal(action="HOLD", symbol=sym, reason="rule-primary: no data"), "", {})
+                continue
+            date = closes[sym].index[-1]
+            ok, score = screen(closes, highs, lows, vols, sym, date, cfg)
+            is_held = sym in held
+            if not is_held and ok:
+                sig = Signal(
+                    action="BUY", symbol=sym,
+                    confidence=min(1.0, max(0.0, (score + 1.0) / 2.0)),
+                    position_pct=cfg["risk_pct"],
+                    reason=f"rule-primary score={score:.3f}",
+                )
+            elif is_held and score < cfg["sell_thresh"]:
+                sig = Signal(action="SELL", symbol=sym, confidence=0.6,
+                             reason=f"rule-primary exit score={score:.3f}")
+            else:
+                sig = Signal(action="HOLD", symbol=sym,
+                             reason=f"rule-primary score={score:.3f}")
+            out[sym] = (sig, "", {})
+            logger.info(f"  RuleSignal[{sym}]: {sig.action} (score={score:.3f}, held={is_held})")
+        return out
+
     def _mot_regime(self, sym: str) -> str:
         """SPY vs 200d regime bucket for the MoT router."""
         try:
@@ -2642,19 +2695,23 @@ class OpenTraderHarness:
         # Run debates in parallel — only for symbols that need it
         # Cap at 4 workers: _API_SEMAPHORE(2) limits actual concurrency, but
         # extra workers handle non-API prep (news, bars, context building).
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=min(len(debate_syms), 4)
-        ) as executor:
-            futures = {
-                executor.submit(_debate_wrapper, sym): sym for sym in debate_syms
-            }
-            for future in concurrent.futures.as_completed(futures):
-                sym, signal, ctx, regime_dict = future.result()
-                results[sym] = (signal, ctx, regime_dict)
-                logger.info(
-                    f"  Signal[{sym}]: {signal.action} "
-                    f"(conf={signal.confidence:.2f}, pos_pct={signal.position_pct:.3f}, {signal.reason[:80]})"
-                )
+        if self.rule_primary:
+            results.update(self._rule_primary_signals(active_symbols))
+            logger.info("Rule-primary mode: signals from the validated rule config")
+        else:
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=min(len(debate_syms), 4)
+            ) as executor:
+                futures = {
+                    executor.submit(_debate_wrapper, sym): sym for sym in debate_syms
+                }
+                for future in concurrent.futures.as_completed(futures):
+                    sym, signal, ctx, regime_dict = future.result()
+                    results[sym] = (signal, ctx, regime_dict)
+                    logger.info(
+                        f"  Signal[{sym}]: {signal.action} "
+                        f"(conf={signal.confidence:.2f}, pos_pct={signal.position_pct:.3f}, {signal.reason[:80]})"
+                    )
 
         # Store debate signals for next cycle's smart debate filter
         if not hasattr(self, "_last_debated_signals"):
@@ -4041,9 +4098,16 @@ def main():
     parser.add_argument(
         "--mixture",
         action="store_true",
-        help="Mixture of Traders (experts): route decisions through the regime router with a "
+        help="Mixture of Traders: route decisions through the regime router with a "
         "rule-floor prior. The rule floor executes until another expert earns weight. "
         "Default: off (current behavior).",
+    )
+    parser.add_argument(
+        "--rule-primary",
+        action="store_true",
+        help="The validated rule config is the PRIMARY signal source: it generates "
+        "BUY/SELL from the validated screen (regime + score) instead of the LLM "
+        "debate. The proven edge does the trading. Default: off.",
     )
     args = parser.parse_args()
 
@@ -4133,6 +4197,7 @@ def main():
         crypto_exchange=args.crypto_exchange,
         rule_gate=args.rule_gate,
         mixture=args.mixture,
+        rule_primary=args.rule_primary,
     )
 
     if _onchain_wallet:
