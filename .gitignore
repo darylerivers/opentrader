@@ -67,3 +67,4 @@ data/paper_state.json.synthetic-era-bak
 *.bak-*
 *.pkl
 data/shadow_aab/
+data/arxiv_library.json

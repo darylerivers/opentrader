@@ -28,10 +28,14 @@ logger = logging.getLogger("opentrader.arxiv")
 ARXIV_API = "https://export.arxiv.org/api/query"
 CACHE_DIR = Path(__file__).resolve().parent.parent / "data"
 CACHE_FILE = CACHE_DIR / "arxiv_cache.json"
+# Persistent discovery library: every fetch MERGES new papers in (dedup by
+# arXiv id), so the corpus grows without bound. CACHE_FILE is just the daily
+# top-k feed the debate context reads.
+LIBRARY_FILE = CACHE_DIR / "arxiv_library.json"
 FEATURE_BACKLOG = CACHE_DIR / "feature_backlog.json"
 CACHE_TTL = 86400  # 24 hours — arXiv updates once daily
 EXTRACT_INTERVAL = 50  # cycles between feature extractions
-MAX_RESULTS = 15  # fetch more, then keyword-filter down
+MAX_RESULTS = 100  # fetch more, keyword-filter down
 MAX_CACHED = 8  # keep top 8 most relevant after filtering
 REQUEST_TIMEOUT = 15  # seconds
 SUMMARY_MAX_CHARS = 800  # keep enough methodology for LLM extraction
@@ -123,14 +127,47 @@ def _save_cache(papers: List[Dict]) -> None:
     }, indent=2))
 
 
-def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
-    """Fetch recent quant-finance/ML papers, keyword-filter for trading relevance.
+def _load_library() -> List[Dict]:
+    """Load the persistent paper library (grows across fetches)."""
+    if not LIBRARY_FILE.exists():
+        return []
+    try:
+        data = json.loads(LIBRARY_FILE.read_text())
+        return data.get("papers", []) if isinstance(data, dict) else data
+    except Exception:
+        return []
 
-    Returns up to MAX_CACHED papers sorted by relevance to algo trading.
+
+def _save_library(papers: List[Dict]) -> None:
+    LIBRARY_FILE.write_text(json.dumps({
+        "papers": papers,
+        "count": len(papers),
+    }, indent=2))
+
+
+def _top_feed(library: List[Dict], n: int = MAX_CACHED) -> List[Dict]:
+    """Best-n papers from the library for the debate feed: relevance, then recency."""
+    def key(p):
+        return (p.get("score", 0), p.get("published", ""))
+    feed = sorted(library, key=key, reverse=True)[:n]
+    out = []
+    for p in feed:
+        q = dict(p)
+        q.pop("_extracted", None)
+        q.pop("score", None)
+        out.append(q)
+    return out
+
+
+def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
+    """Fetch recent quant-finance papers, merge into the persistent library.
+
+    Every call ADDS newly-published papers to data/arxiv_library.json (dedup by
+    arXiv id) so the corpus grows without bound. Returns the top-k feed for the
+    debate context (relevance, then recency). Cache TTL 24h gate the refetch.
     """
     cached = _load_cache()
     if cached is not None:
-        logger.debug(f"arXiv cache hit: {len(cached)} papers")
         return cached
 
     query = f"search_query={CATEGORIES}&max_results={max_results}&sortBy=submittedDate&sortOrder=descending"
@@ -143,16 +180,16 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
             raw = resp.read().decode("utf-8")
     except URLError as e:
         logger.warning(f"arXiv API unreachable: {e}")
-        return []
+        return _top_feed(_load_library())
     except Exception as e:
         logger.warning(f"arXiv fetch failed: {e}")
-        return []
+        return _top_feed(_load_library())
 
     try:
         root = ET.fromstring(raw)
     except ET.ParseError as e:
         logger.warning(f"arXiv XML parse error: {e}")
-        return []
+        return _top_feed(_load_library())
 
     ns = {"a": ATOM_NS}
     candidates = []
@@ -160,6 +197,7 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
         title_el = entry.find("a:title", ns)
         summary_el = entry.find("a:summary", ns)
         published_el = entry.find("a:published", ns)
+        arxiv_id = entry.findtext("a:id", "").rsplit("/", 1)[-1]
 
         title = title_el.text.strip().replace("\n", " ") if title_el is not None else ""
         summary = summary_el.text.strip().replace("\n", " ") if summary_el is not None else ""
@@ -185,31 +223,36 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
             continue
 
         candidates.append({
+            "id": arxiv_id or pdf_url,
             "title": title,
             "summary": summary,
-            "full_summary_len": len(full_summary),
             "published": published,
             "pdf_url": pdf_url,
             "categories": cats,
-            "_score": score,
-            "_dex_specific": is_dex,
+            "score": score,
+            "dex_specific": is_dex,
+            "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         })
 
-    # Sort by relevance score descending, DEX-specific penalised to bottom
-    candidates.sort(key=lambda p: (not p["_dex_specific"], p["_score"]), reverse=True)
+    # Merge ALL filtered candidates into the persistent library (dedup by id)
+    library = _load_library()
+    existing_ids = {p.get("id") for p in library}
+    new_count = 0
+    for c in candidates:
+        if c["id"] and c["id"] not in existing_ids:
+            library.append(c)
+            existing_ids.add(c["id"])
+            new_count += 1
+    _save_library(library)
 
-    # Keep top N, strip scoring metadata
-    papers = candidates[:MAX_CACHED]
-    for p in papers:
-        del p["_score"], p["_dex_specific"], p["full_summary_len"]
-    del candidates  # free memory
-
-    _save_cache(papers)
+    # Feed = top-k from the library; keep CACHE_FILE as the feed snapshot
+    feed = _top_feed(library, MAX_CACHED)
+    _save_cache(feed)
     logger.info(
-        f"arXiv: fetched {len(papers)}/{MAX_CACHED} relevant papers "
-        f"(from {max_results} candidates)"
+        f"arXiv: +{new_count} new papers (library={len(library)}), "
+        f"feed={len(feed)}"
     )
-    return papers
+    return feed
 
 
 def format_arxiv_context(papers: List[Dict]) -> str:
@@ -270,14 +313,12 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
     Deduplicates against existing backlog by title similarity AND rule overlap.
     Filters out DEX/on-chain-specific features.
     """
-    try:
-        cache = json.loads(CACHE_FILE.read_text())
-        papers = cache.get("papers", [])
-    except (FileNotFoundError, json.JSONDecodeError):
-        logger.warning("No arxiv cache found — run fetch_arxiv first")
-        return []
-
-    if not papers:
+    # Read from the persistent LIBRARY (all discovered papers), not just the
+    # daily 8-paper feed — so features accumulate as the corpus grows.
+    library = _load_library()
+    unextracted = [p for p in library if not p.get("_extracted", False)]
+    if not unextracted:
+        logger.debug("arXiv features: all papers already extracted")
         return []
 
     # Load existing backlog
@@ -296,119 +337,117 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
         if r:
             existing_rules.append(r)
 
-    # Find unextracted papers
-    unextracted = [p for p in papers if not p.get("_extracted", False)]
-    if not unextracted:
-        logger.debug("arXiv features: all papers already extracted")
-        return []
-
-    # Build prompt with unextracted paper summaries only
-    paper_text = "\n\n---\n\n".join(
-        f"PAPER {i+1} ({p.get('published', '?')}): {p['title']}\n{p['summary']}"
-        for i, p in enumerate(unextracted[:5])
-    )
-
     # Show existing feature titles to avoid duplicates
     existing_list = "\n".join(f"  - {t}" for t in sorted(existing_titles))
-    prompt = FEATURE_EXTRACT_PROMPT.format(existing_features=existing_list or "  (none yet)")
-    prompt = f"{prompt}\n\n{paper_text}"
+    base_prompt = FEATURE_EXTRACT_PROMPT.format(existing_features=existing_list or "  (none yet)")
 
-    payload = json.dumps({
-        "model": model,
-        "messages": [
-            {"role": "system", "content": "You are a quantitative trading researcher for a centralized exchange (Kraken) trading bot. Output only valid JSON arrays. Never output DEX/on-chain specific rules."},
-            {"role": "user", "content": prompt},
-        ],
-        "temperature": 0.3,
-        "max_tokens": 1200,
-    }).encode()
-
-    url = f"{llama_host}/v1/chat/completions"
-    req = Request(url, data=payload, method="POST")
-    req.add_header("Content-Type", "application/json")
-
-    try:
-        with urlopen(req, timeout=60) as resp:
-            raw = resp.read().decode()
-            data = json.loads(raw)
-            text = data["choices"][0]["message"].get("content", "")
-    except Exception as e:
-        logger.warning(f"Feature extraction LLM call failed: {e}")
-        return []
-
-    # Parse JSON from response
     features = []
-    try:
-        if "```json" in text:
-            text = text.split("```json")[1].split("```")[0]
-        elif "```" in text:
-            text = text.split("```")[1].split("```")[0]
-        features = json.loads(text)
-        if isinstance(features, dict):
-            features = [features]
-    except json.JSONDecodeError:
-        logger.warning(f"Feature extraction: couldn't parse JSON from: {text[:150]}...")
-        return []
-
-    # Filter, deduplicate, and merge
     new_count = 0
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    for f in features:
-        title = f.get("title", "").strip()
-        rule = f.get("rule", "").strip()
-        ftype = f.get("type", "").strip()
+    # Process unextracted papers in batches of 5 per LLM call, bounded per run
+    # so extraction never starves the live debate on the shared GPU.
+    processed = []
+    n_batches = min((len(unextracted) + 4) // 5, 3)
+    for i in range(n_batches):
+        batch = unextracted[i * 5 : i * 5 + 5]
+        processed.extend(batch)
+        paper_text = "\n\n---\n\n".join(
+            f"PAPER {j+1} ({p.get('published', '?')}): {p['title']}\n{p['summary']}"
+            for j, p in enumerate(batch)
+        )
+        prompt = f"{base_prompt}\n\n{paper_text}"
 
-        if not title or not rule or not ftype:
+        payload = json.dumps({
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are a quantitative trading researcher for a centralized exchange (Kraken) trading bot. Output only valid JSON arrays. Never output DEX/on-chain specific rules."},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.3,
+            "max_tokens": 1200,
+        }).encode()
+
+        url = f"{llama_host}/v1/chat/completions"
+        req = Request(url, data=payload, method="POST")
+        req.add_header("Content-Type", "application/json")
+
+        try:
+            with urlopen(req, timeout=60) as resp:
+                raw = resp.read().decode()
+                data = json.loads(raw)
+                text = data["choices"][0]["message"].get("content", "")
+        except Exception as e:
+            logger.warning(f"Feature extraction LLM call failed: {e}")
+            break
+
+        # Parse JSON from response
+        batch_features = []
+        try:
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0]
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0]
+            batch_features = json.loads(text)
+            if isinstance(batch_features, dict):
+                batch_features = [batch_features]
+        except json.JSONDecodeError:
+            logger.warning(f"Feature extraction: couldn't parse JSON from: {text[:150]}...")
             continue
 
-        title_lower = title.lower()
-        rule_lower = rule.lower()
+        # Filter, deduplicate, and merge
+        for f in batch_features:
+            title = f.get("title", "").strip()
+            rule = f.get("rule", "").strip()
+            ftype = f.get("type", "").strip()
 
-        # Reject obvious duplicates by title
-        if title_lower in existing_titles:
-            continue
-
-        # Reject near-duplicate rules (70%+ token overlap with any existing rule)
-        rule_tokens = set(rule_lower.split())
-        is_dup = False
-        for er in existing_rules:
-            er_tokens = set(er.split())
-            if rule_tokens and er_tokens:
-                overlap = len(rule_tokens & er_tokens) / max(len(rule_tokens | er_tokens), 1)
-                if overlap > 0.70:
-                    is_dup = True
-                    break
-        if is_dup:
-            continue
-
-        # Reject DEX/on-chain specific features
-        if ftype in ("entry_filter", "exit_signal"):
-            combined = (title_lower + " " + rule_lower)
-            dex_hits = sum(1 for t in DEX_PENALTY_TERMS if t.lower() in combined)
-            trading_hits = sum(1 for kw in KEYWORD_HITS[:12] if kw.lower() in combined)
-            if dex_hits >= 2 and trading_hits == 0:
-                logger.debug(f"arXiv feature skip (DEX-specific): {title}")
+            if not title or not rule or not ftype:
                 continue
 
-        f["source"] = "arxiv_llm_extraction"
-        f["extracted_at"] = now
-        f["status"] = "pending"
-        f["validated"] = False
-        f["confidence"] = max(0.0, min(1.0, f.get("confidence", 0.5)))
-        backlog["features"].append(f)
-        existing_titles.add(title_lower)
-        existing_rules.append(rule_lower)
-        new_count += 1
+            title_lower = title.lower()
+            rule_lower = rule.lower()
 
-    # Mark processed papers as extracted in cache
-    if new_count > 0 or unextracted:
-        cache_changed = False
-        for p in papers:
-            if not p.get("_extracted", False):
-                p["_extracted"] = True
-                cache_changed = True
-        if cache_changed:
-            CACHE_FILE.write_text(json.dumps(cache, indent=2))
+            # Reject obvious duplicates by title
+            if title_lower in existing_titles:
+                continue
+
+            # Reject near-duplicate rules (70%+ token overlap with any existing rule)
+            rule_tokens = set(rule_lower.split())
+            is_dup = False
+            for er in existing_rules:
+                er_tokens = set(er.split())
+                if rule_tokens and er_tokens:
+                    overlap = len(rule_tokens & er_tokens) / max(len(rule_tokens | er_tokens), 1)
+                    if overlap > 0.70:
+                        is_dup = True
+                        break
+            if is_dup:
+                continue
+
+            # Reject DEX/on-chain specific features
+            if ftype in ("entry_filter", "exit_signal"):
+                combined = (title_lower + " " + rule_lower)
+                dex_hits = sum(1 for t in DEX_PENALTY_TERMS if t.lower() in combined)
+                trading_hits = sum(1 for kw in KEYWORD_HITS[:12] if kw.lower() in combined)
+                if dex_hits >= 2 and trading_hits == 0:
+                    logger.debug(f"arXiv feature skip (DEX-specific): {title}")
+                    continue
+
+            f["source"] = "arxiv_llm_extraction"
+            f["extracted_at"] = now
+            f["status"] = "pending"
+            f["validated"] = False
+            f["confidence"] = max(0.0, min(1.0, f.get("confidence", 0.5)))
+            backlog["features"].append(f)
+            existing_titles.add(title_lower)
+            existing_rules.append(rule_lower)
+            new_count += 1
+            features.append(f)
+
+    # Mark only the PROCESSED papers as extracted in the LIBRARY — the rest
+    # stay unextracted and get picked up on later runs.
+    for p in processed:
+        p["_extracted"] = True
+    _save_library(library)
 
     if new_count > 0:
         backlog["updated_at"] = now
@@ -416,7 +455,7 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
         FEATURE_BACKLOG.write_text(json.dumps(backlog, indent=2))
         logger.info(
             f"arXiv features: extracted {new_count} new rules "
-            f"(from {len(unextracted)} unextracted papers)"
+            f"(from {len(processed)}/{len(unextracted)} unextracted papers)"
         )
 
     return features
