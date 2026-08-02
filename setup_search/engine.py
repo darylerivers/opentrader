@@ -28,7 +28,7 @@ def _rsi(close: pd.Series, period: int) -> pd.Series:
     return (rsi - 50) / 50.0
 
 
-def _features(closes: dict, highs: dict, lows: dict, cfg: dict) -> dict:
+def _features(closes: dict, highs: dict, lows: dict, vols: dict, cfg: dict) -> dict:
     out = {}
     for sym, c in closes.items():
         p = int(cfg["mom_lb"])
@@ -51,6 +51,20 @@ def _features(closes: dict, highs: dict, lows: dict, cfg: dict) -> dict:
                 "z": zscore,
                 "close": c,
             }
+        )
+        # Research-feature gate columns (all 0/NaN when disabled)
+        ma_n = int(cfg.get("ma_reject_n", 0))
+        f["ma_dist"] = (c / c.rolling(ma_n, min_periods=ma_n).mean() - 1.0) if ma_n else 0.0
+        vs_n = int(cfg.get("vol_spike_n", 0))
+        v = vols.get(sym)
+        f["vol_spike"] = (
+            (v / v.rolling(vs_n, min_periods=vs_n).mean()) if vs_n and v is not None else 0.0
+        )
+        vr_n = int(cfg.get("vol_reduce_n", 0))
+        f["vol_level"] = (
+            c.pct_change().rolling(vr_n, min_periods=vr_n).std()
+            if vr_n
+            else 0.0
         )
         out[sym] = f
     return out
@@ -94,7 +108,7 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
     syms = sorted(closes.keys())
     master = next(iter(closes.values())).index
 
-    feat = _features(closes, highs, lows, cfg)
+    feat = _features(closes, highs, lows, vols, cfg)
     mom_frame = {s: feat[s]["mom"] for s in syms}
     rank = _cross_sectional_rank(mom_frame, master) if cfg["rank_on"] else {}
 
@@ -128,11 +142,8 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
 
     for t in range(start, len(master)):
         idx = master[t]
-        scores = _score_at(
-            {s: feat[s].iloc[t] for s in syms},
-            cfg,
-            {s: rank[s][t] if cfg["rank_on"] else 0.0 for s in syms},
-        )
+        bar_feat = {s: feat[s].iloc[t] for s in syms}
+        scores = _score_at(bar_feat, cfg, {s: rank[s][t] if cfg["rank_on"] else 0.0 for s in syms})
         close_t = {s: float(closes[s].iloc[t]) for s in syms}
 
         for s in list(pos.keys()):
@@ -204,6 +215,11 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
                 continue
             if close_t[s] <= 0:
                 continue
+            # Research-feature entry gates (disabled when their param is 0)
+            if cfg["ma_reject_n"] > 0 and float(bar_feat[s]["ma_dist"]) > cfg["ma_reject_pct"]:
+                continue
+            if cfg["vol_spike_n"] > 0 and float(bar_feat[s]["vol_spike"]) > cfg["vol_spike_mult"]:
+                continue
             candidates.append((s, sc))
         candidates.sort(key=lambda x: -x[1])
 
@@ -211,6 +227,11 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
             if len(pos) >= cfg["max_positions"]:
                 break
             notional = cfg["risk_pct"] * equity
+            # Research-feature sizing gates
+            if cfg["vol_reduce_n"] > 0 and float(bar_feat[s]["vol_level"]) > cfg["vol_reduce_thr"]:
+                notional *= cfg["vol_reduce_frac"]
+            if cfg["impact_cap_pct"] > 0:
+                notional = min(notional, cfg["impact_cap_pct"] * equity)
             if notional < cfg["min_notional"]:
                 continue
             exposure = sum(

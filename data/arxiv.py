@@ -47,11 +47,8 @@ CATEGORIES = (
     "+OR+cat:q-fin.ST"  # Statistical Finance
     "+OR+cat:q-fin.RM"  # Risk Management
     "+OR+cat:q-fin.MF"  # Mathematical Finance
-    "+OR+cat:cs.LG"     # Machine Learning
-    "+OR+cat:cs.CE"     # Computational Engineering, Finance, Science
-    "+OR+cat:stat.ML"   # Machine Learning (Statistics)
-    "+OR+cat:stat.AP"   # Statistics Applications
-    "+OR+cat:stat.TH"   # Statistics Theory
+    # Broad ML/stat categories were dropping in physics/biology/3D-ML papers
+    # (Seiberg dualities etc.); finance-only feed keeps the researcher on-topic.
 )
 
 # Terms for relevance scoring — papers matching more terms score higher
@@ -178,9 +175,13 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
         full_summary = summary
         summary = summary[:SUMMARY_MAX_CHARS] + "..." if len(summary) > SUMMARY_MAX_CHARS else summary
 
+        # Finance-first relevance gate: require a q-fin category, or a strong
+        # multi-keyword hit. Single generic-ML hits no longer pass — that let
+        # physics/ML noise (Seiberg dualities, 3D structure) into the feed.
+        is_qfin = any(c.startswith("q-fin") for c in cats)
         score, is_dex = _paper_relevance(title, full_summary)
-        if score == 0:
-            logger.debug(f"arXiv skip (no keyword hits): {title[:60]}")
+        if (not is_qfin and score < 2) or score == 0:
+            logger.debug(f"arXiv skip (not finance-relevant): {title[:60]}")
             continue
 
         candidates.append({

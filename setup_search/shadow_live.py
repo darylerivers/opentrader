@@ -64,7 +64,7 @@ def _feed(s, date, sym, side, qty, price, reason):
 
 def tick(cfg, state, closes, highs, lows, date):
     syms = sorted(closes.keys())
-    feat = _features(closes, highs, lows, cfg)
+    feat = _features(closes, highs, lows, vols, cfg)
 
     spy = closes.get(REGIME_SYM)
     regime = None

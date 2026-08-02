@@ -35,6 +35,15 @@ CONFIG_BOUNDS: Dict[str, tuple] = {
     "tp": (0.02, 0.50),
     "max_hold": (1, 60),
     "trailing_pct": (0.0, 0.05),
+    # ── Research-feature gates (0/off by default) ──
+    "ma_reject_n": (0, 120),       # 0=off; reject if close > MA(n)*(1+pct)
+    "ma_reject_pct": (0.0, 0.5),
+    "vol_spike_n": (0, 120),       # 0=off; reject if volume > mult*avg_vol(n)
+    "vol_spike_mult": (0.0, 10.0),
+    "vol_reduce_n": (0, 120),      # 0=off; scale size by frac when vol>thr
+    "vol_reduce_thr": (0.0, 0.2),
+    "vol_reduce_frac": (0.0, 1.0),
+    "impact_cap_pct": (0.0, 0.5),  # 0=off; cap order notional to pct of equity
 }
 
 DEFAULT_CONFIG: Dict[str, float] = {
@@ -62,11 +71,20 @@ DEFAULT_CONFIG: Dict[str, float] = {
     "tp": 0.10,
     "max_hold": 20,
     "trailing_pct": 0.0,
+    "ma_reject_n": 0,
+    "ma_reject_pct": 0.0,
+    "vol_spike_n": 0,
+    "vol_spike_mult": 0.0,
+    "vol_reduce_n": 0,
+    "vol_reduce_thr": 0.0,
+    "vol_reduce_frac": 0.0,
+    "impact_cap_pct": 0.0,
 }
 
 INT_KEYS = {
     "mom_lb", "rev_lb", "rsi_period", "breakout_lb", "z_period",
     "rank_on", "regime_filter", "regime_window", "max_positions", "max_hold",
+    "ma_reject_n", "vol_spike_n", "vol_reduce_n",
 }
 
 FEE_PER_SIDE = 0.35
