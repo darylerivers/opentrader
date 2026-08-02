@@ -37,6 +37,34 @@ TEST_MONTHS = [("2026-01", "Jan-2026"), ("2026-03", "Mar-2026")]
 VAL_FRAC = 0.15
 SEED = 29
 FEAT_COLS = ["mom", "rev", "rsi", "brk", "z", "ma_dist", "vol_spike", "vol_level", "momfilt"]
+FRED_SERIES = {"FF": "DFF", "T10": "DGS10", "CPI": "CPIAUCSL"}
+
+
+def load_fred():
+    """Historical macro state: date-stamped FRED series -> per-bar value (ffill)."""
+    import json as _json
+    import urllib.request as _ur
+
+    out = {}
+    try:
+        from data.economics import _get_fred_key
+        key = _get_fred_key()
+        if not key:
+            print("[v1m] no FRED key")
+            return out
+        for k, sid in FRED_SERIES.items():
+            url = (f"https://api.stlouisfed.org/fred/series/observations"
+                   f"?series_id={sid}&api_key={key}&file_type=json")
+            with _ur.urlopen(url, timeout=20) as r:
+                data = _json.loads(r.read().decode())
+            obs = [(pd.Timestamp(o["date"], tz="UTC"), float(o["value"]))
+                   for o in data.get("observations", [])
+                   if o.get("value") not in ("", ".")]
+            if obs:
+                out[k] = pd.Series(dict(obs)).sort_index()
+    except Exception as e:
+        print(f"[v1m] FRED load skipped: {e}")
+    return out
 
 
 def load_month(month: str):
@@ -52,10 +80,16 @@ def load_month(month: str):
     return closes, highs, lows, vols
 
 
-def collect(closes, highs, lows, vols, cfg):
+def collect(closes, highs, lows, vols, cfg, fred=None):
     feat = _features(closes, highs, lows, vols, cfg)
     spy = closes.get(REGIME_SYM)
     spy_ma200 = spy.rolling(200, min_periods=60).mean() if spy is not None else None
+    # cross-sectional relative strength: rank each symbol's momentum + RSI
+    # among the universe at each bar (a genuinely different state dimension)
+    mom_frame = pd.DataFrame({s: feat[s]["mom"] for s in closes if s != REGIME_SYM})
+    rsi_frame = pd.DataFrame({s: feat[s]["rsi"] for s in closes if s != REGIME_SYM})
+    mom_rank = mom_frame.rank(axis=1, pct=True)
+    rsi_rank = rsi_frame.rank(axis=1, pct=True)
     w = cfg
     rows = []
     for sym in sorted(closes.keys()):
@@ -69,6 +103,12 @@ def collect(closes, highs, lows, vols, cfg):
         np.nan_to_num(vals, copy=False)
         fwd = (c.shift(-FORWARD) / c - 1.0).values
         sc = score.values
+        mr = mom_rank[sym].reindex(c.index).values
+        rr = rsi_rank[sym].reindex(c.index).values
+        fred_arr = {}
+        if fred:
+            for key, s in fred.items():
+                fred_arr[key] = s.reindex(c.index, method="ffill").values
         n = len(c) - FORWARD
         spy_arr = None
         if spy is not None and spy_ma200 is not None:
@@ -80,7 +120,12 @@ def collect(closes, highs, lows, vols, cfg):
             spy_ratio = 1.0
             if spy_arr is not None and spy_arr[t] == spy_arr[t]:
                 spy_ratio = float(spy_arr[t])
-            v = np.concatenate([vals[t], [s, spy_ratio]])
+            extra = [float(mr[t]) if mr[t] == mr[t] else 0.5,
+                     float(rr[t]) if rr[t] == rr[t] else 0.5]
+            for key in FRED_SERIES:
+                vv = fred_arr.get(key)
+                extra.append(float(vv[t]) if vv is not None and vv[t] == vv[t] else 0.0)
+            v = np.concatenate([vals[t], [s, spy_ratio], extra])
             rows.append({
                 "sym": sym, "ts": c.index[t], "x": v.astype(np.float32),
                 "fwd": float(fwd[t]),
@@ -105,11 +150,13 @@ def main():
     torch.manual_seed(SEED)
     np.random.seed(SEED)
     base = clamp_config(json.loads((PROJECT / "data/setup_search/best.json").read_text())["config"])
+    fred = load_fred()
+    print(f"[v1m] FRED macro features: {list(fred.keys())}")
 
     train_rows = []
     for m in TRAIN_MONTHS:
-        train_rows += collect(*load_month(m), base)
-    test_sets = [(lbl, collect(*load_month(m), base)) for m, lbl in TEST_MONTHS]
+        train_rows += collect(*load_month(m), base, fred)
+    test_sets = [(lbl, collect(*load_month(m), base, fred)) for m, lbl in TEST_MONTHS]
     print(f"[v1m] train: {len(train_rows)} (Dec-25) | tests: "
           + ", ".join(f"{lbl}={len(r)}" for lbl, r in test_sets))
 
