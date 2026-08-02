@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "name": "sentiment-holdout-3-10d",
+      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_sentiment_holdout",
+      "priority": 1,
+      "timeout": 5400,
+      "status": "pending",
+      "note": "The deferred honest sentiment test: FinBERT sentiment vs 3/5/10-day forward returns"
+    },
+    {
+      "name": "value-head-push",
+      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_value_push",
+      "priority": 2,
+      "timeout": 3600,
+      "status": "pending",
+      "note": "Re-run + push the best value-head config (cross-sectional + FRED) through the holdout gate"
+    },
+    {
+      "name": "ptolemy-retrain",
+      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_ptolemy_train",
+      "priority": 3,
+      "timeout": 14400,
+      "status": "pending",
+      "note": "Retrain the successor on accumulated data (Genesis->Ptolemy lifecycle)"
+    }
+  ]
+}
