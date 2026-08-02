@@ -37,13 +37,14 @@ N_LESSONS = 6  # profitable trades to show the apprentice
 
 APPRENTICE_SYSTEM = (
     "You are an apprentice trader learning from a validated rule-based system "
-    "that has a 68% win rate and +5%/yr out-of-sample edge. Below are REAL "
-    "profitable trades the system took — learn this pattern: disciplined "
-    "entries after pullbacks in an uptrend, momentum+RSI composite above "
-    "threshold, stop/TP managed. Your job: for each new signal, decide "
-    "whether to take the long entry. DEFAULT TO YES unless the signal clearly "
-    "violates the pattern (e.g. regime breakdown, extreme overextension, "
-    "crash). Respond ONLY with JSON: {\"take\": true|false, \"reason\": \"one line\"}"
+    "that has a 68% win rate and +5%/yr out-of-sample edge. Learn this "
+    "DISCRIMINATOR: the highest-EV entries are disciplined PULLBACKS in an "
+    "uptrend — a sharp-looking drop right before entry is often the opportunity, "
+    "NOT a reason to avoid. The regime gate (SPY above its 200d) and the rule "
+    "score are the discipline; a scary candle is not a veto. ONLY veto when the "
+    "regime has actually broken down or the entry is a genuine crash/breakdown "
+    "against the pattern, not a routine pullback. DEFAULT TO YES. Respond ONLY "
+    "with JSON: {\"take\": true|false, \"reason\": \"one line\"}"
 )
 
 
@@ -86,21 +87,25 @@ def main():
             trades.append({**t, "impact": t["pnl"] / max(eq_at, 1.0), "score": None})
 
     # ── Teaching examples: the profitable trades, labelled ──
-    lessons = [t for t in trades if t["impact"] > 0]
+    lessons = sorted([t for t in trades if t["impact"] > 0],
+                     key=lambda t: -t["impact"])
     with open(LESSONS, "w") as f:
-        for t in lessons[:N_LESSONS]:
+        for i, t in enumerate(lessons[:N_LESSONS]):
+            scary = (
+                " NOTE: this entry had a sharp drop before it — that is the "
+                "pullback opportunity, the HIGHEST-EV pattern. Do NOT avoid it."
+                if i < 3 else ""
+            )
             f.write(json.dumps({
                 "messages": [
                     {"role": "system", "content":
-                     "You are learning the validated rule playbook. A trade is "
-                     "profitable when the rule screen fires (regime up + score "
-                     ">= threshold) and risk is managed. Learn this example."},
+                     "You are learning the validated rule playbook. The highest-EV "
+                     "trades are disciplined pullbacks in an uptrend — scary drops "
+                     "before entry are opportunities, not vetoes."},
                     {"role": "user", "content": build_ctx(t, closes, base)
                      + "\n\nThe rule system took this LONG entry. Was it correct?"},
                     {"role": "assistant", "content":
-                     f"yes — this was a profitable trade ({t['impact']:+.2%} "
-                     f"portfolio impact). Pattern: disciplined pullback entry in "
-                     f"an uptrend, rule score cleared the threshold."},
+                     f"yes — profitable ({t['impact']:+.2%}).{scary}"},
                 ]
             }) + "\n")
     print(f"[teach] {len(lessons)}/{len(trades)} trades profitable; "
@@ -110,7 +115,14 @@ def main():
     lesson_text = "\n\n".join(
         f"LESSON {i+1}: {build_ctx(t, closes, base)} -> PROFITABLE "
         f"({t['impact']:+.2%})"
+        + (f"  <-- sharp drop before entry; still the highest-EV pullback; TAKE"
+           if i < 3 else "")
         for i, t in enumerate(lessons[:N_LESSONS])
+    )
+    lesson_text += (
+        "\n\nREMEMBER: a sharp drop before entry is the pullback OPPORTUNITY in "
+        "an uptrend (highest EV). Veto ONLY on real regime breakdown, not on "
+        "scary candles."
     )
     verdicts = []
     for i, t in enumerate(trades):
