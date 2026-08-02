@@ -8,7 +8,7 @@
    "timeout": 300,
    "status": "done",
    "note": "verifies the workflow process + scheduler signals (dry-run equivalent)",
-   "last_run": "2026-08-02T18:39:48Z"
+   "last_run": "2026-08-02T19:14:01Z"
   },
   {
    "name": "sentiment-holdout-3-10d",
@@ -16,11 +16,10 @@
    "gpu": "gpu0",
    "priority": 1,
    "timeout": 5400,
-   "status": "pending",
+   "status": "done",
    "note": "FinBERT sentiment vs 3/5/10-day returns (GPU0, safe)",
    "retries": 0,
-   "last_run": "2026-08-02T19:00:22Z",
-   "recurring": true,
+   "last_run": "2026-08-02T19:56:47Z",
    "cooldown_sec": 1800,
    "cooldown_until": 1785699022.23414
   },
@@ -30,12 +29,12 @@
    "gpu": "cpu",
    "priority": 2,
    "timeout": 3600,
-   "status": "running",
+   "status": "done",
    "note": "re-run the best value-head through the holdout gate",
-   "last_run": "2026-08-02T18:41:18Z",
-   "recurring": true,
+   "last_run": "2026-08-02T19:57:47Z",
    "cooldown_sec": 1800,
-   "retries": 0
+   "retries": 0,
+   "cooldown_until": 1785699082.235308
   },
   {
    "name": "ptolemy-retrain",
@@ -43,22 +42,9 @@
    "gpu": "gpu1",
    "priority": 3,
    "timeout": 14400,
-   "status": "running",
+   "status": "done",
    "note": "successor retrain (GPU1, idle-gated coexistence)",
-   "last_run": "2026-08-02T18:53:07Z",
-   "retries": 0
-  },
-  {
-   "name": "sentiment-expert-train",
-   "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_sentiment_expert",
-   "gpu": "gpu0",
-   "priority": 1,
-   "timeout": 7200,
-   "status": "pending",
-   "recurring": true,
-   "note": "train the MoT sentiment expert (FinBERT on GPU0 + value head on 10d fwd)",
-   "last_run": "2026-08-02T18:58:35Z",
-   "cooldown_sec": 1800,
+   "last_run": "2026-08-02T19:56:02Z",
    "retries": 0
   }
  ]
