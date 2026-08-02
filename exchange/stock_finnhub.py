@@ -91,6 +91,33 @@ class FinnhubExchange(ExchangeBase):
         self._watchlist: List[str] = config.get("watchlist", []) or []
         self._realtime: Optional[Any] = None
 
+        # Alpaca data API (free tier) — used FIRST for bars and batch quotes;
+        # finnhub + yfinance act as fallback. Keys optional: without them the
+        # adapter behaves exactly as before.
+        self._alpaca_key = ""
+        self._alpaca_secret = ""
+        self._load_alpaca_keys()
+
+    def _load_alpaca_keys(self):
+        """Read free Alpaca data API keys from config/alt_data_keys.json or env."""
+        try:
+            from pathlib import Path
+
+            cfg_path = (
+                Path(__file__).resolve().parent.parent / "config" / "alt_data_keys.json"
+            )
+            if cfg_path.exists():
+                keys = json.loads(cfg_path.read_text())
+                self._alpaca_key = keys.get("ALPACA_KEY", "")
+                self._alpaca_secret = keys.get("ALPACA_SECRET", "")
+        except Exception:
+            pass
+        if not self._alpaca_key:
+            self._alpaca_key = os.environ.get("ALPACA_KEY", "")
+            self._alpaca_secret = os.environ.get("ALPACA_SECRET", "")
+        if self._alpaca_key:
+            logger.info("FinnhubExchange: Alpaca data API keys present (primary source)")
+
     @staticmethod
     def _read_key_from_store() -> str:
         try:
@@ -124,6 +151,91 @@ class FinnhubExchange(ExchangeBase):
         elapsed = time.time() - self._last_api_call
         if elapsed < self._rate_limit:
             time.sleep(self._rate_limit - elapsed)
+
+    # ── Alpaca data API (free, primary source) ──────────────────
+
+    _ALPACA_TF = {
+        "1m": "1Min", "5m": "5Min", "15m": "15Min", "30m": "30Min",
+        "1h": "1Hour", "4h": "4Hour", "1d": "1Day", "1w": "1Week", "1M": "1Month",
+    }
+
+    def _alpaca_headers(self):
+        return {
+            "APCA-API-KEY-ID": self._alpaca_key,
+            "APCA-API-SECRET-KEY": self._alpaca_secret,
+        }
+
+    def _fetch_alpaca_bars(
+        self, symbol: str, timeframe: str, limit: int
+    ) -> List[OHLCV]:
+        """Real OHLCV bars from Alpaca's data API (free tier). Empty on failure."""
+        if not self._alpaca_key:
+            return []
+        tf = self._ALPACA_TF.get(timeframe)
+        if not tf:
+            return []
+        try:
+            url = (
+                f"https://data.alpaca.markets/v2/stocks/{symbol}/bars"
+                f"?timeframe={tf}&limit={limit}&adjust=all"
+            )
+            with urlopen(Request(url, headers=self._alpaca_headers()), timeout=15) as resp:
+                data = json.loads(resp.read().decode())
+            bars = data.get("bars") or []
+            out = []
+            for b in bars:
+                try:
+                    ts = int(datetime.fromisoformat(b["t"].replace("Z", "+00:00")).timestamp())
+                except Exception:
+                    continue
+                out.append(
+                    OHLCV(
+                        timestamp=ts,
+                        open=float(b["o"]),
+                        high=float(b["h"]),
+                        low=float(b["l"]),
+                        close=float(b["c"]),
+                        volume=float(b.get("v", 0)),
+                    )
+                )
+            return out
+        except Exception as e:
+            logger.debug(f"Alpaca bars failed for {symbol}: {e}")
+            return []
+
+    def _fetch_alpaca_batch_quotes(self, symbols: list, chunk: int = 200) -> dict:
+        """Batch latest quotes — up to 200 symbols per call."""
+        if not self._alpaca_key or not symbols:
+            return {}
+        result = {}
+        try:
+            for i in range(0, len(symbols), chunk):
+                chunked = ",".join(symbols[i : i + chunk])
+                url = f"https://data.alpaca.markets/v2/stocks/quotes?symbols={chunked}"
+                with urlopen(Request(url, headers=self._alpaca_headers()), timeout=15) as resp:
+                    data = json.loads(resp.read().decode())
+                for sym, q in (data.get("quotes") or {}).items():
+                    price = q.get("ap") or q.get("bp")
+                    if price and price > 0:
+                        result[sym] = float(price)
+        except Exception as e:
+            logger.debug(f"Alpaca batch quotes failed: {e}")
+        return result
+
+    def _fetch_alpaca_latest_quote(self, symbol: str) -> Optional[float]:
+        """Latest quote for a single symbol."""
+        if not self._alpaca_key:
+            return None
+        try:
+            url = f"https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest"
+            with urlopen(Request(url, headers=self._alpaca_headers()), timeout=15) as resp:
+                data = json.loads(resp.read().decode())
+            q = data.get("quote") or {}
+            price = q.get("ap") or q.get("bp")
+            return float(price) if price and price > 0 else None
+        except Exception as e:
+            logger.debug(f"Alpaca latest quote failed for {symbol}: {e}")
+            return None
         self._last_api_call = time.time()
 
     def _start_realtime(self) -> None:
@@ -212,6 +324,16 @@ class FinnhubExchange(ExchangeBase):
                 return self._bar_cache[cache_key]
 
         bars: List[OHLCV] = []
+
+        # Alpaca bars first — free, reliable, and finnhub's candle API is
+        # premium-gated, so without this the harness fell back to yfinance.
+        if self._alpaca_key:
+            alpaca_bars = self._fetch_alpaca_bars(symbol, timeframe, limit)
+            if len(alpaca_bars) >= 5:
+                self._bar_cache[cache_key] = alpaca_bars
+                self._last_fetch[cache_key] = now_ts
+                self._price_cache[symbol] = alpaca_bars[-1].close
+                return alpaca_bars
 
         # Try Finnhub candle API first (premium users only; free tier gets 403)
         if self._connected:
@@ -327,6 +449,13 @@ class FinnhubExchange(ExchangeBase):
         if symbol in self._price_cache:
             return self._price_cache[symbol]
 
+        # 2b. Alpaca latest quote (free, primary) — avoids a finnhub /quote call
+        if self._alpaca_key:
+            ap = self._fetch_alpaca_latest_quote(symbol)
+            if ap is not None:
+                self._price_cache[symbol] = ap
+                return ap
+
         # 3. REST API call
         try:
             data = self._api_get("/quote", {"symbol": symbol})
@@ -350,6 +479,18 @@ class FinnhubExchange(ExchangeBase):
 
         if not remaining:
             return result
+
+        # Alpaca batch quotes first — up to 200 symbols per call, so the whole
+        # universe sweep collapses to a couple of requests (vs yfinance chunks).
+        if self._alpaca_key:
+            alpaca_quotes = self._fetch_alpaca_batch_quotes(remaining)
+            for sym, price in alpaca_quotes.items():
+                result[sym] = price
+                self._price_cache[sym] = price
+                if sym in remaining:
+                    remaining.remove(sym)
+            if not remaining:
+                return result
 
         try:
             import yfinance as yf
