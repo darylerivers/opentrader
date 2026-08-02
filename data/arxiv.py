@@ -32,6 +32,7 @@ CACHE_FILE = CACHE_DIR / "arxiv_cache.json"
 # arXiv id), so the corpus grows without bound. CACHE_FILE is just the daily
 # top-k feed the debate context reads.
 LIBRARY_FILE = CACHE_DIR / "arxiv_library.json"
+CROSS_CACHE_FILE = CACHE_DIR / "arxiv_cross_cache.json"
 FEATURE_BACKLOG = CACHE_DIR / "feature_backlog.json"
 CACHE_TTL = 86400  # 24 hours — arXiv updates once daily
 EXTRACT_INTERVAL = 50  # cycles between feature extractions
@@ -317,6 +318,15 @@ def fetch_cross_domain(max_results: int = 200) -> List[Dict]:
     """
     query = (f"search_query={CROSS_CATEGORIES}&max_results={max_results}"
              f"&sortBy=submittedDate&sortOrder=descending")
+    # 24h cooldown — the harness calls this once per cycle, but arXiv is
+    # rate-limited; Feed B refreshes daily like Feed A.
+    try:
+        if CROSS_CACHE_FILE.exists():
+            age = time.time() - float(CROSS_CACHE_FILE.read_text().strip())
+            if age < CACHE_TTL:
+                return []
+    except Exception:
+        pass
     url = f"{ARXIV_API}?{query}"
     try:
         req = Request(url, method="GET")
@@ -383,6 +393,7 @@ def fetch_cross_domain(max_results: int = 200) -> List[Dict]:
             existing_ids.add(c["id"])
             added.append(c)
     _save_library(library)
+    CROSS_CACHE_FILE.write_text(str(time.time()))
     bridges = sum(1 for a in added if a.get("bridge"))
     logger.info(f"cross-domain: +{len(added)} papers ({bridges} bridge), library={len(library)}")
     return added
