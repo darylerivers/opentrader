@@ -94,6 +94,7 @@ def main():
                 "title": c["id"], "rule": c["rule"], "type": f.get("type", ""),
                 "paper": f.get("paper_source", ""), "label": label, "detail": detail,
                 "gate": c.get("gate"), "params": c.get("params"),
+                "fields": f.get("fields", []), "multi_source": f.get("multi_source", False),
             })
             fj.write(json.dumps({"messages": [
                 {"role": "system", "content":

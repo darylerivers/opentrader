@@ -55,6 +55,50 @@ CATEGORIES = (
     # (Seiberg dualities etc.); finance-only feed keeps the researcher on-topic.
 )
 
+# Cross-domain discovery stream (Feed B): psychology, neuroscience, complex
+# systems, and physical sciences mined for emerging-market trading rules.
+# Kept SEPARATE from the core q-fin feed; papers here only reach the model
+# after their extracted rules pass the evidence gate.
+CROSS_CATEGORIES = (
+    "cat:econ.GN"         # General Economics (behavioral econ)
+    "+OR+cat:q-fin.EC"    # Economics
+    "+OR+cat:physics.soc-ph"  # Physics & Society (opinion/market dynamics)
+    "+OR+cat:q-bio.NC"    # Neuroscience (decision-making)
+    "+OR+cat:cs.CY"       # Computers & Society (behavior)
+    "+OR+cat:cond-mat.mtrl-sci"  # Materials (supply chains)
+    "+OR+cat:physics.geo-ph"     # Climate/Earth (energy, commodities)
+    "+OR+cat:q-bio.PE"    # Ecology (population/cyclical analogs)
+    "+OR+cat:stat.AP"     # Statistics Applications
+)
+
+# Trading bridge for cross-domain papers — a paper passes if it hits >= 2 of
+# these OR co-tags a q-fin category. This is what keeps the physics noise out.
+BRIDGE_KEYWORDS = (
+    "risk aversion", "loss aversion", "prospect theory", "decision under uncertainty",
+    "overconfidence", "ambiguity", "probability weighting", "discounting",
+    "market", "trading", "investor", "portfolio", "asset pricing", "liquidity",
+    "volatility", "momentum", "bubble", "crash", "cascade", "herding",
+    "sentiment", "belief", "expectation", "coordination", "contagion",
+    "systemic risk", "supply", "demand", "price", "futures", "commodity",
+    "energy market", "opinion dynamics", "collective behavior", "agent-based",
+    "network", "risk", "return", "stock", "bank",
+)
+
+
+def _stream_of(cats) -> str:
+    """Classify a paper by full category membership: qfin / cross / bridge."""
+    has_qfin = any(c.startswith("q-fin") for c in cats)
+    cross_set = {"econ.gn", "q-fin.ec", "physics.soc-ph", "q-bio.nc", "cs.cy",
+                 "cond-mat.mtrl-sci", "physics.geo-ph", "q-bio.pe", "stat.ap"}
+    has_cross = any(c.lower() in cross_set for c in cats)
+    if has_qfin and has_cross:
+        return "bridge"
+    if has_qfin:
+        return "qfin"
+    if has_cross:
+        return "cross"
+    return "other"
+
 # Terms for relevance scoring — papers matching more terms score higher
 # Also used as a binary filter: papers with zero hits are discarded
 KEYWORD_HITS = (
@@ -146,10 +190,16 @@ def _save_library(papers: List[Dict]) -> None:
 
 
 def _top_feed(library: List[Dict], n: int = MAX_CACHED) -> List[Dict]:
-    """Best-n papers from the library for the debate feed: relevance, then recency."""
+    """Best-n papers from the library for the debate feed: relevance, then recency.
+
+    Only qfin/bridge papers qualify — cross-only papers stay out of the model's
+    daily context until their extracted rules pass the evidence gate.
+    """
+    qual = [p for p in library if p.get("stream") in ("qfin", "bridge")]
+
     def key(p):
         return (p.get("score", 0), p.get("published", ""))
-    feed = sorted(library, key=key, reverse=True)[:n]
+    feed = sorted(qual, key=key, reverse=True)[:n]
     out = []
     for p in feed:
         q = dict(p)
@@ -229,6 +279,7 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
             "published": published,
             "pdf_url": pdf_url,
             "categories": cats,
+            "stream": _stream_of(cats),
             "score": score,
             "dex_specific": is_dex,
             "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -253,6 +304,88 @@ def fetch_arxiv(max_results: int = MAX_RESULTS) -> List[Dict[str, str]]:
         f"feed={len(feed)}"
     )
     return feed
+
+
+def fetch_cross_domain(max_results: int = 200) -> List[Dict]:
+    """Feed B: cross-domain (psych/neuro/complex-systems/physical-science)
+    papers mined for emerging-market trading rules.
+
+    Relevance gate: a paper passes if it co-tags a q-fin category (bridge) OR
+    hits >= 2 trading-bridge keywords. Merged into the SAME library, classified
+    by full category membership (qfin/cross/bridge). Returns the newly added
+    papers. Cross-only papers feed extraction but not the model's daily context.
+    """
+    query = (f"search_query={CROSS_CATEGORIES}&max_results={max_results}"
+             f"&sortBy=submittedDate&sortOrder=descending")
+    url = f"{ARXIV_API}?{query}"
+    try:
+        req = Request(url, method="GET")
+        req.add_header("User-Agent", "OpenTrader/1.0 (research bot; one query per day)")
+        with urlopen(req, timeout=60) as resp:
+            raw = resp.read().decode("utf-8")
+    except Exception as e:
+        logger.warning(f"arXiv cross-domain fetch failed: {e}")
+        return []
+
+    try:
+        root = ET.fromstring(raw)
+    except ET.ParseError as e:
+        logger.warning(f"arXiv cross-domain XML parse error: {e}")
+        return []
+
+    ns = {"a": ATOM_NS}
+    candidates = []
+    for entry in root.findall("a:entry", ns):
+        title_el = entry.find("a:title", ns)
+        summary_el = entry.find("a:summary", ns)
+        published_el = entry.find("a:published", ns)
+        arxiv_id = entry.findtext("a:id", "").rsplit("/", 1)[-1]
+
+        title = title_el.text.strip().replace("\n", " ") if title_el is not None else ""
+        summary = summary_el.text.strip().replace("\n", " ") if summary_el is not None else ""
+        published = published_el.text[:10] if published_el is not None else ""
+        cats = [c.get("term", "") for c in entry.findall("a:category", ns)]
+
+        pdf_url = ""
+        for link in entry.findall("a:link", ns):
+            if link.get("title") == "pdf":
+                pdf_url = link.get("href", "")
+                break
+
+        stream = _stream_of(cats)
+        if stream == "other":
+            continue
+        text = (title + " " + summary).lower()
+        bridge_hits = sum(1 for k in BRIDGE_KEYWORDS if k in text)
+        if stream == "cross" and bridge_hits < 2:
+            continue
+
+        candidates.append({
+            "id": arxiv_id or pdf_url,
+            "title": title,
+            "summary": summary[:SUMMARY_MAX_CHARS] + "..." if len(summary) > SUMMARY_MAX_CHARS else summary,
+            "published": published,
+            "pdf_url": pdf_url,
+            "categories": cats,
+            "stream": stream,
+            "bridge": stream == "bridge",
+            "bridge_hits": bridge_hits,
+            "score": bridge_hits,
+            "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        })
+
+    library = _load_library()
+    existing_ids = {p.get("id") for p in library}
+    added = []
+    for c in candidates:
+        if c["id"] and c["id"] not in existing_ids:
+            library.append(c)
+            existing_ids.add(c["id"])
+            added.append(c)
+    _save_library(library)
+    bridges = sum(1 for a in added if a.get("bridge"))
+    logger.info(f"cross-domain: +{len(added)} papers ({bridges} bridge), library={len(library)}")
+    return added
 
 
 def format_arxiv_context(papers: List[Dict]) -> str:
@@ -329,6 +462,7 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
 
     existing_titles = set()
     existing_rules = []
+    rule_to_feat = {}
     for item in backlog.get("features", []):
         t = item.get("title", "").lower()
         if t:
@@ -336,6 +470,7 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
         r = item.get("rule", "").lower()
         if r:
             existing_rules.append(r)
+            rule_to_feat.setdefault(r, item)
 
     # Show existing feature titles to avoid duplicates
     existing_list = "\n".join(f"  - {t}" for t in sorted(existing_titles))
@@ -351,6 +486,7 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
     for i in range(n_batches):
         batch = unextracted[i * 5 : i * 5 + 5]
         processed.extend(batch)
+        batch_fields = sorted({p.get("stream", "?") for p in batch})
         paper_text = "\n\n---\n\n".join(
             f"PAPER {j+1} ({p.get('published', '?')}): {p['title']}\n{p['summary']}"
             for j, p in enumerate(batch)
@@ -421,6 +557,17 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
                         is_dup = True
                         break
             if is_dup:
+                # Cross-field triangulation: the same rule emerging from a
+                # DIFFERENT stream (finance vs psychology/neuro/physics) is
+                # independent corroboration — promote the existing feature.
+                ex_feat = rule_to_feat.get(er)
+                if ex_feat is not None:
+                    ex_fields = set(ex_feat.get("fields", []))
+                    if set(batch_fields) - ex_fields:
+                        merged = sorted(ex_fields | set(batch_fields))
+                        ex_feat["fields"] = merged
+                        ex_feat["multi_source"] = len(merged) > 1
+                        logger.info(f"arXiv: rule '{title}' triangulated across {merged}")
                 continue
 
             # Reject DEX/on-chain specific features
@@ -436,10 +583,13 @@ def extract_features(llama_host: str = "http://127.0.0.1:5802",
             f["extracted_at"] = now
             f["status"] = "pending"
             f["validated"] = False
+            f["fields"] = batch_fields
+            f["multi_source"] = len(batch_fields) > 1
             f["confidence"] = max(0.0, min(1.0, f.get("confidence", 0.5)))
             backlog["features"].append(f)
             existing_titles.add(title_lower)
             existing_rules.append(rule_lower)
+            rule_to_feat[rule_lower] = f
             new_count += 1
             features.append(f)
 

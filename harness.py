@@ -1938,6 +1938,12 @@ class OpenTraderHarness:
                     self._news_cycle = self.cycle
                     self._news_cache = fetch_all_news()
                     self._arxiv_cache = fetch_arxiv()
+                    try:
+                        from data.arxiv import fetch_cross_domain
+
+                        fetch_cross_domain()  # Feed B: merge into the library (extraction-only)
+                    except Exception:
+                        pass
                     self._social_cache = get_social_sentiment(self.symbols)
             ctx.news_json = json.dumps(self._news_cache or {"sources": {}})
             arxiv_ctx = format_arxiv_context(
