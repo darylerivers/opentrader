@@ -140,6 +140,7 @@ class OpenTraderHarness:
         debate_enabled: bool = True,
         parallel_debate: bool = None,
         debate_mode: str = None,  # "fast" (composite) | "adir" (independent agents)
+        rule_gate: bool = False,  # gate BUY signals behind the validated rule screen
         stage: int = 0,  # 0 = auto (from state/progression), >0 = force
         universe_mode: bool = True,  # agent picks symbols from 50+ universe vs hardcoded list
         universe_focus: int = 6,  # number of symbols to deep-debate per cycle
@@ -167,6 +168,9 @@ class OpenTraderHarness:
         self.debate_enabled = debate_enabled
         self.parallel_debate = parallel_debate
         self.debate_mode = debate_mode
+        self.rule_gate = rule_gate
+        self._rule_gate_cache = {}
+        self._rule_gate_cfg = None
         self._force_stage = stage  # 0 = use state/progression, >0 = override
         self._mot_force = mot_force  # "auto" = MoT decides, otherwise forced
         self.universe_mode = universe_mode
@@ -2367,6 +2371,41 @@ class OpenTraderHarness:
         scored.sort(reverse=True)
         return [s[1] for s in scored[:focus]] or list(self.symbols)
 
+    def _rule_gate_ok(self, sym: str) -> bool:
+        """Weaponized playbook: does a BUY for `sym` clear the validated rule
+        screen (regime + technical score)? Fail-closed — if the screen can't be
+        computed, the trade is blocked. Cached per symbol (20 min)."""
+        try:
+            cached = self._rule_gate_cache.get(sym)
+            if cached and time.time() - cached[0] < 1800:
+                return cached[1]
+            from setup_search.rule_gate import screen, load_rule_config
+            if self._rule_gate_cfg is None:
+                self._rule_gate_cfg = load_rule_config()
+            import pandas as pd  # already loaded by the exchange module
+
+            closes, highs, lows, vols = {}, {}, {}, {}
+            for s in (sym, "SPY"):
+                bars = self.exchange.get_bars(s, "1d", limit=150)
+                if not bars:
+                    continue
+                index = [
+                    datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars
+                ]
+                closes[s] = pd.Series([b.close for b in bars], index=index)
+                highs[s] = pd.Series([b.high for b in bars], index=index)
+                lows[s] = pd.Series([b.low for b in bars], index=index)
+                vols[s] = pd.Series([b.volume for b in bars], index=index)
+            ok = False
+            if sym in closes and "SPY" in closes:
+                date = closes[sym].index[-1]
+                ok, _ = screen(closes, highs, lows, vols, sym, date, self._rule_gate_cfg)
+            self._rule_gate_cache[sym] = (time.time(), ok)
+            return ok
+        except Exception as e:
+            logger.debug(f"rule-gate screen failed for {sym}: {e}")
+            return False
+
     def run_cycle(self) -> dict:
         """Execute one trading cycle across all active symbols.
 
@@ -2875,6 +2914,16 @@ class OpenTraderHarness:
                 logger.info(
                     f"  {sym}: alloc {effective_action} wt={effective_position_pct:.4f} qty={alloc.get('quantity', 0):.6f}"
                 )
+
+            # Rule-playbook gate (weaponized discipline): a BUY must clear the
+            # validated rule screen (regime + technical score) or it becomes HOLD.
+            if self.rule_gate and effective_action == "BUY":
+                if not self._rule_gate_ok(sym):
+                    effective_action = "HOLD"
+                    effective_position_pct = min(effective_position_pct, 0.0)
+                    logger.info(
+                        f"  {sym}: RULE-GATE blocks BUY (failed the validated screen)"
+                    )
 
             # ── SL/TP guard: block debate-driven SELL when SL/TP is active ──
             # The debate engine should BUY/HOLD; exits are SL/TP's job.
@@ -3944,6 +3993,12 @@ def main():
         choices=["auto", "increase", "reduce", "maintain"],
         help="Force MoT decision (auto=let MoT decide)",
     )
+    parser.add_argument(
+        "--rule-gate",
+        action="store_true",
+        help="Weaponize the rule playbook: only act on BUY signals that pass the "
+        "validated rule screen (regime + technical score). Default: off.",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -4030,6 +4085,7 @@ def main():
         sidecar_binary=args.sidecar_binary,
         stock_exchange=args.stock_exchange,
         crypto_exchange=args.crypto_exchange,
+        rule_gate=args.rule_gate,
     )
 
     if _onchain_wallet:

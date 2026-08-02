@@ -1,0 +1,232 @@
+{
+ "n": 28,
+ "mean_all": 0.005444597974617014,
+ "mean_yes": null,
+ "mean_no": 0.005444597974617014,
+ "verdicts": [
+  {
+   "sym": "MSFT",
+   "date": "2024-01-05 00:00:00+00:00",
+   "impact": 0.004726458874048745,
+   "pnl_pct": 0.0313633634641589,
+   "take": false,
+   "reason": "Price is extended above the 50d mean with no rule score, indicating an overbought condition that violates conservative entry discipline."
+  },
+  {
+   "sym": "DIS",
+   "date": "2024-01-09 00:00:00+00:00",
+   "impact": 0.007653458633251449,
+   "pnl_pct": 0.05078666288660613,
+   "take": false,
+   "reason": "Price is flatlining near the 50d mean with no upward momentum and the rule score is null, indicating no validated entry signal."
+  },
+  {
+   "sym": "PG",
+   "date": "2024-04-03 00:00:00+00:00",
+   "impact": 0.004758171057615346,
+   "pnl_pct": 0.03157559236551441,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought/oversold condition that violates conservative entry discipline."
+  },
+  {
+   "sym": "NVDA",
+   "date": "2024-04-17 00:00:00+00:00",
+   "impact": 0.010253486527173119,
+   "pnl_pct": 0.06804295929946134,
+   "take": false,
+   "reason": "Price is extended above the 50d mean with no rule score, indicating an overbought condition that violates conservative entry discipline."
+  },
+  {
+   "sym": "WMT",
+   "date": "2024-04-18 00:00:00+00:00",
+   "impact": 0.0012521317205576182,
+   "pnl_pct": 0.008309312646751376,
+   "take": false,
+   "reason": "Price is flat at the 50d mean with no upward momentum and the rule score is null, indicating no validated entry signal."
+  },
+  {
+   "sym": "NFLX",
+   "date": "2024-04-19 00:00:00+00:00",
+   "impact": 0.014017467687678852,
+   "pnl_pct": 0.09301560811863388,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought/oversold condition that violates disciplined entry criteria."
+  },
+  {
+   "sym": "META",
+   "date": "2024-04-25 00:00:00+00:00",
+   "impact": 0.01227238006699942,
+   "pnl_pct": 0.08144239702790877,
+   "take": false,
+   "reason": "Price is significantly below the 50d mean, indicating an extended or overbought correction that contradicts a conservative long entry stance."
+  },
+  {
+   "sym": "MSFT",
+   "date": "2024-04-30 00:00:00+00:00",
+   "impact": 0.01278856178971595,
+   "pnl_pct": 0.0848664492718571,
+   "take": false,
+   "reason": "Price is significantly below the 50-day mean, indicating an extended pullback that lacks a clear regime signal to justify a long entry."
+  },
+  {
+   "sym": "DIS",
+   "date": "2024-05-07 00:00:00+00:00",
+   "impact": -0.005520460824030433,
+   "pnl_pct": -0.03664162950374276,
+   "take": false,
+   "reason": "Price is extended above the 50d mean with no rule score, indicating an overbought condition."
+  },
+  {
+   "sym": "XOM",
+   "date": "2024-05-23 00:00:00+00:00",
+   "impact": -0.005905651180820424,
+   "pnl_pct": -0.03919851826708158,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought-to-oversold reversal rather than a valid entry."
+  },
+  {
+   "sym": "NFLX",
+   "date": "2025-01-10 00:00:00+00:00",
+   "impact": 0.025309254717498758,
+   "pnl_pct": 0.16794142191136358,
+   "take": false,
+   "reason": "Price has extended significantly below the 50-day mean and recent closes, indicating an overbought-to-oversold reversal rather than a valid long setup."
+  },
+  {
+   "sym": "DIS",
+   "date": "2025-01-03 00:00:00+00:00",
+   "impact": 0.0015416900088343652,
+   "pnl_pct": 0.010230192493924123,
+   "take": false,
+   "reason": "Price is extended above the 50-day mean with no rule score, indicating an overbought condition."
+  },
+  {
+   "sym": "NVDA",
+   "date": "2025-01-27 00:00:00+00:00",
+   "impact": 0.024514714939713012,
+   "pnl_pct": 0.162691982145572,
+   "take": false,
+   "reason": "Price dropped sharply from 147 to 118, indicating a breakdown rather than a valid entry signal."
+  },
+  {
+   "sym": "DIS",
+   "date": "2025-03-06 00:00:00+00:00",
+   "impact": -0.007946664002230283,
+   "pnl_pct": -0.05274377066092697,
+   "take": false,
+   "reason": "Price is significantly below the 50-day mean, indicating an extended or oversold condition that contradicts a conservative long entry."
+  },
+  {
+   "sym": "JNJ",
+   "date": "2025-04-01 00:00:00+00:00",
+   "impact": 0.0030630002316710298,
+   "pnl_pct": 0.020329092333064475,
+   "take": false,
+   "reason": "Entry at 148.24 is significantly below the 50d mean of 153, indicating the stock is extended and overbought relative to its recent range, making a long entry inadvisable."
+  },
+  {
+   "sym": "WMT",
+   "date": "2025-06-12 00:00:00+00:00",
+   "impact": 0.004246211747436315,
+   "pnl_pct": 0.028182434765422565,
+   "take": false,
+   "reason": "Price is extended above the 50d mean with no rule score, indicating an overbought condition that violates conservative entry discipline."
+  },
+  {
+   "sym": "KO",
+   "date": "2026-01-05 00:00:00+00:00",
+   "impact": 0.00880018926919243,
+   "pnl_pct": 0.058395416517534375,
+   "take": false,
+   "reason": "Price has extended below the 50-day mean and is trading at a multi-week low, indicating an overbought-to-oversold reversal rather than a valid long setup."
+  },
+  {
+   "sym": "AAPL",
+   "date": "2026-01-06 00:00:00+00:00",
+   "impact": -0.0037396877692886135,
+   "pnl_pct": -0.024815340143487984,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought-to-the-downside setup that violates conservative entry discipline."
+  },
+  {
+   "sym": "CSCO",
+   "date": "2026-01-08 00:00:00+00:00",
+   "impact": 0.007665526588193496,
+   "pnl_pct": 0.05086610240280594,
+   "take": false,
+   "reason": "Price is trending down from 77 to 73, trading below the 50d mean of 75, indicating an extended and bearish setup that contradicts a long entry."
+  },
+  {
+   "sym": "DIS",
+   "date": "2026-02-02 00:00:00+00:00",
+   "impact": -0.0014398367801964965,
+   "pnl_pct": -0.009554882834114682,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought/oversold condition that violates disciplined entry criteria."
+  },
+  {
+   "sym": "AMZN",
+   "date": "2026-02-06 00:00:00+00:00",
+   "impact": -0.0016031915068436063,
+   "pnl_pct": -0.010639181787647832,
+   "take": false,
+   "reason": "Price is significantly below the 50d mean, indicating an extended decline rather than a mean-reversion opportunity."
+  },
+  {
+   "sym": "JNJ",
+   "date": "2026-03-20 00:00:00+00:00",
+   "impact": 0.0005826112543101911,
+   "pnl_pct": 0.0038662049679626556,
+   "take": false,
+   "reason": "Price is extended above the 50d mean with no rule score, indicating an overbought condition."
+  },
+  {
+   "sym": "KO",
+   "date": "2026-03-20 00:00:00+00:00",
+   "impact": 0.004071560945010818,
+   "pnl_pct": 0.02701885525984457,
+   "take": false,
+   "reason": "Price has drifted below the 50-day mean and recent closes show a downtrend, making a long entry against the regime."
+  },
+  {
+   "sym": "GOOGL",
+   "date": "2026-03-26 00:00:00+00:00",
+   "impact": 0.025329693142607225,
+   "pnl_pct": 0.16808844071879417,
+   "take": false,
+   "reason": "Price is significantly below the 50d mean and recent closes show a downtrend, indicating an overextended and bearish setup unsuitable for a long entry."
+  },
+  {
+   "sym": "JNJ",
+   "date": "2026-04-16 00:00:00+00:00",
+   "impact": -0.007690565205321163,
+   "pnl_pct": -0.05104138856678814,
+   "take": false,
+   "reason": "Price is significantly below the 50-day mean, indicating an extended or overbought correction that contradicts a conservative long entry."
+  },
+  {
+   "sym": "WMT",
+   "date": "2026-05-21 00:00:00+00:00",
+   "impact": -0.0023950712377608396,
+   "pnl_pct": -0.01589525944671761,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating a weak, overbought-to-the-downside setup that violates conservative entry discipline."
+  },
+  {
+   "sym": "AMZN",
+   "date": "2026-06-05 00:00:00+00:00",
+   "impact": -0.009494888360028146,
+   "pnl_pct": -0.0630132311035529,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought/oversold condition that violates disciplined entry criteria."
+  },
+  {
+   "sym": "AAPL",
+   "date": "2026-06-25 00:00:00+00:00",
+   "impact": 0.025338190954288256,
+   "pnl_pct": 0.1681495735157582,
+   "take": false,
+   "reason": "Price is extended below the 50d mean with no rule score, indicating an overbought-to-oversold reversal rather than a valid long setup."
+  }
+ ]
+}
