@@ -1,28 +1,44 @@
 {
-  "tasks": [
-    {
-      "name": "sentiment-holdout-3-10d",
-      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_sentiment_holdout",
-      "priority": 1,
-      "timeout": 5400,
-      "status": "pending",
-      "note": "The deferred honest sentiment test: FinBERT sentiment vs 3/5/10-day forward returns"
-    },
-    {
-      "name": "value-head-push",
-      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_value_push",
-      "priority": 2,
-      "timeout": 3600,
-      "status": "pending",
-      "note": "Re-run + push the best value-head config (cross-sectional + FRED) through the holdout gate"
-    },
-    {
-      "name": "ptolemy-retrain",
-      "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_ptolemy_train",
-      "priority": 3,
-      "timeout": 14400,
-      "status": "pending",
-      "note": "Retrain the successor on accumulated data (Genesis->Ptolemy lifecycle)"
-    }
-  ]
+ "tasks": [
+  {
+   "name": "scheduler-self-test",
+   "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_self_test",
+   "gpu": "cpu",
+   "priority": 0,
+   "timeout": 300,
+   "status": "done",
+   "note": "verifies the workflow process + scheduler signals (dry-run equivalent)",
+   "last_run": "2026-08-02T18:39:48Z"
+  },
+  {
+   "name": "sentiment-holdout-3-10d",
+   "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_sentiment_holdout",
+   "gpu": "gpu0",
+   "priority": 1,
+   "timeout": 5400,
+   "status": "done",
+   "note": "FinBERT sentiment vs 3/5/10-day returns (GPU0, safe)",
+   "retries": 0,
+   "last_run": "2026-08-02T18:49:03Z"
+  },
+  {
+   "name": "value-head-push",
+   "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_value_push",
+   "gpu": "cpu",
+   "priority": 2,
+   "timeout": 3600,
+   "status": "done",
+   "note": "re-run the best value-head through the holdout gate",
+   "last_run": "2026-08-02T18:41:18Z"
+  },
+  {
+   "name": "ptolemy-retrain",
+   "cmd": "/home/mrc/rocm_venv/bin/python3 -m setup_search.task_ptolemy_train",
+   "gpu": "gpu1",
+   "priority": 3,
+   "timeout": 14400,
+   "status": "pending",
+   "note": "successor retrain (GPU1, idle-gated coexistence)"
+  }
+ ]
 }

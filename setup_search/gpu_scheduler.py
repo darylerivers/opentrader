@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
-"""Autonomous GPU scheduler — keeps idle GPUs productively busy.
+"""Autonomous GPU scheduler v2 — request-activity gating (wayfinder #43).
 
-The rule-primary trader doesn't call the LLM, so GPU0/GPU1 sit idle. This
-scheduler watches GPU utilization; when both are idle for a sustained window,
-it runs the next pending task from the manifest (sentiment holdout -> value
-head push -> Ptolemy retrain) to completion, logs + checkpoints, and moves on.
+Research found the util-based gate could never fire (GPU1 is ~100% duty-cycled
+by the harness's scout/coach). v2 gates on REQUEST ACTIVITY from the journal:
 
-Runs forever. Launch via systemd (opentrader-gpu-scheduler.service).
+- GPU0 tasks (sentiment FinBERT): safe when no `slot launch` in 5 min
+  (rule-primary never calls qwen). During a run, a launch pauses the task
+  (SIGSTOP) and resumes it after 60s quiet — the gpu_sync proxy could shift
+  traffic there.
+- GPU1 tasks (Ptolemy retrain): coexistence — run only in 60s-quiet windows,
+  pause on any new launch, resume after 60s quiet.
+- CPU tasks (value-head): always run.
+
+Retry policy: 2 retries then `failed`. `--dry-run` validates the signals
+without running tasks (the scheduler's own process-verification step).
 """
 
+import argparse
 import json
 import logging
-import os
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -19,12 +27,11 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parent.parent
 OUT = PROJECT / "data" / "gpu_scheduler"
 MANIFEST = Path(__file__).resolve().parent / "auto_tasks.json"
-IDLE_THRESHOLD = 30.0   # % GPU util below this = mostly idle (harness still scouts/coaches)
-IDLE_CYCLES = 30        # ~5 min of mostly-idle before running the next task
-POLL_SEC = 10
+POLL_SEC = 15
+GPU0_SERVICE = "opentrader-llama-gpu0.service"  # qwen (NVIDIA)
+GPU1_SERVICE = "opentrader-llama-gpu1.service"  # qwythos (AMD)
 
 OUT.mkdir(parents=True, exist_ok=True)
-
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [scheduler] %(levelname)s %(message)s",
                     handlers=[logging.FileHandler(OUT / "scheduler.log"),
@@ -32,27 +39,25 @@ logging.basicConfig(level=logging.INFO,
 log = logging.getLogger("gpu_scheduler")
 
 
-def gpu_util() -> float:
-    """Max GPU utilization across NVIDIA + AMD."""
-    util = []
+def launches_in(service: str, minutes: float) -> int:
+    """Count llama-server `slot launch` events in the journal over the window."""
     try:
-        out = subprocess.run(["nvidia-smi", "--query-gpu=utilization.gpu",
-                              "--format=csv,noheader,nounits"],
-                             capture_output=True, text=True, timeout=10)
-        util += [float(x.strip()) for x in out.stdout.strip().splitlines() if x.strip().isdigit()]
+        r = subprocess.run(
+            ["journalctl", "--user", "-u", service, "--since",
+             f"{int(minutes)} min ago", "--no-pager"],
+            capture_output=True, text=True, timeout=20,
+        )
+        return r.stdout.count("slot launch")
     except Exception:
-        pass
-    try:
-        out = subprocess.run(["rocm-smi", "--showuse"], capture_output=True, text=True, timeout=10)
-        for line in out.stdout.splitlines():
-            if "%" in line:
-                try:
-                    util.append(float(line.split(":")[-1].replace("%", "").strip()))
-                except Exception:
-                    pass
-    except Exception:
-        pass
-    return max(util) if util else 0.0
+        return 0
+
+
+def gpu0_safe() -> bool:
+    return launches_in(GPU0_SERVICE, 5) == 0
+
+
+def gpu1_quiet() -> bool:
+    return launches_in(GPU1_SERVICE, 1) == 0
 
 
 def load_manifest():
@@ -63,49 +68,109 @@ def save_manifest(tasks):
     MANIFEST.write_text(json.dumps({"tasks": tasks}, indent=1))
 
 
-def run_task(task):
-    log.info(f"RUN task: {task['name']} ({task['cmd']})")
-    task["status"] = "running"
-    save_manifest(load_manifest())
-    try:
-        result = subprocess.run(task["cmd"], shell=True, cwd=str(PROJECT),
-                                capture_output=True, text=True, timeout=task.get("timeout", 3600))
-        task["status"] = "done" if result.returncode == 0 else "failed"
-        task["exit"] = result.returncode
-        log.info(f"DONE task {task['name']}: rc={result.returncode}")
-        if result.stdout:
-            log.info(f"  stdout tail: {result.stdout[-800:]}")
-        if result.stderr:
-            log.info(f"  stderr tail: {result.stderr[-400:]}")
-    except subprocess.TimeoutExpired:
-        task["status"] = "timed_out"
-        log.warning(f"TIMEOUT task {task['name']}")
-    task["last_run"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    save_manifest(load_manifest())
+def task_safe(task) -> str:
+    """Return '' if safe to run, else the reason it's gated."""
+    gpu = task.get("gpu", "cpu")
+    if gpu == "gpu0":
+        return "" if gpu0_safe() else "GPU0 active (launch within 5 min)"
+    if gpu == "gpu1":
+        return "" if gpu1_quiet() else "GPU1 busy (launch within 60s)"
+    return ""
+
+
+def run_task(task, dry_run=False) -> str:
+    """Run a task, pausing on GPU contention; returns status."""
+    gpu = task.get("gpu", "cpu")
+    if dry_run:
+        return "dry-run-ok"
+    proc = subprocess.Popen(task["cmd"], shell=True, cwd=str(PROJECT),
+                            stdout=open(OUT / f"{task['name']}.out", "w"),
+                            stderr=subprocess.STDOUT)
+    paused = False
+    start = time.time()
+    while proc.poll() is None:
+        time.sleep(POLL_SEC)
+        if gpu == "gpu0":
+            if launches_in(GPU0_SERVICE, 5) > 0 and not paused:
+                proc.send_signal(signal.SIGSTOP)
+                paused = True
+                log.info(f"  {task['name']}: GPU0 active -> paused")
+            elif paused and gpu0_safe():
+                proc.send_signal(signal.SIGCONT)
+                paused = False
+                log.info(f"  {task['name']}: GPU0 quiet -> resumed")
+        elif gpu == "gpu1":
+            if not gpu1_quiet() and not paused:
+                proc.send_signal(signal.SIGSTOP)
+                paused = True
+                log.info(f"  {task['name']}: GPU1 busy -> paused")
+            elif paused and gpu1_quiet():
+                proc.send_signal(signal.SIGCONT)
+                paused = False
+                log.info(f"  {task['name']}: GPU1 quiet -> resumed")
+        if time.time() - start > task.get("timeout", 3600):
+            proc.kill()
+            return "timed_out"
+    rc = proc.returncode
+    if paused:
+        try:
+            proc.send_signal(signal.SIGCONT)
+        except Exception:
+            pass
+    return "done" if rc == 0 else "failed"
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
-    idle_count = 0
-    log.info("GPU scheduler started (rule-primary trader -> idle GPUs run research/training)")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Validate signals + report what would run, run nothing")
+    ap.add_argument("--once", action="store_true", help="Run one task then exit")
+    args = ap.parse_args()
+
+    if args.dry_run:
+        print(f"GPU0 launches(5min)={launches_in(GPU0_SERVICE, 5)} "
+              f"-> safe={gpu0_safe()}")
+        print(f"GPU1 launches(1min)={launches_in(GPU1_SERVICE, 1)} "
+              f"-> quiet={gpu1_quiet()}")
+        for t in load_manifest():
+            print(f"  {t['name']} (gpu={t.get('gpu')}): "
+                  f"{task_safe(t) or 'would run'}")
+        return
+
+    log.info("GPU scheduler v2 started (request-activity gating)")
     while True:
         try:
-            util = gpu_util()
-            if util < IDLE_THRESHOLD:
-                idle_count += 1
-            else:
-                idle_count = 0
-            if idle_count >= IDLE_CYCLES:
-                tasks = load_manifest()
-                pending = [t for t in tasks if t.get("status") in ("pending", "failed", "never_run", None)]
-                if pending:
-                    run_task(pending[0])
-                else:
-                    log.info("All tasks complete; waiting for new work")
-                idle_count = 0
+            tasks = load_manifest()
+            ran = False
+            for t in tasks:
+                if t.get("status") not in ("pending", "failed"):
+                    continue
+                if t.get("retries", 0) >= 2:
+                    continue
+                why = task_safe(t)
+                if why:
+                    log.debug(f"gated: {t['name']} ({why})")
+                    continue
+                log.info(f"RUN {t['name']} (gpu={t.get('gpu')})")
+                t["status"] = "running"
+                save_manifest(tasks)
+                status = run_task(t)
+                t["status"] = status
+                if status == "failed":
+                    t["retries"] = t.get("retries", 0) + 1
+                    t["status"] = "failed" if t["retries"] >= 2 else "pending"
+                t["last_run"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                save_manifest(tasks)
+                log.info(f"DONE {t['name']}: {status} (retries={t.get('retries', 0)})")
+                ran = True
+                if args.once:
+                    return
+                break  # one task per pass; loop re-gates on the next
+            if not ran:
+                time.sleep(POLL_SEC)
         except Exception as e:
             log.error(f"scheduler error: {e}")
-        time.sleep(POLL_SEC)
+            time.sleep(POLL_SEC)
 
 
 if __name__ == "__main__":

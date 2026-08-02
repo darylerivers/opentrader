@@ -1,0 +1,21 @@
+{
+ "3": {
+  "n": 4000,
+  "up_mean_sent": -0.19133262982018728,
+  "down_mean_sent": -0.2087737108223615,
+  "separation": 0.01744108100217423
+ },
+ "5": {
+  "n": 4000,
+  "up_mean_sent": -0.1942135259244239,
+  "down_mean_sent": -0.20595286245568867,
+  "separation": 0.011739336531264771
+ },
+ "10": {
+  "n": 4000,
+  "up_mean_sent": -0.18627169319881862,
+  "down_mean_sent": -0.21662029281604336,
+  "separation": 0.030348599617224747
+ },
+ "verdict": "sentiment predicts longer-horizon returns"
+}

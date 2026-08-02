@@ -36,37 +36,43 @@ def main():
     px = {}
     for tk in UNIVERSE:
         try:
-            v = yf.download(tk, period="1y", interval="1d", auto_adjust=True, progress=False)
+            v = yf.download(tk, period="2y", interval="1d", auto_adjust=True, progress=False)
             s = v["Close"]
-            s = s["Close"] if hasattr(s, "columns") else s
+            s = s[tk] if hasattr(s, "columns") else s
             px[tk] = s.dropna()
         except Exception as e:
             print(f"  price fail {tk}: {e}", flush=True)
     print(f"[sent3d] prices for {len(px)}/{len(UNIVERSE)} tickers", flush=True)
 
+    df["day"] = pd.to_datetime(df["timestamp"], utc=True).dt.normalize()
     for h in HORIZONS:
-        fwd = []
+        fwd_map = {}
         for tk, grp in df.groupby("ticker"):
             s = px.get(tk)
             if s is None:
                 continue
-            dates = pd.to_datetime(grp["timestamp"]).dt.normalize()
-            for d in dates:
+            for d in grp["day"]:
                 try:
-                    pos = s.index.searchsorted(pd.Timestamp(d))
+                    pos = s.index.searchsorted(pd.Timestamp(d).tz_localize(None))
                     if pos + h < len(s):
-                        fwd.append((d, tk, float(s.iloc[pos + h] / s.iloc[pos] - 1.0)))
+                        fwd_map[(d, tk)] = float(s.iloc[pos + h] / s.iloc[pos] - 1.0)
                 except Exception:
                     continue
-        fwd_df = pd.DataFrame(fwd, columns=["date", "ticker", f"fwd_{h}d"])
-        df = df.merge(fwd_df, on=["date", "ticker"], how="left")
-        print(f"[sent3d] {h}d fwd rows: {fwd_df['fwd_{h}d'].notna().sum()}", flush=True)
+        df[f"fwd_{h}d"] = df.apply(lambda r: fwd_map.get((r["day"], r["ticker"])), axis=1)
+        print(f"[sent3d] {h}d fwd rows: {df[f'fwd_{h}d'].notna().sum()}", flush=True)
 
     # FinBERT sentiment on the universe tweets (subsample to keep it bounded)
     pipe = pipeline("sentiment-analysis", model="ProsusAI/finbert",
                     device=0 if torch.cuda.is_available() else -1,
                     truncation=True, max_length=512)
-    sample = df.dropna(subset=[f"fwd_{HORIZONS[-1]}d"]).sample(min(4000, len(df)), random_state=7)
+    aligned = df.dropna(subset=[f"fwd_{HORIZONS[-1]}d"])
+    if len(aligned) < 200:
+        print("[sent3d] too few aligned forward rows - cannot test", flush=True)
+        import json as _j
+        (PROJECT / "data" / "research_gate" / "sentiment_holdout_3_10d.json").write_text(
+            _j.dumps({"verdict": "insufficient aligned data"}))
+        return
+    sample = aligned.sample(min(4000, len(aligned)), random_state=7)
     sents = []
     for i in range(0, len(sample), 32):
         res = pipe(sample["text"].iloc[i:i + 32].tolist())
