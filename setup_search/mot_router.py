@@ -20,7 +20,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from mot.mot import RegimeRouter
+from mot.mixture import RegimeRouter
 from setup_search.core import clamp_config
 from setup_search.data import REGIME_SYM, load_ohlcv, align
 from setup_search.engine import _features, _score_at

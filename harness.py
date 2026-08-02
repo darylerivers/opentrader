@@ -141,6 +141,7 @@ class OpenTraderHarness:
         parallel_debate: bool = None,
         debate_mode: str = None,  # "fast" (composite) | "adir" (independent agents)
         rule_gate: bool = False,  # gate BUY signals behind the validated rule screen
+        mixture: bool = False,  # MoT experts: route decisions through the regime router (rule-floor prior)
         stage: int = 0,  # 0 = auto (from state/progression), >0 = force
         universe_mode: bool = True,  # agent picks symbols from 50+ universe vs hardcoded list
         universe_focus: int = 6,  # number of symbols to deep-debate per cycle
@@ -171,6 +172,9 @@ class OpenTraderHarness:
         self.rule_gate = rule_gate
         self._rule_gate_cache = {}
         self._rule_gate_cfg = None
+        self.mixture = mixture
+        self._mot_router = None
+        self._mot_experts = {}
         self._force_stage = stage  # 0 = use state/progression, >0 = override
         self._mot_force = mot_force  # "auto" = MoT decides, otherwise forced
         self.universe_mode = universe_mode
@@ -2371,6 +2375,23 @@ class OpenTraderHarness:
         scored.sort(reverse=True)
         return [s[1] for s in scored[:focus]] or list(self.symbols)
 
+    def _mot_regime(self, sym: str) -> str:
+        """SPY vs 200d regime bucket for the MoT router."""
+        try:
+            import pandas as pd
+
+            bars = self.exchange.get_bars("SPY", "1d", limit=250)
+            if not bars:
+                return "unknown"
+            idx = [datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars]
+            spy = pd.Series([b.close for b in bars], index=idx)
+            ma = spy.rolling(200, min_periods=60).mean()
+            last = spy.index[-1]
+            return "bull" if float(spy[last]) > float(ma[last]) else "bear"
+        except Exception as e:
+            logger.debug(f"mot regime failed for {sym}: {e}")
+            return "unknown"
+
     def _rule_gate_ok(self, sym: str) -> bool:
         """Weaponized playbook: does a BUY for `sym` clear the validated rule
         screen (regime + technical score)? Fail-closed — if the screen can't be
@@ -2924,6 +2945,24 @@ class OpenTraderHarness:
                     logger.info(
                         f"  {sym}: RULE-GATE blocks BUY (failed the validated screen)"
                     )
+
+            # Mixture of Traders: route through the regime router. With the
+            # rule-floor prior, the router picks "rule" until an expert earns
+            # weight, so behavior == the rule floor today.
+            if self.mixture and effective_action == "BUY":
+                if self._mot_router is None:
+                    from mot.mixture import RegimeRouter
+
+                    self._mot_router = RegimeRouter(rule_floor="rule", min_evidence=5)
+                regime = self._mot_regime(sym)
+                expert = self._mot_router.pick(regime)
+                if expert != "adir":
+                    if not self._rule_gate_ok(sym):
+                        effective_action = "HOLD"
+                        effective_position_pct = min(effective_position_pct, 0.0)
+                        logger.info(
+                            f"  {sym}: MoT->{expert} ({regime}) blocks BUY (rule floor)"
+                        )
 
             # ── SL/TP guard: block debate-driven SELL when SL/TP is active ──
             # The debate engine should BUY/HOLD; exits are SL/TP's job.
@@ -3999,6 +4038,13 @@ def main():
         help="Weaponize the rule playbook: only act on BUY signals that pass the "
         "validated rule screen (regime + technical score). Default: off.",
     )
+    parser.add_argument(
+        "--mixture",
+        action="store_true",
+        help="Mixture of Traders (experts): route decisions through the regime router with a "
+        "rule-floor prior. The rule floor executes until another expert earns weight. "
+        "Default: off (current behavior).",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -4086,6 +4132,7 @@ def main():
         stock_exchange=args.stock_exchange,
         crypto_exchange=args.crypto_exchange,
         rule_gate=args.rule_gate,
+        mixture=args.mixture,
     )
 
     if _onchain_wallet:

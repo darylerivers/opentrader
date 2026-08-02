@@ -51,6 +51,24 @@ class RuleExpert:
         )
 
 
+class AdirExpert:
+    """The ADIR debate as an expert (proposes; gated by the router)."""
+
+    def __init__(self):
+        self.name = "adir"
+
+    def decide(self, ctx: Any, symbol: str) -> ExpertDecision:
+        signal = getattr(ctx, "debate_signal", None)
+        if signal is None:
+            return ExpertDecision(action="HOLD", p_edge=0.0, evidence={})
+        return ExpertDecision(
+            action=signal.action,
+            size_pct=getattr(signal, "position_pct", 0.0),
+            p_edge=min(1.0, max(0.0, getattr(signal, "confidence", 0.0))),
+            evidence={"reason": getattr(signal, "reason", "")},
+        )
+
+
 class RegimeRouter:
     """Mixture router: per-regime argmax by mean per-trade impact, rule-floor prior."""
 
