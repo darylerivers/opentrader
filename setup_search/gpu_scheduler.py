@@ -56,8 +56,8 @@ def gpu0_safe() -> bool:
     return launches_in(GPU0_SERVICE, 5) == 0
 
 
-def gpu1_quiet() -> bool:
-    return launches_in(GPU1_SERVICE, 1) == 0
+def gpu1_quiet(seconds: int = 10) -> bool:
+    return launches_in(GPU1_SERVICE, seconds / 60.0) == 0
 
 
 def load_manifest():
@@ -74,7 +74,11 @@ def task_safe(task) -> str:
     if gpu == "gpu0":
         return "" if gpu0_safe() else "GPU0 active (launch within 5 min)"
     if gpu == "gpu1":
-        return "" if gpu1_quiet() else "GPU1 busy (launch within 60s)"
+        # Coexistence: GPU1 is ~100% duty-cycled by the harness, so there is
+        # never a long quiet window. Start in a SHORT quiet gap (10s) and let
+        # the pause/resume mechanics yield during the run — the task makes
+        # progress across the harness's 20-57s inter-call gaps.
+        return "" if gpu1_quiet(10) else "GPU1 busy (launch within 10s)"
     return ""
 
 
@@ -100,14 +104,14 @@ def run_task(task, dry_run=False) -> str:
                 paused = False
                 log.info(f"  {task['name']}: GPU0 quiet -> resumed")
         elif gpu == "gpu1":
-            if not gpu1_quiet() and not paused:
+            if not gpu1_quiet(10) and not paused:
                 proc.send_signal(signal.SIGSTOP)
                 paused = True
                 log.info(f"  {task['name']}: GPU1 busy -> paused")
-            elif paused and gpu1_quiet():
+            elif paused and gpu1_quiet(30):
                 proc.send_signal(signal.SIGCONT)
                 paused = False
-                log.info(f"  {task['name']}: GPU1 quiet -> resumed")
+                log.info(f"  {task['name']}: GPU1 quiet 30s -> resumed")
         if time.time() - start > task.get("timeout", 3600):
             proc.kill()
             return "timed_out"
@@ -147,6 +151,8 @@ def main():
                     continue
                 if t.get("retries", 0) >= 2:
                     continue
+                if t.get("cooldown_until", 0) > time.time():
+                    continue
                 why = task_safe(t)
                 if why:
                     log.debug(f"gated: {t['name']} ({why})")
@@ -159,9 +165,14 @@ def main():
                 if status == "failed":
                     t["retries"] = t.get("retries", 0) + 1
                     t["status"] = "failed" if t["retries"] >= 2 else "pending"
+                elif status == "done" and t.get("recurring"):
+                    # recurring research loop: keep the card productive
+                    t["status"] = "pending"
+                    t["cooldown_until"] = time.time() + t.get("cooldown_sec", 1800)
                 t["last_run"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                 save_manifest(tasks)
-                log.info(f"DONE {t['name']}: {status} (retries={t.get('retries', 0)})")
+                log.info(f"DONE {t['name']}: {status} (retries={t.get('retries', 0)})"
+                         + (f", next in {t.get('cooldown_sec', 1800)}s" if t.get("recurring") else ""))
                 ran = True
                 if args.once:
                     return

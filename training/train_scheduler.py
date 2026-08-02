@@ -242,7 +242,7 @@ def execute_training(force: bool = False) -> Dict:
         subprocess.Popen([
             "/home/mrc/src/modelai-llama.cpp/build-wmma/bin/llama-server",
             "--model", "/home/mrc/models/qwythos-9b-mtp/Qwythos-9B-Claude-Mythos-5-1M-MTP-Q4_K_M.gguf",
-            "--alias", "qwen2.5-7b-instruct", "--host", "127.0.0.1", "--port", "5803",
+            "--alias", "qwen2.5-7b-instruct", "--host", "127.0.0.1", "--port", "5813",
             "--ctx-size", "16384", "--cache-type-k", "q8_0", "--cache-type-v", "q8_0",
             "--jinja", "--parallel", "4", "--cont-batching",
             "--threads", "8", "--batch-size", "4096", "--ubatch-size", "1024",

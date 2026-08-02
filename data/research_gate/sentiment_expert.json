@@ -1,0 +1,8 @@
+{
+ "sep_tech": -0.004963018465787172,
+ "sep_sent": 0.0016739163547754288,
+ "margin": 0.006636934820562601,
+ "verdict": "sentiment ADDS to the expert",
+ "n_train": 4704,
+ "n_test": 1990
+}
