@@ -1,0 +1,12 @@
+{
+ "sample": 18,
+ "agents": [
+  "qwythos",
+  "hermes",
+  "qwen"
+ ],
+ "n_by_regime": {
+  "bull": 10,
+  "bear": 8
+ }
+}
