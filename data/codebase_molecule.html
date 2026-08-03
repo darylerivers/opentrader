@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>OpenTrader codebase molecule</title>
+<style>body{margin:0;font-family:monospace;background:#111;color:#eee} #info{position:fixed;top:8px;left:8px;font-size:12px;z-index:5;background:#000a;padding:8px;border-radius:6px}</style></head>
+<body><div id="info">OpenTrader codebase — rotate/zoom. Atoms = modules (colored by role), bonds = imports. Use this to guide the physical molecular-kit build.</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+var DATA = {"atoms": [{"n": "harness.py", "c": "#e63946", "x": -0.2781265930927878, "y": -0.11613338783159526, "z": 0.06403345286322891, "r": "hub"}, {"n": "mcp_server.py", "c": "#457b9d", "x": -0.023323865012669996, "y": -0.10227690244643727, "z": -0.03805932941331438, "r": "service"}, {"n": "dashboard.py", "c": "#a8dadc", "x": -0.8381786796147576, "y": 0.17088552735936377, "z": -0.5890773577557494, "r": "ui"}, {"n": "tui_dashboard.py", "c": "#a8dadc", "x": 0.20616897803021988, "y": -0.7454265256173219, "z": -0.5879632326474747, "r": "ui"}, {"n": "mot", "c": "#f4a261", "x": -0.1252596378301749, "y": 0.07522426720932525, "z": -0.04656489761417252, "r": "agents"}, {"n": "exchange", "c": "#2a9d8f", "x": -0.03349055866651397, "y": -0.02163129396367703, "z": 0.17061401133019347, "r": "data-io"}, {"n": "risk", "c": "#e9c46a", "x": -0.13173846618248272, "y": -0.17257662512116054, "z": 0.2910196095303115, "r": "risk"}, {"n": "setup_search", "c": "#9b5de5", "x": -0.38415143040661076, "y": 0.12752770617709858, "z": 0.01571654753415303, "r": "research"}, {"n": "training", "c": "#f15bb5", "x": -0.21613570169867147, "y": -0.25823616295674573, "z": -0.02857769396664314, "r": "training"}, {"n": "data", "c": "#4cc9f0", "x": -0.2479503539312016, "y": -0.028336968969638738, "z": 0.1843969566030427, "r": "core"}, {"n": "state", "c": "#4cc9f0", "x": -0.0603455364526322, "y": -0.24727992565349366, "z": 0.1373558050053898, "r": "core"}, {"n": "agent", "c": "#f4a261", "x": -0.4225517117692109, "y": -0.3054781694169344, "z": 0.06660420125625509, "r": "agents"}, {"n": "tools", "c": "#8d99ae", "x": 0.1449714248094345, "y": 0.012084790612976815, "z": -0.19349272726548114, "r": "util"}, {"n": "charts", "c": "#a8dadc", "x": -0.13178259869111159, "y": -0.09741556647076065, "z": -0.3890662771386348, "r": "ui"}, {"n": "scripts", "c": "#8d99ae", "x": 0.6562119231332932, "y": 0.33420249107830774, "z": -0.5825325021581803, "r": "util"}, {"n": "coordinator.py", "c": "#f15bb5", "x": 0.24954541112323322, "y": 0.40809960611090074, "z": 0.8552278949034234, "r": "training"}, {"n": "connections.py", "c": "#4cc9f0", "x": 0.4865771610868243, "y": -0.4716804416686597, "z": 0.710718708438088, "r": "core"}, {"n": "model_manager.py", "c": "#f15bb5", "x": -0.5382524714650293, "y": -0.054992441909962074, "z": 0.3897062022161216, "r": "training"}, {"n": "onchain.py", "c": "#2a9d8f", "x": 0.021337117620826903, "y": -0.005408800926253771, "z": -1.0, "r": "data-io"}, {"n": "gpu_sync.py", "c": "#457b9d", "x": -0.09359481707352275, "y": 0.2615961079304636, "z": 0.3584331770596006, "r": "service"}, {"n": "run_harness.py", "c": "#457b9d", "x": 0.8689951248811298, "y": -0.16181795647364675, "z": 0.2159340549539567, "r": "service"}, {"n": "tests", "c": "#8d99ae", "x": 0.0051573378713650015, "y": 0.38102005999274463, "z": -0.15461313688375375, "r": "util"}, {"n": "data_mgmt.py", "c": "#4cc9f0", "x": 0.5973325465311004, "y": 0.776321993216305, "z": -0.029988422415145422, "r": "core"}], "bonds": [[4, 9], [4, 12], [4, 21], [5, 10], [8, 9], [0, 5], [1, 6], [0, 8], [9, 11], [9, 17], [1, 9], [0, 11], [1, 12], [4, 5], [5, 6], [4, 8], [5, 9], [8, 11], [9, 10], [0, 7], [0, 4], [0, 10], [9, 19], [1, 5], [7, 9], [6, 10], [4, 7], [0, 9], [8, 10], [1, 4], [0, 6], [1, 13], [1, 10], [6, 9]]};
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0,0,6);
+var renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
+new THREE.AmbientLight(0xffffff, 0.6);
+var dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(5,5,5); scene.add(dl);
+var nodes = DATA.atoms.map(function(a){
+  var m = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 24),
+    new THREE.MeshPhongMaterial({color: new THREE.Color(a.c)}));
+  m.position.set(a.x*2.4, a.y*2.4, a.z*2.4); m.userData={n:a.n};
+  scene.add(m); return m; });
+DATA.bonds.forEach(function(b){
+  var p1=nodes[b[0]].position, p2=nodes[b[1]].position;
+  var d=p2.clone().sub(p1); var len=d.length();
+  var cyl=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,len,6),
+    new THREE.MeshPhongMaterial({color:0x999999}));
+  cyl.position.copy(p1).add(d.clone().multiplyScalar(0.5));
+  cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
+  scene.add(cyl); });
+function animate(){ requestAnimationFrame(animate); controls.update(); renderer.render(scene,camera); }
+animate();
+</script></body></html>
