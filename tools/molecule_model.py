@@ -37,17 +37,18 @@ ROLE = {  # module -> color role for the physical kit
     "gpu_sync.py": "service", "run_harness.py": "service", "tests": "util",
     "data_mgmt.py": "core",
 }
-COLOR = {
-    "hub": "#e63946", "service": "#457b9d", "ui": "#a8dadc", "agents": "#f4a261",
-    "data-io": "#2a9d8f", "risk": "#e9c46a", "research": "#9b5de5", "training": "#f15bb5",
-    "core": "#4cc9f0", "util": "#8d99ae",
+COLOR = {  # OLD NOBBY kit colors (CPK): blue=N, black=C, red=O, yellow=S, green=Cl, purple=P, white=H
+    "hub": "#1f6feb", "core": "#222222", "agents": "#d62828", "data-io": "#f4d35e",
+    "risk": "#2a9d8f", "research": "#8338ec", "training": "#d62828", "service": "#f8f9fa",
+    "ui": "#2a9d8f", "util": "#222222",
 }
-ELEMENT = {  # element letter per module (for the PDB)
-    m: "C" if ROLE[m] == "core" else "N" if ROLE[m] == "hub" else
-       "O" if ROLE[m] == "agents" else "S" if ROLE[m] in ("data-io", "risk") else
-       "P" if ROLE[m] in ("training", "research") else "F"
-    for m in MODULES
+KIT = {  # physical kit atom type + color per role
+    "hub": ("N", "blue"), "core": ("C", "black"), "agents": ("O", "red"),
+    "data-io": ("S", "yellow"), "risk": ("Cl", "green"), "research": ("P", "purple"),
+    "training": ("O", "red"), "service": ("H", "white"), "ui": ("Cl", "green"),
+    "util": ("C", "black"),
 }
+ELEMENT = {m: KIT[ROLE[m]][0] for m in MODULES}
 
 
 def build_graph():
@@ -76,39 +77,32 @@ def build_graph():
 
 # ── 2. Force-directed 3D layout ──
 def layout(deps):
+    """Concentric shell layout by role: core center, hub near it, groups and
+    services/UI on outer rings. Guarantees minimum separation for the kit."""
+    import math
+    SHELL = {
+        "core": 1.0, "hub": 1.8, "agents": 2.8, "risk": 2.8, "research": 3.2,
+        "training": 3.2, "data-io": 3.6, "service": 4.0, "ui": 4.0, "util": 4.5,
+    }
+    pos = {}
+    for r in sorted(set(SHELL.values())):
+        members = [mm for mm in MODULES if SHELL[ROLE[mm]] == r]
+        n = len(members)
+        for i, mm in enumerate(members):
+            if r == 0.0:
+                pos[mm] = [0.0, 0.0, 0.0]
+            else:
+                ang = 2 * math.pi * i / n
+                tilt = (i % 3) * 0.5 - 0.5
+                pos[mm] = [r * math.cos(ang), r * math.sin(ang), tilt]
     nodes = list(MODULES)
-    idx = {m: i for i, m in enumerate(nodes)}
-    pos = {m: [random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1)] for m in nodes}
+    idx = {mm: i for i, mm in enumerate(nodes)}
     edges = set()
     for a, bs in deps.items():
         for b in bs:
             edges.add(tuple(sorted((idx[a], idx[b]))))
-    for _ in range(400):
-        forces = {m: [0.0, 0.0, 0.0] for m in nodes}
-        for i in range(len(nodes)):
-            for j in range(i + 1, len(nodes)):
-                a, b = nodes[i], nodes[j]
-                d = sum((pos[a][k] - pos[b][k]) ** 2 for k in range(3)) ** 0.5 + 1e-6
-                f = 0.02 / d ** 2  # repulsion
-                for k in range(3):
-                    forces[a][k] += f * (pos[a][k] - pos[b][k]) / d
-                    forces[b][k] += f * (pos[b][k] - pos[a][k]) / d
-        for (i, j) in edges:
-            a, b = nodes[i], nodes[j]
-            d = sum((pos[a][k] - pos[b][k]) ** 2 for k in range(3)) ** 0.5 + 1e-6
-            f = 0.01 * (d - 1.0)  # spring
-            for k in range(3):
-                forces[a][k] += f * (pos[b][k] - pos[a][k]) / d
-                forces[b][k] += f * (pos[a][k] - pos[b][k]) / d
-        for m in nodes:
-            for k in range(3):
-                pos[m][k] += forces[m][k]
-    # normalize
-    xs = [pos[m][0] for m in nodes]; ys = [pos[m][1] for m in nodes]; zs = [pos[m][2] for m in nodes]
-    maxv = max(max(abs(x) for x in xs), max(abs(y) for y in ys), max(abs(z) for z in zs))
-    for m in nodes:
-        pos[m] = [v / maxv for v in pos[m]]
     return nodes, edges, pos
+
 
 
 def write_pdb(nodes, edges, pos, out):
@@ -183,12 +177,31 @@ def write_html(nodes, edges, pos, out):
     page = _h.escape(open("/tmp/mol_template.html").read() if __import__("os").path.exists("/tmp/mol_template.html") else "", quote=False)
     # build template inline
     template = """<!DOCTYPE html><html><head><meta charset="utf-8"><title>OpenTrader codebase molecule</title>
-<style>body{margin:0;font-family:monospace;background:#111;color:#eee} #info{position:fixed;top:8px;left:8px;font-size:12px;z-index:5;background:#000a;padding:8px;border-radius:6px}</style></head>
-<body><div id="info">OpenTrader codebase — rotate/zoom. Atoms = modules (colored by role), bonds = imports. Use this to guide the physical molecular-kit build.</div>
+<style>body{margin:0;font-family:monospace;background:#111;color:#eee} #legend{position:fixed;top:8px;right:8px;z-index:5;background:#000a;padding:8px;border-radius:6px;font-size:11px;max-height:70vh;overflow-y:auto} #info{position:fixed;top:8px;left:8px;font-size:12px;z-index:5;background:#000a;padding:8px;border-radius:6px}</style></head>
+<body><div id="info">OpenTrader codebase — rotate/zoom. Atoms = modules, bonds = imports.
+Physical build with an OLD NOBBY kit: <b style="color:#1f6feb">blue=N</b> hub,
+<b style="color:#222">black=C</b> core/util, <b style="color:#d62828">red=O</b> agents/training,
+<b style="color:#f4d35e">yellow=S</b> data-io, <b style="color:#2a9d8f">green=Cl</b> risk/ui,
+<b style="color:#8338ec">purple=P</b> research, <b style="color:#f8f9fa">white=H</b> service.</div>
+<div id="legend"><b>Key</b><br/></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 var DATA = __DATA__;
+var legend = document.getElementById("legend");
+var byRole = {};
+DATA.atoms.forEach(function(a){ (byRole[a.r]=byRole[a.r]||[]).push(a.n); });
+var roleNames = {"hub":"hub (harness)","core":"core","agents":"agents","data-io":"data I/O","risk":"risk","research":"research","training":"training","service":"service","ui":"UI","util":"util"};
+Object.keys(roleNames).forEach(function(r){
+  var row=document.createElement("div");
+  var sw=document.createElement("span");
+  sw.style.display="inline-block"; sw.style.width="12px"; sw.style.height="12px";
+  sw.style.background=DATA.atoms.filter(function(a){return a.r===r})[0].c;
+  sw.style.marginRight="6px"; sw.style.border="1px solid #888";
+  row.appendChild(sw);
+  row.appendChild(document.createTextNode(roleNames[r]+": "+byRole[r].join(", ")));
+  legend.appendChild(row);
+});
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
 camera.position.set(0,0,6);
