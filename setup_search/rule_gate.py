@@ -28,16 +28,18 @@ def load_rule_config() -> dict:
     return clamp_config(cfg.get("config", {}))
 
 
-def screen(closes: dict, highs: dict, lows: dict, vols: dict, sym: str, date, cfg: dict = None) -> tuple:
+def screen(closes: dict, highs: dict, lows: dict, vols: dict, sym: str, date, cfg: dict = None, regime_sym: str = None) -> tuple:
     """Return (pass_bool, score) for the rule-playbook entry gate.
 
     pass iff regime allows longs AND composite score >= buy_thresh.
+    regime_sym overrides the default regime market (SPY); crypto uses BTC.
     """
     cfg = cfg or load_rule_config()
+    regime_sym = regime_sym or REGIME_SYM
     feat = _features(closes, highs, lows, vols, cfg)
     if sym not in feat or date not in feat[sym].index:
         return False, 0.0
-    spy = closes.get(REGIME_SYM)
+    spy = closes.get(regime_sym)
     regime_ok = True
     if cfg["regime_filter"] and spy is not None:
         ma = spy.rolling(int(cfg["regime_window"]), min_periods=10).mean()

@@ -2426,6 +2426,51 @@ class OpenTraderHarness:
                              reason=f"rule-primary score={score:.3f}")
             out[sym] = (sig, "", {})
             logger.info(f"  RuleSignal[{sym}]: {sig.action} (score={score:.3f}, held={is_held})")
+
+        # ── Crypto leg: the validated crypto rule screen (BTC regime, % fee) ──
+        # Runs alongside the US-stock leg so the book trades both markets.
+        try:
+            from setup_search.core import DEFAULT_CONFIG, clamp_config
+
+            crypto_syms = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
+            crypto_cfg = clamp_config({**DEFAULT_CONFIG, "_fee_pct": 0.0016})
+            c_closes, c_highs, c_lows, c_vols = {}, {}, {}, {}
+            for s in crypto_syms + ["BTC/USDT"]:
+                bars = self.exchange.get_bars(s, "1d", limit=150)
+                if not bars:
+                    continue
+                idx = [datetime.fromtimestamp(
+                    b.timestamp / 1000.0 if b.timestamp > 10 ** 11 else b.timestamp,
+                    tz=timezone.utc) for b in bars]
+                c_closes[s] = pd.Series([b.close for b in bars], index=idx)
+                c_highs[s] = pd.Series([b.high for b in bars], index=idx)
+                c_lows[s] = pd.Series([b.low for b in bars], index=idx)
+                c_vols[s] = pd.Series([b.volume for b in bars], index=idx)
+            logger.debug(f"  Crypto bars fetched: { {s: len(c_closes.get(s, [])) for s in crypto_syms + ['BTC/USDT']} }")
+            for sym in crypto_syms:
+                if sym not in c_closes or "BTC/USDT" not in c_closes:
+                    out.setdefault(sym, (Signal(action="HOLD", symbol=sym,
+                                                reason="crypto: no data"), "", {}))
+                    continue
+                date = c_closes[sym].index[-1]
+                ok, score = screen(c_closes, c_highs, c_lows, c_vols, sym, date,
+                                   crypto_cfg, regime_sym="BTC/USDT")
+                is_held = sym in held
+                if not is_held and ok:
+                    sig = Signal(action="BUY", symbol=sym,
+                                 confidence=min(1.0, max(0.0, (score + 1.0) / 2.0)),
+                                 position_pct=crypto_cfg["risk_pct"],
+                                 reason=f"crypto-rule score={score:.3f}")
+                elif is_held and score < crypto_cfg["sell_thresh"]:
+                    sig = Signal(action="SELL", symbol=sym, confidence=0.6,
+                                 reason=f"crypto-rule exit score={score:.3f}")
+                else:
+                    sig = Signal(action="HOLD", symbol=sym,
+                                 reason=f"crypto-rule score={score:.3f}")
+                out[sym] = (sig, "", {})
+                logger.info(f"  CryptoRule[{sym}]: {sig.action} (score={score:.3f}, held={is_held})")
+        except Exception as e:
+            logger.warning(f"crypto rule screen skipped: {e}")
         return out
 
     def _mot_regime(self, sym: str) -> str:
