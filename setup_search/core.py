@@ -122,6 +122,8 @@ def clamp_config(cfg: Dict[str, Any]) -> Dict[str, float]:
         out["tp"] = round(min(out["sl"] + 0.05, CONFIG_BOUNDS["tp"][1]), 3)
     if "_start_equity" in cfg:
         out["_start_equity"] = float(cfg["_start_equity"])
+    if "_fee_pct" in cfg:
+        out["_fee_pct"] = float(cfg["_fee_pct"])
     return out
 
 

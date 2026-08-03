@@ -16,6 +16,11 @@ import pandas as pd
 
 from setup_search.core import DEFAULT_CONFIG, FEE_PER_SIDE, clamp_config
 
+def _fee_amt(cfg, qty, price):
+    pct = cfg.get("_fee_pct", 0.0)
+    return (qty * price * pct) if pct > 0 else FEE_PER_SIDE
+
+
 
 def _rsi(close: pd.Series, period: int) -> pd.Series:
     delta = close.diff()
@@ -185,8 +190,9 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
                 exit_price = close_t[s]
                 exit_reason = "rsi_exit"
             if exit_price is not None:
-                proceeds = p["qty"] * exit_price - FEE_PER_SIDE
-                fees_total += FEE_PER_SIDE
+                fee = _fee_amt(cfg, p["qty"], exit_price)
+                proceeds = p["qty"] * exit_price - fee
+                fees_total += fee
                 cash += proceeds
                 pnl = proceeds - p["cost"]
                 pnl_pct = pnl / p["cost"]
@@ -256,14 +262,16 @@ def run_backtest(data: tuple, cfg: dict) -> dict:
             ) / max(equity, 1.0)
             if exposure + notional / max(equity, 1.0) > cfg["max_exposure"]:
                 continue
-            if notional + FEE_PER_SIDE > cash:
-                notional = max(0.0, cash - FEE_PER_SIDE)
+            fee = _fee_amt(cfg, notional / max(close_t[s], 1e-9), close_t[s])
+            if notional + fee > cash:
+                notional = max(0.0, cash - fee)
                 if notional < cfg["min_notional"]:
                     continue
             qty = notional / close_t[s]
-            cost = qty * close_t[s] + FEE_PER_SIDE
+            fee = _fee_amt(cfg, qty, close_t[s])
+            cost = qty * close_t[s] + fee
             cash -= cost
-            fees_total += FEE_PER_SIDE
+            fees_total += fee
             pos[s] = {
                 "qty": qty,
                 "entry": close_t[s],
