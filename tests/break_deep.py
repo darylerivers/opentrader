@@ -220,19 +220,28 @@ def _():
 @t(2, "corrupted arena checkpoint (garbage bytes) -> None, no crash")
 def _():
     from arena import agent as agent_mod
-    p = Path("data/arena/arena_value_head.pt")
-    p.write_bytes(b"\x00\x01\x02 not a checkpoint")
-    assert agent_mod.load(p) is None
+    import tempfile, os
+    fd, p = tempfile.mkstemp(suffix=".pt")   # NEVER touch the real checkpoint
+    os.close(fd)
+    Path(p).write_bytes(b"\x00\x01\x02 not a checkpoint")
+    try:
+        assert agent_mod.load(p) is None
+    finally:
+        Path(p).unlink(missing_ok=True)
     return "garbage -> None"
 
 
 @t(2, "checkpoint missing 'mean' key -> graceful")
 def _():
-    import torch
+    import torch, tempfile, os
     from arena import agent as agent_mod
-    p = Path("data/arena/arena_value_head.pt")
+    fd, p = tempfile.mkstemp(suffix=".pt")
+    os.close(fd)
     torch.save({"state": {}, "theta": 0.0}, p)
-    assert agent_mod.load(p) is None
+    try:
+        assert agent_mod.load(p) is None
+    finally:
+        Path(p).unlink(missing_ok=True)
     return "missing key -> None"
 
 

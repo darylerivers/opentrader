@@ -68,30 +68,30 @@ def main():
     )
     args, unknown = parser.parse_known_args()
 
+    # RUNWAY defaults (2026-08-05): the validated rule config is the trader
+    # (rule_primary, no LLM), paper settlement on real prices (alpaca-paper),
+    # pinned stage/cash/interval, risk config frozen (--pin-risk), and the
+    # mixture router demoted to monitor-only (no --mot-force / --debate-mode).
     harness_args = (
         unknown
         if unknown
         else [
             "--exchange",
-            "finnhub",
+            "alpaca-paper",
             "--no-synthetic",
             "--stage",
-            "2",
+            "1",
             "--cash",
             "500",
             "--max-cycles",
             "0",
-            "--mot-force",
-            "increase",
             "--max-daily-trades",
-            "500",
-            "--debate-mode",
-            "adir",
-            "--llama-host",
-            "http://127.0.0.1:5801",
-            "--parallel-debate",
-            "--interval",
             "10",
+            "--no-model",
+            "--rule-primary",
+            "--pin-risk",
+            "--interval",
+            "60",
         ]
     )
 

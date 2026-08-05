@@ -512,7 +512,7 @@ class OpenTraderHarness:
 
         # FlashTrainer — single-step training during HOLD streaks
         self.flash_trainer = None
-        if self.flash_train_enabled and use_model:
+        if self.flash_train_enabled and use_model and self._llama_available:
             try:
                 from training.flash_train import FlashTrainer
 
@@ -531,7 +531,7 @@ class OpenTraderHarness:
         self.debate = None
         self.scorer = None
         self.reflection = None
-        if self.debate_enabled and use_model:
+        if self.debate_enabled and use_model and self._llama_available:
             try:
                 from mot import DebateEngine, AgentScorer, ReflectionLog
 
@@ -1468,6 +1468,14 @@ class OpenTraderHarness:
                                 f"  Reflection resolved: BUY on {sym} → {pnl_pct:+.4%}"
                             )
 
+                        # ── MoT router monitor (runway: rule floor records) ──
+                        # Live attribution is MONITORING only — the arena's
+                        # held-out gate is the edge evidence; the router needs
+                        # years of live data to shift weight. Record anyway so
+                        # live_router_state.json accrues the rule baseline.
+                        if entry_price > 0:
+                            self._record_router_impact(sym, entry_price, price)
+
                         # ── Record to trade journal ────────
                         if entry_price > 0:
                             pnl_pct = (price - entry_price) / entry_price
@@ -1676,7 +1684,8 @@ class OpenTraderHarness:
         self._save_agent_state()
 
         # ── Per-symbol parameter optimization (every 50 cycles) ──
-        if self.cycle % 50 == 0 and self.cycle > 0 and self._trade_journal:
+        # RUNWAY: disabled under --pin-risk (same reason as the 100-cycle block).
+        if not getattr(self, "_pin_risk", False) and self.cycle % 50 == 0 and self.cycle > 0 and self._trade_journal:
             try:
                 from risk.param_optimizer import run_cycle as run_param_cycle
 
@@ -2473,6 +2482,56 @@ class OpenTraderHarness:
             logger.warning(f"crypto rule screen skipped: {e}")
         return out
 
+    # ── MoT router monitor (runway) ──────────────────────────────
+    def _record_router_impact(self, sym, entry_price, exit_price):
+        """Record a closed trade's pnl_pct against the expert that entered it,
+        into the persisted live_router_state.json. Monitoring only — the router
+        does not gate anything on the runway."""
+        try:
+            from mot.mixture import RegimeRouter
+
+            if self._mot_router is None:
+                self._mot_router = RegimeRouter(rule_floor="rule", min_evidence=5)
+                self._load_router_state()
+            entry = self._sl_tp_levels.get(sym, {})
+            regime = entry.get("entry_regime") or self._mot_regime(sym)
+            expert = entry.get("entry_expert", "rule")
+            if regime not in ("up", "down"):
+                regime = "up" if self._mot_regime(sym) == "bull" else "down"
+            impact = (exit_price - entry_price) / entry_price if entry_price > 0 else 0.0
+            self._mot_router.record(regime, expert, float(impact))
+            self._save_router_state()
+        except Exception:
+            pass
+
+    def _save_router_state(self):
+        try:
+            import json
+            from pathlib import Path as _Path
+
+            p = _Path(self.state_dir) / "live_router_state.json"
+            p.write_text(
+                json.dumps(
+                    {"track": self._mot_router.track, "weights": self._mot_router.weights},
+                    indent=1,
+                )
+            )
+        except Exception:
+            pass
+
+    def _load_router_state(self):
+        try:
+            import json
+            from pathlib import Path as _Path
+
+            p = _Path(self.state_dir) / "live_router_state.json"
+            if p.exists():
+                d = json.loads(p.read_text())
+                self._mot_router.track = d.get("track", {})
+                self._mot_router.weights = d.get("weights", {})
+        except Exception:
+            pass
+
     def _mot_regime(self, sym: str) -> str:
         """SPY vs 200d regime bucket for the MoT router."""
         try:
@@ -2553,15 +2612,34 @@ class OpenTraderHarness:
 
         _training_lock = _Path(self.state_dir) / "training.lock"
         if _training_lock.exists():
-            # Training in progress — only check SL/TP, no new trades
-            self._check_sl_tp()
-            logger.debug(
-                f"Cycle {self.cycle}: training lock active — HOLD only, {len(self.symbols)} symbols"
-            )
-            return {"cycle": self.cycle, "training_locked": True}
+            # A trainer that dies can leave a stale lock that HOLDs the harness
+            # forever with no auto-cleanup. Anything older than 6h is stale.
+            stale = False
+            try:
+                stale = time.time() - _training_lock.stat().st_mtime > 6 * 3600
+            except OSError:
+                stale = False
+            if stale:
+                try:
+                    _training_lock.unlink()
+                    logger.info(
+                        f"Cycle {self.cycle}: removed stale training.lock (>6h)"
+                    )
+                except OSError:
+                    pass
+            else:
+                # Training in progress — only check SL/TP, no new trades
+                self._check_sl_tp()
+                logger.debug(
+                    f"Cycle {self.cycle}: training lock active — HOLD only, {len(self.symbols)} symbols"
+                )
+                return {"cycle": self.cycle, "training_locked": True}
 
         # Periodic param re-optimization (every 100 cycles, or when portfolio moves)
-        if self.cycle % 100 == 0 and self._optimal_params:
+        # RUNWAY: disabled under --pin-risk — these blocks rewrite SL/TP/sizing
+        # from 15m crypto params (data/param_opt/params.json) and silently change
+        # the risk profile mid-shadow.
+        if not getattr(self, "_pin_risk", False) and self.cycle % 100 == 0 and self._optimal_params:
             bal = self.exchange.get_balance()
             new_params = self._load_optimal_params(bal.total_value)
             if new_params:
@@ -3051,7 +3129,10 @@ class OpenTraderHarness:
             # Mixture of Traders: route through the regime router. With the
             # rule-floor prior, the router picks "rule" until an expert earns
             # weight, so behavior == the rule floor today.
-            if self.mixture and effective_action == "BUY":
+            # RUNWAY: under rule_primary the router is upstream of this gate
+            # (decisions come from the validated rule directly), so this veto
+            # is redundant — keep it only for non-rule_primary mode.
+            if self.mixture and not self.rule_primary and effective_action == "BUY":
                 if self._mot_router is None:
                     from mot.mixture import RegimeRouter
 
@@ -3289,6 +3370,8 @@ class OpenTraderHarness:
                                         "entry_price": entry_price_val,
                                         "qty": new_qty,
                                         "highest_price": price,
+                                        "entry_expert": getattr(self, "_runway_mode", False) and "rule" or "adir",
+                                        "entry_regime": self._mot_regime(sym),
                                         "cycle_opened": self.cycle,
                                         "trailing_stop_pct": risk_cfg.trailing_stop_pct,
                                         "trailing_activation": risk_cfg.trailing_stop_activation,
@@ -4154,6 +4237,14 @@ def main():
         "BUY/SELL from the validated screen (regime + score) instead of the LLM "
         "debate. The proven edge does the trading. Default: off.",
     )
+    parser.add_argument(
+        "--pin-risk",
+        action="store_true",
+        help="Runway mode: freeze the risk config. Disables the periodic param "
+        "re-optimization blocks (100-cycle and 50-cycle) that silently rewrite "
+        "SL/TP/sizing from crypto params — they invalidate 'live impact ~= "
+        "backtest' comparisons. Default: off.",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -4248,6 +4339,9 @@ def main():
     if _onchain_wallet:
         harness._onchain = _onchain_wallet
         logger.info("Onchain swap routing enabled for BUY signals")
+
+    harness._pin_risk = args.pin_risk
+    harness._runway_mode = True
 
     harness.run()
 

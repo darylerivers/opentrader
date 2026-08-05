@@ -17,16 +17,19 @@ MAX_BACKOFF=60
 MIN_BACKOFF=1
 MAX_CONSECUTIVE_CRASHES=20
 
+# RUNWAY defaults (2026-08-05): validated rule config is the trader,
+# paper on real prices, risk config frozen, no LLM.
 HARNESS_ARGS=(
     --exchange alpaca-paper
-    --stage 2
-    --cash 100000
+    --no-synthetic
+    --stage 1
+    --cash 500
     --max-cycles 0
-    --mot-force increase
-    --max-daily-trades 500
-    --debate-mode fast
-    --llama-host http://127.0.0.1:8080
-    --interval 15
+    --max-daily-trades 10
+    --no-model
+    --rule-primary
+    --pin-risk
+    --interval 60
     "${@}"
 )
 

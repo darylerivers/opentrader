@@ -81,3 +81,8 @@ data/gpu_scheduler/adapters/**/tokenizer.json
 data/scenarios/
 data/mot_router_state.json
 data/arena/momentum_gate.json
+data/paper_state.json
+data/agent_state.json
+data/health.json
+data/live_router_state.json
+data/high_level_state.json
