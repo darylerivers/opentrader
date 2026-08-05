@@ -19,11 +19,14 @@ from pathlib import Path
 
 @dataclass
 class SimpleBar:
+    """Anchored-synthetic OHLCV bar. timestamp is epoch SECONDS so harness
+    bar consumers (which use datetime.fromtimestamp(ts)) work unchanged."""
     open: float = 0.0
     high: float = 0.0
     low: float = 0.0
     close: float = 0.0
     volume: float = 0
+    timestamp: int = 0
 from typing import Dict, List, Optional
 from .base import OrderResult
 
@@ -306,6 +309,8 @@ class AlpacaPaperExchange:
 
         bars = []
         price = real_price
+        import time as _time
+        now = _time.time()
         for i in range(limit):
             ret = random.gauss(0.0001, 0.01)
             price *= (1 + ret)
@@ -314,7 +319,8 @@ class AlpacaPaperExchange:
             h = max(o, c) * (1 + abs(random.gauss(0, 0.003)))
             l = min(o, c) * (1 - abs(random.gauss(0, 0.003)))
             v = max(100, int(random.gauss(5000, 2000)))
-            bars.append(SimpleBar(open=o, high=h, low=l, close=c, volume=v))
+            bars.append(SimpleBar(open=o, high=h, low=l, close=c, volume=v,
+                                  timestamp=int(now) - (limit - i) * 3600))
 
         self._bars[key] = bars
         return bars[-limit:]
@@ -325,12 +331,14 @@ class AlpacaPaperExchange:
         if key not in self._bars:
             self._bars[key] = []
         b = bar[0] if isinstance(bar, list) else bar
+        import time as _time
         self._bars[key].append(SimpleBar(
             open=float(b.get("open", b.get("o", 0))),
             high=float(b.get("high", b.get("h", 0))),
             low=float(b.get("low", b.get("l", 0))),
             close=float(b.get("close", b.get("c", 0))),
             volume=float(b.get("volume", 0)),
+            timestamp=int(b.get("timestamp", b.get("t", _time.time()))),
         ))
 
     def load_bars(self, symbol: str, bars: list):
@@ -338,6 +346,7 @@ class AlpacaPaperExchange:
         if key not in self._bars:
             self._bars[key] = []
         for b in bars:
+            import time as _time
             if isinstance(b, dict):
                 self._bars[key].append(SimpleBar(
                     open=float(b.get("open", 0)),
@@ -345,6 +354,7 @@ class AlpacaPaperExchange:
                     low=float(b.get("low", 0)),
                     close=float(b.get("close", 0)),
                     volume=float(b.get("volume", 0)),
+                    timestamp=int(b.get("timestamp", b.get("t", _time.time()))),
                 ))
             elif hasattr(b, "close"):
                 self._bars[key].append(SimpleBar(
@@ -353,6 +363,7 @@ class AlpacaPaperExchange:
                     low=getattr(b, "low", 0),
                     close=getattr(b, "close", 0),
                     volume=getattr(b, "volume", 0),
+                    timestamp=int(getattr(b, "timestamp", getattr(b, "t", _time.time()))),
                 ))
 
     def get_balance(self) -> Balance:

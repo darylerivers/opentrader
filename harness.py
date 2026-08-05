@@ -2406,7 +2406,7 @@ class OpenTraderHarness:
             bars = self.exchange.get_bars(s, "1d", limit=150)
             if not bars:
                 continue
-            idx = [datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars]
+            idx = [self._bar_ts(b) for b in bars]
             closes[s] = pd.Series([b.close for b in bars], index=idx)
             highs[s] = pd.Series([b.high for b in bars], index=idx)
             lows[s] = pd.Series([b.low for b in bars], index=idx)
@@ -2448,9 +2448,7 @@ class OpenTraderHarness:
                 bars = self.exchange.get_bars(s, "1d", limit=150)
                 if not bars:
                     continue
-                idx = [datetime.fromtimestamp(
-                    b.timestamp / 1000.0 if b.timestamp > 10 ** 11 else b.timestamp,
-                    tz=timezone.utc) for b in bars]
+                idx = [self._bar_ts(b) for b in bars]
                 c_closes[s] = pd.Series([b.close for b in bars], index=idx)
                 c_highs[s] = pd.Series([b.high for b in bars], index=idx)
                 c_lows[s] = pd.Series([b.low for b in bars], index=idx)
@@ -2481,6 +2479,24 @@ class OpenTraderHarness:
         except Exception as e:
             logger.warning(f"crypto rule screen skipped: {e}")
         return out
+
+    @staticmethod
+    def _bar_ts(b) -> "datetime":
+        """Epoch-seconds -> UTC datetime for ANY bar type the exchanges emit:
+        OHLCV (.timestamp, int seconds), LiveExchange/ccxt (.timestamp, int
+        MILLISECONDS), dict bars, and SimpleBar (.t / .timestamp). The old
+        direct fromtimestamp(b.timestamp) crashed on SimpleBar (no field) and
+        misread ccxt ms timestamps."""
+        if isinstance(b, dict):
+            ts = b.get("timestamp", b.get("t", 0))
+        else:
+            ts = getattr(b, "timestamp", getattr(b, "t", None))
+        if ts is None:
+            return datetime.now(timezone.utc)
+        ts = float(ts)
+        if ts > 1e11:  # milliseconds (ccxt) -> seconds
+            ts /= 1000.0
+        return datetime.fromtimestamp(ts, tz=timezone.utc)
 
     # ── MoT router monitor (runway) ──────────────────────────────
     def _record_router_impact(self, sym, entry_price, exit_price):
@@ -2540,7 +2556,7 @@ class OpenTraderHarness:
             bars = self.exchange.get_bars("SPY", "1d", limit=250)
             if not bars:
                 return "unknown"
-            idx = [datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars]
+            idx = [self._bar_ts(b) for b in bars]
             spy = pd.Series([b.close for b in bars], index=idx)
             ma = spy.rolling(200, min_periods=60).mean()
             last = spy.index[-1]
@@ -2567,9 +2583,7 @@ class OpenTraderHarness:
                 bars = self.exchange.get_bars(s, "1d", limit=150)
                 if not bars:
                     continue
-                index = [
-                    datetime.fromtimestamp(b.timestamp, tz=timezone.utc) for b in bars
-                ]
+                index = [self._bar_ts(b) for b in bars]
                 closes[s] = pd.Series([b.close for b in bars], index=index)
                 highs[s] = pd.Series([b.high for b in bars], index=index)
                 lows[s] = pd.Series([b.low for b in bars], index=index)

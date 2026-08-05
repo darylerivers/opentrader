@@ -77,7 +77,7 @@ def main():
         if unknown
         else [
             "--exchange",
-            "alpaca-paper",
+            "finnhub",
             "--no-synthetic",
             "--stage",
             "1",

@@ -20,7 +20,7 @@ MAX_CONSECUTIVE_CRASHES=20
 # RUNWAY defaults (2026-08-05): validated rule config is the trader,
 # paper on real prices, risk config frozen, no LLM.
 HARNESS_ARGS=(
-    --exchange alpaca-paper
+    --exchange finnhub
     --no-synthetic
     --stage 1
     --cash 500
