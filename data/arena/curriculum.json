@@ -1,0 +1,222 @@
+{
+ "skills": {
+  "s01-takes-in-ring": {
+   "tier": 1,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": []
+  },
+  "s02-beats-field": {
+   "tier": 1,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s01-takes-in-ring"
+   ]
+  },
+  "s03-war-book-profit": {
+   "tier": 1,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s01-takes-in-ring"
+   ]
+  },
+  "s04-unseen-bear-half": {
+   "tier": 1,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": []
+  },
+  "s05-window-2026": {
+   "tier": 1,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": []
+  },
+  "s06-beats-always-take": {
+   "tier": 2,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s02-beats-field"
+   ]
+  },
+  "s07-beats-random": {
+   "tier": 2,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s02-beats-field"
+   ]
+  },
+  "s08-trend-ride": {
+   "tier": 2,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s03-war-book-profit"
+   ]
+  },
+  "s09-range-defense": {
+   "tier": 2,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s03-war-book-profit"
+   ]
+  },
+  "s10-hype-fade-duel": {
+   "tier": 3,
+   "status": "remedial",
+   "failures": 2,
+   "consecutive": 0,
+   "mastered_at": null,
+   "prerequisites": [
+    "s07-beats-random"
+   ],
+   "retrain_flag": true
+  },
+  "s11-hedge-fund-gauntlet": {
+   "tier": 3,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 22,
+   "prerequisites": [
+    "s08-trend-ride",
+    "s09-range-defense"
+   ]
+  },
+  "s12-bull-bear-balance": {
+   "tier": 4,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 3,
+   "mastered_at": 24,
+   "prerequisites": [
+    "s04-unseen-bear-half",
+    "s05-window-2026"
+   ]
+  },
+  "s13-gate-locked": {
+   "tier": 4,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 24,
+   "prerequisites": [
+    "s12-bull-bear-balance"
+   ]
+  },
+  "s14-qlora-distilled": {
+   "tier": 4,
+   "status": "mastered",
+   "failures": 0,
+   "consecutive": 1,
+   "mastered_at": 24,
+   "prerequisites": [
+    "s13-gate-locked"
+   ]
+  },
+  "s15-mot-weight": {
+   "tier": 5,
+   "status": "remedial",
+   "failures": 2,
+   "consecutive": 0,
+   "mastered_at": null,
+   "prerequisites": [
+    "s14-qlora-distilled"
+   ],
+   "retrain_flag": true
+  }
+ },
+ "iterations_seen": [
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47,
+  48,
+  49,
+  50,
+  51,
+  52,
+  53,
+  54,
+  55,
+  56,
+  57,
+  58,
+  59,
+  60,
+  61,
+  62,
+  63,
+  64,
+  65
+ ],
+ "mastered": [
+  "s01-takes-in-ring",
+  "s02-beats-field",
+  "s03-war-book-profit",
+  "s04-unseen-bear-half",
+  "s05-window-2026",
+  "s06-beats-always-take",
+  "s07-beats-random",
+  "s08-trend-ride",
+  "s09-range-defense",
+  "s11-hedge-fund-gauntlet",
+  "s12-bull-bear-balance",
+  "s13-gate-locked",
+  "s14-qlora-distilled"
+ ],
+ "graduate": false,
+ "last_error": null,
+ "updated_at": "2026-08-04T11:07:08+00:00",
+ "carrot": {
+  "battle_passes": 16,
+  "qlora_budget": 1200,
+  "shadow_risk": 0.04,
+  "mastered_count": 13
+ }
+}

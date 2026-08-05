@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Arena — both fields</title>
+<style>
+  body { background: #0d1117; color: #c9d1d9; font-family: ui-monospace, monospace; margin: 16px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .meta { color: #8b949e; font-size: 12px; margin-bottom: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; }
+  .card h2 { font-size: 13px; margin: 0 0 8px; color: #58a6ff; text-transform: uppercase; letter-spacing: 1px; }
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  th, td { padding: 3px 8px; text-align: right; border-bottom: 1px solid #21262d; }
+  th { color: #8b949e; font-weight: normal; }
+  td:first-child, th:first-child { text-align: left; }
+  .agent { color: #f0b429; font-weight: bold; }
+  .good { color: #3fb950; } .bad { color: #f85149; }
+  canvas { width: 100%; height: 220px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; }
+  .gate { font-size: 13px; margin-top: 8px; }
+  .bar { height: 10px; border-radius: 3px; display: inline-block; }
+</style>
+</head>
+<body>
+<h1>Momentum agent arena</h1>
+<div class="meta" id="statusbanner" style="display:none;"></div>
+<div class="meta" id="meta">loading…</div>
+<div class="grid">
+  <div class="card">
+    <h2>Battle ring — standings</h2>
+    <table id="standings"></table>
+    <div class="gate" id="gate"></div>
+  </div>
+  <div class="card">
+    <h2>Battle ring — field vs agent (round history)</h2>
+    <canvas id="ring"></canvas>
+  </div>
+  <div class="card">
+    <h2>Portfolio war — books</h2>
+    <table id="war"></table>
+  </div>
+  <div class="card">
+    <h2>Portfolio war — equity</h2>
+    <canvas id="warcanvas"></canvas>
+  </div>
+  <div class="card">
+    <h2>Tech tree — what the agent discovered</h2>
+    <div class="meta" id="techmeta"></div>
+    <canvas id="techcanvas" style="height: 380px;"></canvas>
+  </div>
+</div>
+
+<script>
+const STATE = null;
+const POLL_MS = 3000;
+const COLORS = ["#58a6ff", "#f0b429", "#3fb950", "#f85149", "#bc8cff", "#ff9f43", "#56d4dd", "#f07178", "#7ee787", "#d2a8ff", "#e3b341", "#79c0ff"];
+
+function fetchState() {
+  return fetch("arena_state.json").then(r => r.json()).catch(() => null);
+}
+
+function fetchStatus() {
+  return fetch("run_status.json").then(r => r.json()).catch(() => null);
+}
+
+function fmtPct(v) { return (v * 100).toFixed(2) + "%"; }
+
+function standingsTable(s, h2h) {
+  const names = Object.keys(s).filter(n => n !== "agent");
+  const rows = [["bot", "takes", "take-mean", "arena z", "vs agent"]];
+  for (const n of names) {
+    const st = s[n]; const h = h2h[n] || {wins: 0, losses: 0};
+    rows.push([n, st.takes, fmtPct(st.take_mean), st.arena_score.toFixed(3), `${h.wins}W/${h.losses}L`]);
+  }
+  const a = s["agent"];
+  rows.push(["AGENT", a.takes, fmtPct(a.take_mean), a.arena_score.toFixed(3), "—"]);
+  let html = "<table><tr>" + rows[0].map(h => `<th>${h}</th>`).join("") + "</tr>";
+  for (let i = 1; i < rows.length; i++) {
+    const cls = rows[i][0] === "AGENT" ? "agent" : "";
+    html += "<tr>" + rows[i].map((c, j) => `<td class="${j === 0 ? cls : ""}">${c}</td>`).join("") + "</tr>";
+  }
+  return html + "</table>";
+}
+
+function drawRing(canvas, rounds) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width = canvas.clientWidth * 2, H = canvas.height = 220 * 2;
+  ctx.clearRect(0, 0, W, H);
+  if (!rounds || !rounds.length) return;
+  const agents = rounds.map(r => r.agent ? r.agent.score : 0);
+  const fields = rounds.map(r => {
+    const vs = Object.values(r.field || {}).map(f => f.score);
+    return vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : 0;
+  });
+  const all = agents.concat(fields).filter(v => isFinite(v));
+  const lo = Math.min(...all), hi = Math.max(...all);
+  const span = (hi - lo) || 1;
+  const px = (i, v) => [i / (rounds.length - 1) * W, H - (v - lo) / span * H];
+  ctx.strokeStyle = "#f0b429"; ctx.lineWidth = 3;
+  ctx.beginPath();
+  agents.forEach((v, i) => { const [x, y] = px(i, v); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+  ctx.stroke();
+  ctx.strokeStyle = "#58a6ff"; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  fields.forEach((v, i) => { const [x, y] = px(i, v); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+  ctx.stroke();
+}
+
+function warTable(war) {
+  const names = Object.keys(war || {});
+  if (!names.length) return "<p>no war run yet</p>";
+  let html = "<table><tr><th>book</th><th>net return</th><th>trades</th><th>win rate</th><th>max dd</th></tr>";
+  for (const n of names) {
+    const b = war[n];
+    const cls = n === "agent" ? "agent" : "";
+    html += `<tr><td class="${cls}">${n}</td><td>${fmtPct(b.net_return)}</td><td>${b.n_trades}</td><td>${fmtPct(b.win_rate)}</td><td>${fmtPct(b.max_dd)}</td></tr>`;
+  }
+  return html + "</table>";
+}
+
+function drawWar(canvas, war) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width = canvas.clientWidth * 2, H = canvas.height = 220 * 2;
+  ctx.clearRect(0, 0, W, H);
+  if (!war) return;
+  const names = Object.keys(war);
+  const all = [];
+  for (const n of names) all.push(...war[n].equity);
+  const lo = Math.min(...all), hi = Math.max(...all);
+  const span = (hi - lo) || 1;
+  let i = 0;
+  for (const n of names) {
+    const eq = war[n].equity;
+    if (eq.length < 2) continue;
+    ctx.strokeStyle = COLORS[i++ % COLORS.length]; ctx.lineWidth = 2;
+    ctx.beginPath();
+    eq.forEach((v, j) => {
+      const x = j / (eq.length - 1) * W, y = H - (v - lo) / span * H;
+      j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    });
+    ctx.stroke();
+  }
+}
+
+function drawTech(canvas, tech) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width = canvas.clientWidth * 2, H = canvas.height = 380 * 2;
+  ctx.clearRect(0, 0, W, H);
+  if (!tech || !tech.nodes || !tech.nodes.length) return;
+  const nodes = tech.nodes;
+  const discovered = tech.discovered || {};
+  const depthOf = {};
+  for (const n of nodes) depthOf[n.id] = n.parent === null ? 0 : (depthOf[n.parent] ?? 0) + 1;
+  const maxDepth = Math.max(...Object.values(depthOf));
+  const byDepth = {};
+  for (const n of nodes) (byDepth[depthOf[n.id]] = byDepth[depthOf[n.id]] || []).push(n);
+  const nodeW = 240, nodeH = 44;
+  const pad = 14;
+  const pos = {};
+  for (const d of Object.keys(byDepth)) {
+    const list = byDepth[d];
+    const dx = d / maxDepth * (W - nodeW - 20) + pad;
+    const span = (H - pad * 2 - nodeH) / list.length;
+    list.forEach((n, i) => {
+      pos[n.id] = { x: dx, y: pad + span * i + (span - nodeH) / 2 };
+    });
+  }
+  ctx.lineWidth = 2;
+  for (const n of nodes) {
+    if (n.parent === null) continue;
+    const p = pos[n.id], q = pos[n.parent];
+    if (!p || !q) continue;
+    const lit = discovered[n.id] !== undefined;
+    ctx.strokeStyle = lit ? "#3fb950" : "#30363d";
+    ctx.beginPath();
+    ctx.moveTo(q.x + nodeW, q.y + nodeH / 2);
+    ctx.lineTo(p.x, p.y + nodeH / 2);
+    ctx.stroke();
+  }
+  for (const n of nodes) {
+    const p = pos[n.id];
+    if (!p) continue;
+    const lit = discovered[n.id] !== undefined;
+    const it = discovered[n.id];
+    ctx.fillStyle = lit ? "#1f6feb" : "#161b22";
+    ctx.strokeStyle = lit ? "#3fb950" : "#30363d";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(p.x, p.y, nodeW, nodeH, 8);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = lit ? "#f0f6fc" : "#8b949e";
+    ctx.font = "bold 13px ui-monospace, monospace";
+    const label = n.label.length > 26 ? n.label.slice(0, 24) + "…" : n.label;
+    ctx.fillText(label, p.x + 10, p.y + 20);
+    ctx.font = "11px ui-monospace, monospace";
+    ctx.fillStyle = lit ? "#7ee787" : "#484f58";
+    ctx.fillText(lit ? `discovered · iteration ${it}` : "locked", p.x + 10, p.y + 36);
+  }
+  document.getElementById("techmeta").textContent =
+    `experience: ${Object.keys(discovered).length}/${nodes.length} discoveries · iterations seen: ${(tech.iterations || []).join(", ")}`;
+}
+
+function render(state) {
+  if (!state) return;
+  document.getElementById("meta").textContent =
+    `iteration ${state.iteration} · ${state.n_candidates} candidates · updated ${state.updated_at}`;
+  document.getElementById("standings").innerHTML = standingsTable(state.battle.standings, state.battle.h2h);
+  const g = state.gate;
+  const passed = g.pass;
+  document.getElementById("gate").innerHTML =
+    `gate: <span class="${passed ? "good" : "bad"}">${passed ? "PASS" : "FAIL"}</span>` +
+    ` · margins ` + g.results.map(r => `${r.window}: ${r.margin >= 0 ? "+" : ""}${(r.margin * 100).toFixed(2)}%`).join(" · ");
+  drawRing(document.getElementById("ring"), state.battle.rounds);
+  document.getElementById("war").innerHTML = warTable(state.war);
+  drawWar(document.getElementById("warcanvas"), state.war);
+  drawTech(document.getElementById("techcanvas"), state.tech);
+}
+
+async function tick() {
+  const state = STATE || await fetchState();
+  render(state);
+  const rs = STATE ? null : await fetchStatus();
+  if (rs) {
+    const el = document.getElementById("statusbanner");
+    el.style.display = "block";
+    el.style.background = rs.status === "completed" ? "#1a3a2a" : "#3a1a1a";
+    el.style.padding = "8px 12px";
+    el.style.borderRadius = "6px";
+    el.style.border = "1px solid " + (rs.status === "completed" ? "#3fb950" : "#f85149");
+    el.textContent = `RUN ${rs.status.toUpperCase()} (${rs.at}): ${rs.message}`;
+  }
+  if (STATE) return;
+  setTimeout(tick, POLL_MS);
+}
+tick();
+</script>
+</body>
+</html>
