@@ -1105,7 +1105,7 @@ class OpenTraderHarness:
                     )
                     atr = self._compute_atr_14(bars_raw) if bars_raw else 0.0
                     atr_mult = 3.0
-                    if atr > 0:
+                    if atr > 0 and not getattr(self, "_runway_mode", False):
                         sl_atr = entry - (atr * atr_mult)
                         tp_atr = entry + (atr * atr_mult * 2)
                     else:
@@ -1118,6 +1118,7 @@ class OpenTraderHarness:
                         "qty": qty,
                         "highest_price": max(entry, current),
                         "cycle_opened": p.get("cycle_opened", self.cycle),
+                        "exit_date": self._hold_exit_date(sym) if getattr(self, "_runway_mode", False) else None,
                         "trailing_stop_pct": risk_cfg.trailing_stop_pct,
                         "trailing_activation": risk_cfg.trailing_stop_activation,
                         "max_position_cycles": risk_cfg.max_position_cycles,
@@ -1422,6 +1423,16 @@ class OpenTraderHarness:
                     )
 
             # ── 4. Max-time-in-trade ────────────────────────
+            # RUNWAY: date-based 14-trading-day hold (validated max_hold).
+            exit_date = levels.get("exit_date")
+            if not triggered and exit_date is not None:
+                try:
+                    from datetime import datetime as _dt
+                    if _dt.now(timezone.utc).date() >= _dt.strptime(exit_date, "%Y-%m-%d").date():
+                        triggered = True
+                        reason = f"timeout: held past {exit_date} (14d max-hold)"
+                except Exception:
+                    pass
             max_cycles = levels.get("max_position_cycles", cfg.max_position_cycles)
             if not triggered and max_cycles > 0:
                 age = self.cycle - cycle_opened
@@ -2449,6 +2460,13 @@ class OpenTraderHarness:
                                        "regime_filter": 1,
                                        "regime_sym": "BTC/USDT",
                                        "regime_window": 96})
+            # RUNWAY: crypto sleeve capped at 12% of equity (per-class gross).
+            # BTC/ETH/SOL are ONE correlated cluster (rho 0.7-0.9, ~4x stock
+            # vol); the pre-redo sleeve could reach ~26% of equity.
+            _bal = self.exchange.get_balance()
+            _prices = {s: self.exchange.get_current_price(s) for s in crypto_syms}
+            _sleeve_now = sum(_prices.get(s, 0.0) * q for s, q in _bal.positions.items() if s in crypto_syms)
+            _sleeve_budget = max(0.0, (0.12 * _bal.total_value - _sleeve_now)) / max(_bal.total_value, 1.0)
             c_closes, c_highs, c_lows, c_vols = {}, {}, {}, {}
             for s in crypto_syms + ["BTC/USDT"]:
                 bars = self.exchange.get_bars(s, "1d", limit=150)
@@ -2469,11 +2487,15 @@ class OpenTraderHarness:
                 ok, score = screen(c_closes, c_highs, c_lows, c_vols, sym, date,
                                    crypto_cfg, regime_sym="BTC/USDT")
                 is_held = sym in held
-                if not is_held and ok:
+                if not is_held and ok and _sleeve_budget >= 0.01:
+                    pos_pct = min(crypto_cfg["risk_pct"], _sleeve_budget)
                     sig = Signal(action="BUY", symbol=sym,
                                  confidence=min(1.0, max(0.0, (score + 1.0) / 2.0)),
-                                 position_pct=crypto_cfg["risk_pct"],
+                                 position_pct=pos_pct,
                                  reason=f"crypto-rule score={score:.3f}")
+                elif not is_held and ok:
+                    sig = Signal(action="HOLD", symbol=sym,
+                                 reason="crypto-rule sleeve cap (12% of equity)")
                 elif is_held and score < crypto_cfg["sell_thresh"]:
                     sig = Signal(action="SELL", symbol=sym, confidence=0.6,
                                  reason=f"crypto-rule exit score={score:.3f}")
@@ -2485,6 +2507,26 @@ class OpenTraderHarness:
         except Exception as e:
             logger.warning(f"crypto rule screen skipped: {e}")
         return out
+
+    def _hold_exit_date(self, sym):
+        """Validated max_hold=14 TRADING days after the last daily close
+        (the harness's cycle counter is 1h-based and cannot express daily
+        holds; a raw max_position_cycles=14 at 60s cycles would exit in
+        ~14 minutes). Returns ISO date or None."""
+        try:
+            from datetime import timedelta
+            bars = self.exchange.get_bars(sym, "1d", 1)
+            if not bars:
+                return None
+            d = self._bar_ts(bars[-1]).date()
+            n = 0
+            while n < 14:
+                d += timedelta(days=1)
+                if d.weekday() < 5:
+                    n += 1
+            return d.isoformat()
+        except Exception:
+            return None
 
     @staticmethod
     def _bar_ts(b) -> "datetime":
@@ -3368,12 +3410,16 @@ class OpenTraderHarness:
                                         else 0.0
                                     )
                                     atr_mult = 3.0
-                                    if atr > 0:
+                                    # RUNWAY: reproduce the VALIDATED exits
+                                    # (sl 12.28% / tp 17.81%); ATR exits are a
+                                    # different strategy (measured -6.8% vs
+                                    # +22.2% on identical signals).
+                                    if atr > 0 and not getattr(self, "_runway_mode", False):
                                         sl_atr = price - (atr * atr_mult)
                                         tp_atr = price + (atr * atr_mult * 2)
                                     else:
-                                        sl_atr = risk_result.adjusted_stop
-                                        tp_atr = risk_result.adjusted_tp
+                                        sl_atr = price * (1 - risk_cfg.stop_loss_pct)
+                                        tp_atr = price * (1 + risk_cfg.take_profit_pct)
                                     existing = self._sl_tp_levels.get(sym, {})
                                     old_qty = existing.get("qty", 0)
                                     old_entry = existing.get("entry_price", 0)
@@ -3383,9 +3429,12 @@ class OpenTraderHarness:
                                             old_entry * old_qty + price * order.quantity
                                         ) / new_qty
                                         entry_price_val = avg_price
-                                        if atr > 0:
+                                        if atr > 0 and not getattr(self, "_runway_mode", False):
                                             sl_atr = avg_price - (atr * atr_mult)
                                             tp_atr = avg_price + (atr * atr_mult * 2)
+                                        else:
+                                            sl_atr = avg_price * (1 - risk_cfg.stop_loss_pct)
+                                            tp_atr = avg_price * (1 + risk_cfg.take_profit_pct)
                                     else:
                                         new_qty = order.quantity
                                         entry_price_val = price
@@ -3398,6 +3447,7 @@ class OpenTraderHarness:
                                         "entry_expert": getattr(self, "_runway_mode", False) and "rule" or "adir",
                                         "entry_regime": self._mot_regime(sym),
                                         "cycle_opened": self.cycle,
+                                        "exit_date": self._hold_exit_date(sym) if getattr(self, "_runway_mode", False) else None,
                                         "trailing_stop_pct": risk_cfg.trailing_stop_pct,
                                         "trailing_activation": risk_cfg.trailing_stop_activation,
                                         "max_position_cycles": risk_cfg.max_position_cycles,
@@ -4367,6 +4417,25 @@ def main():
 
     harness._pin_risk = args.pin_risk
     harness._runway_mode = True
+    if args.pin_risk:
+        # RUNWAY: replace the crypto-derived initial RiskConfig with the
+        # VALIDATED risk contract (best.json) so live sizing/exits match the
+        # backtest: risk 15%, sl 12.28%, tp 17.81%, 6 positions, 95% exposure,
+        # trailing OFF, Kelly inputs = validated stats (64% win / 2.44 ratio
+        # -> full Kelly ~0.49, so the 0.35-fraction cap ~0.17 does not clip 15%).
+        rc = harness.risk.config
+        rc.max_position_pct = 0.15
+        rc.stop_loss_pct = 0.1228
+        rc.take_profit_pct = 0.1781
+        rc.max_total_exposure = 0.95
+        rc.max_positions = 6
+        rc.kelly_fraction = 0.35
+        rc.default_win_prob = 0.64
+        rc.default_wl_ratio = 2.44
+        rc.trailing_stop_pct = 0.0
+        rc.trailing_stop_activation = 0.0
+        rc.position_stop_pct = 0.0
+        rc.max_position_cycles = 0
 
     harness.run()
 
