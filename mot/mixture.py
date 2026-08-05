@@ -111,18 +111,30 @@ class RegimeRouter:
         return t["sum"] / t["n"]
 
     def pick(self, regime: str) -> str:
-        """Which expert acts in this regime (rule-floor prior)."""
+        """Which expert acts in this regime (rule-floor prior).
+
+        The rule holds unless an expert with >= min_evidence strictly beats the
+        rule's own mean impact in this regime. If the rule has no record yet, the
+        floor holds (no baseline to beat). Eligibility comes from the weight
+        schedule when step() has run; until then every tracked expert is
+        eligible, so the earning mechanism is reachable without step()."""
         if regime not in self.track:
             return self.rule_floor
-        w = self.weights.get(regime, {self.rule_floor: 1.0})
-        eligible = [e for e, wgt in w.items() if wgt > 0]
-        best, best_impact = self.rule_floor, -1e9
-        for e in eligible:
-            if e == self.rule_floor:
-                continue
+        rule_imp = self.mean_impact(regime, self.rule_floor)
+        if rule_imp is None:
+            return self.rule_floor
+        w = self.weights.get(regime)
+        candidates = [
+            e for e in self.track[regime]
+            if e != self.rule_floor and (w is None or w.get(e, 0.0) > 0)
+        ]
+        best, best_impact = self.rule_floor, rule_imp
+        for e in candidates:
             imp = self.mean_impact(regime, e)
             n = self.track[regime].get(e, {}).get("n", 0)
-            if imp is not None and n >= self.min_evidence and imp > best_impact:
+            if imp is None or n < self.min_evidence:
+                continue
+            if imp > best_impact:
                 best, best_impact = e, imp
         return best
 

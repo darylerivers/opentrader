@@ -67,6 +67,24 @@ def fit(
     print(f"[arena] fit on {device}" if device == "cuda" else "", flush=True)
     train_w, test_ws = _adaptive_windows(rows)
     train = [r for r in rows if train_w[0] <= r["bar"] < train_w[1]]
+    if len(train) < 8:
+        # Not enough data to split train/val: return a degenerate, clearly-failing
+        # art instead of crashing on an empty stack. The gate reads pass=False.
+        model = ArenaMLP(rows[0]["x"].shape[0] if rows else 11, hidden=hidden)
+        report = {
+            "train_window": list(train_w),
+            "test_windows": [list(t) for t in test_ws],
+            "n_train": len(train),
+            "n_val": 0,
+            "val_mse": float("nan"),
+            "theta": 0.0,
+            "results": [{"window": f"{lo}-{hi}", "n": 0, "kept": 0, "kept_mean": 0.0,
+                         "all_mean": 0.0, "margin": -1.0} for lo, hi in test_ws],
+            "pass": False,
+            "insufficient_data": True,
+        }
+        return {"model": model, "theta": 0.0, "mean": np.zeros(model.net[0].in_features),
+                "std": np.ones(model.net[0].in_features), "report": report, "pass": False}
     n_val = max(1, int(len(train) * VAL_FRAC))
     trn, val = train[: len(train) - n_val], train[-n_val:]
     if extra_rows:

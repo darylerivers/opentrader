@@ -38,6 +38,10 @@ def run_battle(rows, field, agent_fn, round_size=25, agent_evals=None):
     rounds_log = []
     arena_targets = {}
 
+    if not rows:
+        return {"standings": standings, "h2h": h2h, "rounds": rounds_log,
+                "arena_targets": arena_targets}
+
     n_rounds = max(1, (len(rows) + round_size - 1) // round_size)
     for ri in range(n_rounds):
         batch = rows[ri * round_size : (ri + 1) * round_size]

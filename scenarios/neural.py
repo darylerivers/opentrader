@@ -168,7 +168,12 @@ class NeuralMarketGenerator:
         return self
 
     # -- generation -----------------------------------------------------------
-    def generate_world(self, spec: ScenarioSpec, n_bars=None) -> dict:
+    def generate_world(self, spec: ScenarioSpec, n_bars=None, seed=None) -> dict:
+        if not self._trained:
+            raise RuntimeError("NeuralMarketGenerator not trained/loaded")
+        if seed is not None:
+            torch.manual_seed(seed)
+            np.random.seed(seed)
         n = n_bars or spec.n_bars
         steps = (n + _BATCH_S - 1) // _BATCH_S
         self.gen.eval()
@@ -195,11 +200,21 @@ class NeuralMarketGenerator:
     def save(self, path):
         torch.save({"gen": self.gen.state_dict(), "norm_std": self.norm_std}, path)
 
-    def load(self, path):
-        ck = torch.load(path, map_location=self.device, weights_only=False)
-        self.gen.load_state_dict(ck["gen"])
-        self.norm_std = ck["norm_std"]
-        self._trained = True
+    def load(self, path) -> bool:
+        """Load a checkpoint; returns True on success, False (without raising)
+        on corrupt/missing-key checkpoints so callers degrade gracefully."""
+        try:
+            ck = torch.load(path, map_location=self.device, weights_only=False)
+            if "gen" not in ck or "norm_std" not in ck:
+                print(f"[neural] checkpoint {path} missing keys; ignoring")
+                return False
+            self.gen.load_state_dict(ck["gen"])
+            self.norm_std = np.asarray(ck["norm_std"], dtype=np.float32)
+            self._trained = True
+            return True
+        except Exception as e:
+            print(f"[neural] checkpoint {path} unreadable ({e}); ignoring")
+            return False
 
 
 def _pick_device(device: str):

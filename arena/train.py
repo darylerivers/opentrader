@@ -73,8 +73,8 @@ def run_iteration(
     agg = _aggregate_battles(battles)
 
     z_targets = {(k[0], k[1]): v["z"] for k, v in battles[-1]["arena_targets"].items()}
-    if (OUT / "relabels.json").exists():
-        relabels = json.loads((OUT / "relabels.json").read_text())
+    relabels = _load_relabels()
+    if relabels:
         for r in relabels:
             key = (r["bar"], r["sym"])
             z = z_targets.get(key)
@@ -131,7 +131,7 @@ def run_iteration(
         f"[arena]   war done: {war['base_n_trades']} base trades, {len(combined)} relabels",
         flush=True,
     )
-    (OUT / "relabels.json").write_text(json.dumps(combined, indent=1, default=str))
+    _atomic_write(OUT / "relabels.json", combined)
 
     router_info = _update_regime_router(war)
 
@@ -200,6 +200,11 @@ def _update_regime_router(war, state_path=None):
                 n = stats.get("n", 0)
                 if n >= router.min_evidence:
                     router.record("up" if reg == "up" else "down", name, stats.get("mean_pnl_pct", 0.0))
+                    # the war's rule bot is named 'rule-config'; the router's
+                    # floor is 'rule'. record the floor's impact too, or pick()
+                    # has no baseline to compare against.
+                    if name == "rule-config":
+                        router.record("up" if reg == "up" else "down", "rule", stats.get("mean_pnl_pct", 0.0))
         import json as _json
         state_path.write_text(_json.dumps(
             {"track": router.track, "weights": router.weights}, indent=1))
@@ -209,6 +214,34 @@ def _update_regime_router(war, state_path=None):
     except Exception as e:
         print(f"[arena]   router update skipped ({e})", flush=True)
         return None
+
+
+def _atomic_write(path, obj):
+    """Write JSON via tmp-file + os.replace so a concurrent reader never sees a
+    partial file (the previous write_text could interleave with a reader)."""
+    import os
+    import tempfile
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(obj, f, indent=1, default=str)
+        os.replace(tmp, str(path))
+    except BaseException:
+        os.unlink(tmp)
+        raise
+
+
+def _load_relabels():
+    """Guarded read of the war-relabel overlay file: corrupt or partial state
+    must degrade to 'no relabels' (fresh fit), never crash the iteration."""
+    try:
+        if (OUT / "relabels.json").exists():
+            return json.loads((OUT / "relabels.json").read_text())
+    except Exception as e:
+        print(f"[arena]   relabels.json unreadable ({e}); treating as none", flush=True)
+    return None
 
 
 def _checkpoint_for(expert_id="momentum"):

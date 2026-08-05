@@ -155,6 +155,7 @@ def _():
     from scenarios.neural import NeuralMarketGenerator
     from scenarios.spec import ScenarioSpec
     g = NeuralMarketGenerator(device="cpu")
+    g._trained = True  # shape test only: bypass training
     d = g.generate_world(ScenarioSpec(n_bars=1, seed=1))
     return f"syms={len(d)}, rows={len(d['AAPL'])}"
 
@@ -409,6 +410,7 @@ def _():
     from scenarios.neural import NeuralMarketGenerator
     from scenarios.spec import ScenarioSpec
     g = NeuralMarketGenerator(device="cpu")
+    g._trained = True
     d = g.generate_world(ScenarioSpec(n_bars=200, regime="crisis", event="us_debt_ceiling"))
     c = d["SPY"]["close"].to_numpy()
     return f"syms={len(d)} draws {round((c[-1]/c[0]-1)*100,1)}% over 200 bars"

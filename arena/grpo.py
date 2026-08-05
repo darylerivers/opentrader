@@ -42,6 +42,7 @@ def grpo_update(
     clip_eps: float = CLIP_EPS,
     tau: float = TAU,
     group_key: str = "group",
+    device: str = "auto",
 ):
     """One GRPO update over a list of decisions.
 
@@ -50,7 +51,8 @@ def grpo_update(
     field-relative normalization the arena protocol intends. Returns
     (loss, mean_abs_advantage).
     """
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if device == "auto":
+        device = "cuda" if torch.cuda.is_available() else "cpu"
     model = model.to(device)
     model.train()
 
