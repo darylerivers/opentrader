@@ -230,6 +230,34 @@ def predict_batch(art, xs):
     return v
 
 
+def recompute_gate(art, rows):
+    """Recompute the held-out discrimination gate on the CURRENT model weights
+    (after a GRPO refinement the margins in art['report'] are stale). Mutates
+    art['report']['results'] and art['report']['pass'] in place."""
+    theta = art["theta"]
+    results = []
+    for lo, hi in TESTS:
+        win = [r for r in rows if lo <= r["bar"] < hi]
+        wp = predict_batch(art, [r["x"] for r in win])
+        kept_f = [r["fwd"] for r, p in zip(win, wp) if p >= theta]
+        all_m = statistics.mean(r["fwd"] for r in win)
+        kept_m = statistics.mean(kept_f) if kept_f else 0.0
+        results.append(
+            {
+                "window": f"{lo}-{hi}",
+                "n": len(win),
+                "kept": len(kept_f),
+                "kept_mean": kept_m,
+                "all_mean": all_m,
+                "margin": kept_m - all_m,
+            }
+        )
+    passed = [r for r in results if r["margin"] >= THETA_BAR]
+    art["report"]["results"] = results
+    art["report"]["pass"] = len(passed) == len(results)
+    return art
+
+
 def make_agent(art):
     model, theta, mean, std = art["model"], art["theta"], art["mean"], art["std"]
     device = _device()

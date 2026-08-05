@@ -132,6 +132,8 @@ def run_iteration(
     )
     (OUT / "relabels.json").write_text(json.dumps(combined, indent=1, default=str))
 
+    router_info = _update_regime_router(war)
+
     grpo_info = _run_grpo_refine(rows, war, bear, art, steps=grpo_steps)
     if grpo_info:
         print(
@@ -139,6 +141,8 @@ def run_iteration(
             f"loss={grpo_info['loss']:.4f}",
             flush=True,
         )
+        agent_mod.recompute_gate(art, rows)
+        _write_momentum_gate(art)
         agent_mod.save(art)
 
     mv_report = _run_multiverse_gate(rows, field, art, cfg, war_period)
@@ -166,12 +170,60 @@ def run_iteration(
         },
         "multiverse": mv_report,
         "grpo": grpo_info,
+        "router": router_info,
         "n_relabels": len(combined),
         "n_bear_relabels": len(bear["relabels"]),
     }
     report["tech"] = tech_mod.snapshot(report, iteration)
     view_mod.write_snapshot(report)
     return report
+
+
+def _update_regime_router(war, state_path=None):
+    """Feed the fidelity war's per-regime impacts into a persisted RegimeRouter
+    (closes seam e: the MoT rule-floor prior finally receives real data instead
+    of the standalone demo). record() accrues sum/n per (regime, expert);
+    pick() can then select a validated expert off the rule floor."""
+    try:
+        from mot.mixture import RegimeRouter
+
+        state_path = state_path or PROJECT / "data" / "mot_router_state.json"
+        router = RegimeRouter()
+        if state_path.exists():
+            import json as _json
+            d = _json.loads(state_path.read_text())
+            router.track = d.get("track", {})
+            router.weights = d.get("weights", {})
+        for name, decomp in war.get("regime_decomp", {}).items():
+            for reg, stats in decomp.items():
+                n = stats.get("n", 0)
+                if n >= router.min_evidence:
+                    router.record("up" if reg == "up" else "down", name, stats.get("mean_pnl_pct", 0.0))
+        import json as _json
+        state_path.write_text(_json.dumps(
+            {"track": router.track, "weights": router.weights}, indent=1))
+        picks = {reg: router.pick(reg) for reg in ("up", "down")}
+        return {"picks": picks, "n_experts_tracked": len(
+            {e for d in router.track.values() for e in d})}
+    except Exception as e:
+        print(f"[arena]   router update skipped ({e})", flush=True)
+        return None
+
+
+def _write_momentum_gate(art):
+    """Closes seam e: skill s15 / tech 'mot-weight' check
+    data/arena/momentum_gate.json, which nothing ever wrote. Write it when the
+    (post-GRPO) held-out discrimination gate passes, so the curriculum can
+    actually graduate."""
+    try:
+        passed = bool(art.get("report", {}).get("pass"))
+        OUT.mkdir(parents=True, exist_ok=True)
+        (OUT / "momentum_gate.json").write_text(
+            json.dumps({"pass": passed, "report": art["report"].get("results", []),
+                        "written": "arena"}, indent=1)
+        )
+    except Exception as e:
+        print(f"[arena]   momentum_gate write skipped ({e})", flush=True)
 
 
 def _grpo_decisions(rows, relabels, group_label, action=1):
