@@ -131,6 +131,14 @@ def run_iteration(
     )
     (OUT / "relabels.json").write_text(json.dumps(combined, indent=1, default=str))
 
+    mv_report = _run_multiverse_gate(rows, field, art, cfg, war_period)
+    if mv_report:
+        print(
+            f"[arena]   multiverse gate: {mv_report['n_ruined']}/{mv_report['n_worlds']} worlds ruined "
+            f"(pass={mv_report['pass']})",
+            flush=True,
+        )
+
     report = {
         "iteration": iteration,
         "n_candidates": len(rows),
@@ -146,12 +154,33 @@ def run_iteration(
             "net_return": war["base_net_return"],
             "n_trades": war["base_n_trades"],
         },
+        "multiverse": mv_report,
         "n_relabels": len(combined),
         "n_bear_relabels": len(bear["relabels"]),
     }
     report["tech"] = tech_mod.snapshot(report, iteration)
     view_mod.write_snapshot(report)
     return report
+
+
+def _run_multiverse_gate(rows, field, art, cfg, war_period="5y", n_base=2, n_per_event=1):
+    """Second gate: run the fitted agent through generated worlds (everyday +
+    crisis multiverse). Fails silently (returns None) if scenarios/ can't load,
+    so the arena loop never breaks on a generator problem."""
+    try:
+        from scenarios import MarketScenarioGenerator, crisis_worlds
+        from scenarios.spec import ScenarioSpec
+        from arena.war import run_multiverse_war
+
+        gen = MarketScenarioGenerator()
+        base = gen.generate(n_base, base_spec=ScenarioSpec(seed=11))
+        worlds = base + crisis_worlds(n_per_event=n_per_event, base_spec=ScenarioSpec(seed=11))
+        return run_multiverse_war(
+            worlds, field, agent_mod.make_agent(art), cfg, period=war_period
+        )
+    except Exception as e:
+        print(f"[arena]   multiverse gate skipped ({e})", flush=True)
+        return None
 
 
 def _aggregate_battles(battles):

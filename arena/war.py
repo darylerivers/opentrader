@@ -95,11 +95,13 @@ def run_war(
     cfg_override=None,
     bar_lo=0,
     bar_hi=None,
+    data=None,
 ):
     cfg = clamp_config(cfg)
     if cfg_override:
         cfg = clamp_config({**cfg, **cfg_override})
-    data = load_ohlcv(period)
+    if data is None:
+        data = load_ohlcv(period)
     al = align(data, [s for s in data if s != REGIME_SYM])
     closes, highs, lows, vols = al
     feat = _features(closes, highs, lows, vols, cfg)
@@ -244,3 +246,55 @@ def run_bear_war(
         "n_base_trades": out["base_n_trades"],
         "regime_decomp": out["regime_decomp"],
     }
+
+
+def run_multiverse_war(
+    worlds,
+    field,
+    agent_fn,
+    cfg,
+    eta=0.5,
+    cfg_override=None,
+    ruin_net_return=-0.25,
+    ruin_max_dd=0.30,
+    period="5y",
+):
+    """The tail-robustness gate: run the agent through every generated World and
+    flag worlds where it is ruined (portfolio net return below the ruin floor or
+    max drawdown above the ruin ceiling).
+
+    The fidelity war (run_war on the real archive) is still the headline gate;
+    this is the SECOND gate that catches single-path memorization: a value head
+    that profits on the one realized path but blows up in the debt-crisis world
+    must not pass. Consumes World objects from scenarios/ — same relabel schema,
+    CPU-fast per world (~0.3 s at 2y, ~0.7 s at 5y).
+    """
+    out = {}
+    for i, w in enumerate(worlds):
+        try:
+            res = run_war(
+                None, field, agent_fn, cfg, period=period, eta=eta,
+                cfg_override=cfg_override, data=w.data,
+            )
+            book = res["books"].get("agent", {})
+        except Exception as e:
+            book = {"net_return": 0.0, "max_dd": 0.0, "n_trades": 0, "win_rate": 0.0, "error": str(e)}
+        net_return = book.get("net_return", 0.0)
+        max_dd = book.get("max_dd", 0.0)
+        out[f"world_{i}"] = {
+            "spec": w.spec.__dict__,
+            "generated_by": w.generated_by,
+            "net_return": net_return,
+            "max_dd": max_dd,
+            "n_trades": book.get("n_trades", 0),
+            "win_rate": book.get("win_rate", 0.0),
+            "error": book.get("error"),
+            "ruined": (net_return <= ruin_net_return) or (max_dd >= ruin_max_dd),
+        }
+    worlds_out = [out[k] for k in out if k.startswith("world_")]
+    out["n_worlds"] = len(worlds_out)
+    out["n_ruined"] = sum(1 for r in worlds_out if r["ruined"])
+    out["pass"] = out["n_worlds"] > 0 and out["n_ruined"] == 0
+    out["mean_net_return"] = float(np.mean([r["net_return"] for r in worlds_out]))
+    out["mean_max_dd"] = float(np.mean([r["max_dd"] for r in worlds_out]))
+    return out

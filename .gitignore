@@ -78,3 +78,4 @@ data/shadow_aab/
 data/arxiv_library.json
 OpenTrader/
 data/gpu_scheduler/adapters/**/tokenizer.json
+data/scenarios/
