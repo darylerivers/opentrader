@@ -52,10 +52,10 @@ SPECIALIZATIONS: dict = {
         id="macro",
         name="Macro / rate-sensitivity value head",
         description="FRED + VIX + breadth features (the value_head_1m reuse path).",
-        status="prototype",
-        checkpoint=None,
+        status="ready",
+        checkpoint=ARENA_OUT / "arena_macro_value_head.pt",
         feature_plan="value_head_1m features: cross-sectional ranks + DFF/DGS10/CPIAUCSL + VIX + breadth",
-        data_plan="data/macro_cache.json + FRED (api in data/connections.json)",
+        data_plan="data/setup_search/macro_series.pkl cache (FRED API + yahoo ^VIX), arena/candidates_macro.py",
     ),
     "sentiment": ExpertSpec(
         id="sentiment",

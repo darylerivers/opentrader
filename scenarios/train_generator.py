@@ -25,14 +25,22 @@ sys.path.insert(0, str(PROJECT))
 def _log_returns_from_pkl(path: Path):
     with open(path, "rb") as f:
         data = pickle.load(f)
-    syms = [s for s in data if s != "SPY"]
-    closes = {s: data[s]["close"].to_numpy(dtype=np.float64) for s in syms}
+    # DEFAULT_UNIVERSE order (SPY first, then tradeables) so the column count
+    # and ordering match the neural model's D=17 space. Dropping SPY here was
+    # a latent bug: training fed 16-dim windows into a D=17 model.
+    from scenarios.spec import DEFAULT_UNIVERSE
+    missing = [s for s in DEFAULT_UNIVERSE if s not in data]
+    if missing:
+        raise ValueError(f"archive missing universe symbols: {missing}")
+    closes = {s: data[s]["close"].to_numpy(dtype=np.float64) for s in DEFAULT_UNIVERSE}
     n = min(len(c) for c in closes.values())
     X = np.column_stack([np.diff(np.log(c[:n])) for c in closes.values()])
-    spy = data["SPY"]["close"].to_numpy(dtype=np.float64)[:n]
+    spy = closes["SPY"]
     spy_ma = pd_rolling(spy, 200)
     regime = np.where(spy > spy_ma, "bull", "bear")
-    return X, regime
+    # X[t] = return into bar t+1: the conditioning regime must be the one in
+    # effect at that bar, so align by dropping the first regime label.
+    return X, regime[1:]
 
 
 def pd_rolling(x: np.ndarray, w: int) -> np.ndarray:

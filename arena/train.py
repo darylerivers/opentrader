@@ -9,6 +9,8 @@ iteration's war, per 'Arena reward + war-relabeling protocol'.
 import json
 from pathlib import Path
 
+from setup_search.core import clamp_config
+
 from arena import agent as agent_mod
 from arena import battle as battle_mod
 from arena import candidates as cand_mod
@@ -33,8 +35,9 @@ def run_iteration(
     grpo_steps=2,
     expert_id="momentum",
 ):
-    rows, cfg = cand_mod.collect(period)
+    rows, cfg = _collect_for(expert_id, period)
     field = opp_mod.default_field(cfg, seed=field_seed)
+    macro_ctx = _build_macro_ctx(war_period) if expert_id == "macro" else None
 
     agent_path = _checkpoint_for(expert_id)
     if use_previous and agent_path.exists():
@@ -100,6 +103,7 @@ def run_iteration(
         bar_lo=0,
         bar_hi=250,
         buy_thresh=0.15,
+        macro_ctx=macro_ctx,
     )
     print(
         f"[arena]   bear war done: {bear['n_base_trades']} down-regime trades",
@@ -121,10 +125,11 @@ def run_iteration(
         flush=True,
     )
     art["report"]["iteration"] = iteration
-    agent_mod.save(art)
+    agent_mod.save(art, path=_checkpoint_for(expert_id))
 
     war = war_mod.run_war(
-        rows, field, agent_mod.make_agent(art), cfg, period=war_period, eta=eta
+        rows, field, agent_mod.make_agent(art), cfg, period=war_period, eta=eta,
+        macro_ctx=macro_ctx,
     )
     combined = war["relabels"] + bear["relabels"]
     print(
@@ -144,9 +149,9 @@ def run_iteration(
         )
         agent_mod.recompute_gate(art, rows)
         _write_momentum_gate(art)
-        agent_mod.save(art)
+        agent_mod.save(art, path=_checkpoint_for(expert_id))
 
-    mv_report = _run_multiverse_gate(rows, field, art, cfg, war_period)
+    mv_report = _run_multiverse_gate(rows, field, art, cfg, war_period, macro_ctx=macro_ctx)
     if mv_report:
         print(
             f"[arena]   multiverse gate: {mv_report['n_ruined']}/{mv_report['n_worlds']} worlds ruined "
@@ -244,6 +249,13 @@ def _load_relabels():
     return None
 
 
+def _collect_for(expert_id, period):
+    if expert_id == "macro":
+        from arena import candidates_macro
+        return candidates_macro.collect(period)
+    return cand_mod.collect(period)
+
+
 def _checkpoint_for(expert_id="momentum"):
     try:
         from mot.roster import SPECIALIZATIONS
@@ -307,7 +319,29 @@ def _run_grpo_refine(rows, war, bear, art, steps=2, min_decisions=8):
         return None
 
 
-def _run_multiverse_gate(rows, field, art, cfg, war_period="5y", n_base=2, n_per_event=1):
+def _build_macro_ctx(period="5y"):
+    """Precompute the macro expert's per-symbol feature arrays for the war
+    referee, from the SAME archive the fidelity war replays (period must match
+    war_period). None if FRED/VIX are unavailable."""
+    try:
+        from arena.war import build_macro_ctx
+        from setup_search.data import load_ohlcv, align, REGIME_SYM
+        from setup_search.engine import _features
+        import json as _json
+        data = load_ohlcv(period)
+        al = align(data, [s for s in data if s != REGIME_SYM])
+        closes, highs, lows, vols = al
+        cfg = clamp_config(_json.loads(
+            (PROJECT / "data/setup_search/best.json").read_text())["config"])
+        feat = _features(closes, highs, lows, vols, cfg)
+        return build_macro_ctx(closes, feat)
+    except Exception as e:
+        print(f"[arena]   macro ctx unavailable ({e}); war uses 11-dim states", flush=True)
+        return None
+
+
+def _run_multiverse_gate(rows, field, art, cfg, war_period="5y", n_base=2, n_per_event=1,
+                         macro_ctx=None):
     """Second gate: run the fitted agent through generated worlds (everyday +
     crisis multiverse). Fails silently (returns None) if scenarios/ can't load,
     so the arena loop never breaks on a generator problem."""
@@ -320,7 +354,8 @@ def _run_multiverse_gate(rows, field, art, cfg, war_period="5y", n_base=2, n_per
         base = gen.generate(n_base, base_spec=ScenarioSpec(seed=11))
         worlds = base + crisis_worlds(n_per_event=n_per_event, base_spec=ScenarioSpec(seed=11))
         return run_multiverse_war(
-            worlds, field, agent_mod.make_agent(art), cfg, period=war_period
+            worlds, field, agent_mod.make_agent(art), cfg, period=war_period,
+            macro_ctx=macro_ctx,
         )
     except Exception as e:
         print(f"[arena]   multiverse gate skipped ({e})", flush=True)

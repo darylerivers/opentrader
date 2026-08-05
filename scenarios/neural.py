@@ -1,20 +1,21 @@
 """NeuralMarketGenerator — conditional DoppelGANger-style GAN over market returns.
 
 Follows the architecture notes in docs/research/chinese-lab-rl-foundations.md
-(DoppelGANger 1909.13403):
+(DoppelGANger 1909.13403) and the failure-mode research in
+docs/research/market-generator-failure-modes.md:
   - GRU generator with BATCH generation (S records per hidden step) to preserve
-    long-range autocorrelation over long horizons;
+    long-range autocorrelation;
   - per-series auto-normalization, with the per-series scale emitted as metadata
-    the generator must also produce (kills mode collapse on wide-dynamic-range
-    OHLCV);
-  - a second, metadata-only Wasserstein discriminator; combined loss
-    L_seq + alpha * L_meta (WGAN-GP on the sequence head).
+    the generator must also produce;
+  - a spectral-normalized temporal-conv Wasserstein critic (fix #3: WGAN-GP
+    through an RNN requires non-CuDNN double backwards, and SN is the
+    recommended stability fix for finite critic updates) plus the auxiliary
+    metadata critic; combined loss L_seq + alpha * L_meta;
+  - per-window standardization (zero mean / unit std) removes drift/scale games.
 
-Input space: per-bar log-returns of the 17-symbol universe (SPY + 16 tradeables),
-normalized to unit variance per column. The generator is CONDITIONAL on a regime
-+ event one-hot, so the multiverse can be asked for a specific reality (e.g.
-"bear" or "us_debt_ceiling"), and the tail library still injects grounded crises
-on top.
+Input space: per-bar log-returns of the 17-symbol universe (SPY + 16
+tradeables), normalized to unit variance per column. The generator is
+CONDITIONAL on a regime + event one-hot.
 
 torch is imported lazily so the rest of the scenarios package works without it.
 """
@@ -33,7 +34,7 @@ N_EVENT = 8
 COND_DIM = N_REGIME + N_EVENT
 
 _BASE_LEN = 256
-_BATCH_S = 5
+_BATCH_S = 1
 
 
 def _condition_vector(regime: str, event: str = "") -> np.ndarray:
@@ -52,6 +53,7 @@ def _condition_vector(regime: str, event: str = "") -> np.ndarray:
 class _Generator(nn.Module):
     def __init__(self, latent=32, hidden=64, out=D):
         super().__init__()
+        self.latent = latent
         self.mlp_meta = nn.Sequential(nn.Linear(latent + COND_DIM, hidden), nn.ReLU(),
                                       nn.Linear(hidden, hidden), nn.ReLU(),
                                       nn.Linear(hidden, D))
@@ -61,38 +63,56 @@ class _Generator(nn.Module):
     def forward(self, z, c, steps, batch_s=_BATCH_S):
         """Return (records (steps*batch_s, D), fake_meta (D,)).
 
-        Batch generation per DoppelGANger: each GRU hidden step emits batch_s
-        correlated records (shared hidden state, independent per-row noise) so
-        long-range autocorrelation survives over long horizons.
+        PER-STEP NOISE INPUT: a fresh latent z_t is fed to the GRU every step.
+        With a constant input the hidden state converges to a fixed point and
+        the whole sequence freezes (measured acf(lag1)~0.98 on the real-data
+        run); per-step noise keeps the dynamics moving so autocorrelation
+        emerges from the learned recurrence instead of vanishing.
         """
         zc = torch.cat([z, c], dim=-1)
         meta = self.mlp_meta(zc)
         hh = None
-        x_in = zc.unsqueeze(1)
         out_rows = []
         for _ in range(steps):
-            _, hh = self.gru(x_in, hh)          # hh: (1,1,H)
-            h = hh[0, 0]                        # (H,)
-            h_exp = h.unsqueeze(0).repeat(batch_s, 1)
-            noise = torch.randn(batch_s, h_exp.size(-1), device=h.device) * 0.5
-            out_rows.append(self.head(h_exp + noise))
-        rows = torch.cat(out_rows, dim=0)
+            z_t = torch.randn(1, self.latent, device=z.device)
+            x_in = torch.cat([z_t, c], dim=-1).unsqueeze(1)  # (1,1,latent+cond)
+            _, hh = self.gru(x_in, hh)                       # hh: (1,1,H)
+            h = hh[0, 0]                                     # (H,)
+            if batch_s == 1:
+                out_rows.append(self.head(h))
+            else:
+                h_exp = h.unsqueeze(0).repeat(batch_s, 1)
+                noise = torch.randn(batch_s, h_exp.size(-1), device=h.device) * 0.5
+                out_rows.append(self.head(h_exp + noise))
+        rows = torch.stack(out_rows, dim=0).reshape(-1, D)
         return rows, meta
 
 
 class _SeqCritic(nn.Module):
+    """Temporal-conv Wasserstein critic with spectral normalization.
+
+    Replaces the GRU critic: WGAN-GP through an RNN requires non-CuDNN double
+    backwards (order-of-magnitude slower), and the literature (see
+    docs/research/market-generator-failure-modes.md, fix #3) recommends SN over
+    GP with finite critic updates. CNN over the (B,T,D) sequence, mean-pooled
+    score."""
     def __init__(self, hidden=64):
         super().__init__()
-        self.gru = nn.GRU(D, hidden, batch_first=True, bidirectional=True)
-        self.head = nn.Sequential(nn.Linear(hidden * 2, hidden), nn.ReLU(), nn.Linear(hidden, 1))
+        self.conv = nn.Sequential(
+            nn.utils.spectral_norm(nn.Conv1d(D, hidden, 5, padding=2)),
+            nn.LeakyReLU(0.2),
+            nn.utils.spectral_norm(nn.Conv1d(hidden, hidden, 5, padding=2)),
+            nn.LeakyReLU(0.2),
+            nn.utils.spectral_norm(nn.Conv1d(hidden, hidden, 5, padding=2)),
+            nn.LeakyReLU(0.2),
+            nn.Conv1d(hidden, 1, 1),
+        )
 
     def forward(self, x):
-        # x: (B, T, D) or (T, D)
         if x.dim() == 2:
             x = x.unsqueeze(0)
-        _, h = self.gru(x)
-        h = torch.cat([h[0], h[1]], dim=-1) if h.dim() == 3 else h
-        return self.head(h).squeeze(-1)
+        out = self.conv(x.transpose(1, 2))   # (B,1,T)
+        return out.mean(dim=2).squeeze(-1)   # (B,)
 
 
 class _MetaCritic(nn.Module):
@@ -118,20 +138,29 @@ class NeuralMarketGenerator:
 
     # -- training -------------------------------------------------------------
     def train(self, logret: np.ndarray, regimes: np.ndarray, epochs=50,
-              lr=1e-3, grad_penalty=10.0, window=_BASE_LEN, seed=0):
+              lr=1e-3, grad_penalty=None, window=_BASE_LEN, seed=0, stride=None,
+              critic_per_gen=1):
         """logret: (T, D) normalized-log-return matrix; regimes: (T,) label str
-        per bar. Slices windows, conditions each on its regime one-hot, and runs
-        the DoppelGANger-style WGAN-GP update."""
+        per bar. Slices heavily-overlapping windows, standardizes each window
+        to zero mean / unit std (kills drift amplification), conditions each on
+        its regime one-hot, and runs the WGAN-SN update (spectral-normalized
+        temporal-conv critic; no gradient penalty — see _SeqCritic docstring).
+        grad_penalty kept in the signature for API compatibility but unused."""
         self.norm_std = (np.std(logret, axis=0) + 1e-8).astype(np.float32)
         x = (logret / self.norm_std).astype(np.float32)
         conds = np.stack([_condition_vector(r) for r in regimes])
-        windows = _make_windows(x, window)
-        cond_w = _make_windows(conds, window)
-        opt_g = torch.optim.Adam(self.gen.parameters(), lr=lr, betas=(0.5, 0.999))
+        windows = _make_windows(x, window, stride or 16)
+        cond_w = _make_windows(conds, window, stride or 16)
+        for i in range(len(windows)):  # per-window standardization
+            w = windows[i]
+            windows[i] = (w - w.mean(0)) / (w.std(0) + 1e-8)
+        lr_g, lr_d = lr, lr * 2.0  # TTUR: higher critic LR
+        opt_g = torch.optim.Adam(self.gen.parameters(), lr=lr_g, betas=(0.5, 0.999))
         opt_d = torch.optim.Adam(list(self.seq_c.parameters()) + list(self.meta_c.parameters()),
-                                 lr=lr, betas=(0.5, 0.999))
+                                 lr=lr_d, betas=(0.5, 0.999))
         steps = (window + _BATCH_S - 1) // _BATCH_S
         rng = np.random.RandomState(seed)
+        meta_target = torch.ones(D, device=self.device).unsqueeze(0)
         for ep in range(epochs):
             g_loss_t, d_loss_t = 0.0, 0.0
             idx = rng.permutation(len(windows))
@@ -139,18 +168,16 @@ class NeuralMarketGenerator:
                 xw = torch.tensor(windows[i].astype(np.float32),
                                   device=self.device).unsqueeze(0)  # (1,T,D)
                 cw = torch.tensor(cond_w[i][0], device=self.device)             # (Dc,)
-                for _ in range(2):  # critic updates per gen step
+                for _ in range(critic_per_gen):
                     z = torch.randn(1, 32, device=self.device)
                     fake, fake_meta = self.gen(z, cw.unsqueeze(0), steps)
-                    # truncate the batch-generated fake to the real window length
                     fake = fake[:xw.size(1)]
                     fake_seq = fake.unsqueeze(0)
                     d_real = self.seq_c(xw)
                     d_fake = self.seq_c(fake_seq.detach())
-                    gp = _grad_penalty(self.seq_c, xw, fake_seq.detach(), self.device)
-                    m_real = self.meta_c(torch.tensor(self.norm_std, device=self.device).unsqueeze(0))
+                    m_real = self.meta_c(meta_target)
                     m_fake = self.meta_c(fake_meta.detach())
-                    d_loss = (d_fake.mean() - d_real.mean() + grad_penalty * gp
+                    d_loss = (d_fake.mean() - d_real.mean()
                               + self.alpha * (m_fake.mean() - m_real.mean()))
                     opt_d.zero_grad()
                     d_loss.backward()
@@ -163,7 +190,7 @@ class NeuralMarketGenerator:
                 opt_g.step()
                 g_loss_t += g_loss.item()
                 d_loss_t += d_loss.item()
-            print(f"[neural] epoch {ep}: g={g_loss_t / len(windows):.3f} d={d_loss_t / len(windows):.3f}")
+            print(f"[neural] epoch {ep}: g={g_loss_t / len(windows):.3f} d={d_loss_t / len(windows):.3f}", flush=True)
         self._trained = True
         return self
 
@@ -227,14 +254,3 @@ def _make_windows(x: np.ndarray, window: int, stride=None) -> np.ndarray:
     stride = stride or window // 2
     n = len(x)
     return np.stack([x[i:i + window] for i in range(0, max(1, n - window + 1), stride)])
-
-
-def _grad_penalty(critic, real, fake, device):
-    b = real.size(0)
-    eps = torch.rand(b, 1, 1, device=device)
-    interp = (eps * real + (1 - eps) * fake).requires_grad_(True)
-    d = critic(interp)
-    grads = torch.autograd.grad(d, interp, grad_outputs=torch.ones_like(d),
-                                create_graph=True)[0]
-    gp = ((grads.norm(2, dim=-1) - 1) ** 2).mean()
-    return gp

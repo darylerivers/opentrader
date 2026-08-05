@@ -12,6 +12,7 @@ per-state relabels (advantage-style, per regime window).
 import statistics
 
 import numpy as np
+import pandas as pd
 
 from setup_search.core import clamp_config
 from setup_search.data import REGIME_SYM, load_ohlcv, align
@@ -19,7 +20,7 @@ from setup_search.engine import _features, _score_at, run_backtest
 from arena.candidates import FEAT_COLS
 
 
-def _entry_state(sym, entry_date, feat, closes, cfg, spy, spy_ma):
+def _entry_state(sym, entry_date, feat, closes, cfg, spy, spy_ma, macro_ctx=None):
     c = closes[sym]
     f = feat[sym]
     t = c.index.get_loc(entry_date)
@@ -37,6 +38,13 @@ def _entry_state(sym, entry_date, feat, closes, cfg, spy, spy_ma):
     if spy_ma200 is not None and date in spy_ma200.index and spy_ma200[date]:
         spy_ratio = float(spy[date] / spy_ma200[date])
     x = np.array([feats[k] for k in FEAT_COLS] + [score, spy_ratio], dtype=np.float32)
+    if macro_ctx is not None:
+        # macro expert: append mom_rank/rsi_rank/FF/T10/CPI/VIX/breadth at this
+        # bar, in the same order as arena/candidates_macro.collect
+        arr = macro_ctx["arrays"][sym]
+        if t < len(arr[0]):
+            extra = np.array([a[t] for a in arr], dtype=np.float32)
+            x = np.concatenate([x, extra])
     return {
         "bar": t,
         "sym": sym,
@@ -48,6 +56,37 @@ def _entry_state(sym, entry_date, feat, closes, cfg, spy, spy_ma):
         "close": float(c.iloc[t]),
         "close_series": c,
     }
+
+
+def build_macro_ctx(closes, feat):
+    """Precompute per-symbol macro feature arrays (ranks + FRED + VIX +
+    breadth), indexed by close-series position, so _entry_state can sample
+    the macro expert's extra dims at any trade's entry date in O(1)."""
+    from arena.candidates_macro import macro_state
+    from setup_search.value_head_1m import breadth_series
+
+    st = macro_state()
+    fred, vix = st.get("fred"), st.get("vix")
+    if fred is None or vix is None:
+        return None
+    mom_frame = pd.DataFrame({s: feat[s]["mom"] for s in closes if s != REGIME_SYM})
+    rsi_frame = pd.DataFrame({s: feat[s]["rsi"] for s in closes if s != REGIME_SYM})
+    mom_rank = mom_frame.rank(axis=1, pct=True)
+    rsi_rank = rsi_frame.rank(axis=1, pct=True)
+    breadth = breadth_series(closes, window=50)
+    keys = ("FF", "T10", "CPI")
+    arrays = {}
+    for sym, c in closes.items():
+        idx = c.index
+        cols = [mom_rank[sym].reindex(idx).values,
+                rsi_rank[sym].reindex(idx).values]
+        for k in keys:
+            s = fred.get(k)
+            cols.append(s.reindex(idx, method="ffill").values if s is not None else np.full(len(idx), np.nan))
+        cols.append(vix.reindex(idx.normalize(), method="ffill").values)
+        cols.append(breadth.reindex(idx, method="ffill").values)
+        arrays[sym] = [np.nan_to_num(a, nan=0.0) for a in cols]
+    return {"arrays": arrays}
 
 
 def _book_metrics(kept, start_equity=500.0):
@@ -96,6 +135,7 @@ def run_war(
     bar_lo=0,
     bar_hi=None,
     data=None,
+    macro_ctx=None,
 ):
     cfg = clamp_config(cfg)
     if cfg_override:
@@ -120,7 +160,7 @@ def run_war(
         kept = []
         for t in trades:
             state = _entry_state(
-                t["sym"], t["entry_date"], feat, closes, cfg, spy, spy_ma
+                t["sym"], t["entry_date"], feat, closes, cfg, spy, spy_ma, macro_ctx
             )
             if bar_hi is not None and not (bar_lo <= state["bar"] < bar_hi):
                 continue
@@ -157,7 +197,8 @@ def run_war(
     base_states = {}
     sel_trades = []
     for t in trades:
-        state = _entry_state(t["sym"], t["entry_date"], feat, closes, cfg, spy, spy_ma)
+        state = _entry_state(t["sym"], t["entry_date"], feat, closes, cfg, spy,
+                             spy_ma, macro_ctx)
         if bar_hi is not None and not (bar_lo <= state["bar"] < bar_hi):
             continue
         base_states[(t["sym"], t["entry_date"])] = state
@@ -224,6 +265,7 @@ def run_bear_war(
     bar_lo=0,
     bar_hi=250,
     buy_thresh=0.15,
+    macro_ctx=None,
 ):
     """Down-regime relabels: war the 2022 bear segment with the regime filter
     off and a looser entry threshold so the rules actually execute there. The
@@ -240,6 +282,7 @@ def run_bear_war(
         cfg_override=override,
         bar_lo=bar_lo,
         bar_hi=bar_hi,
+        macro_ctx=macro_ctx,
     )
     return {
         "relabels": out["relabels"],
@@ -258,6 +301,7 @@ def run_multiverse_war(
     ruin_net_return=-0.25,
     ruin_max_dd=0.30,
     period="5y",
+    macro_ctx=None,
 ):
     """The tail-robustness gate: run the agent through every generated World and
     flag worlds where it is ruined (portfolio net return below the ruin floor or
@@ -274,7 +318,7 @@ def run_multiverse_war(
         try:
             res = run_war(
                 None, field, agent_fn, cfg, period=period, eta=eta,
-                cfg_override=cfg_override, data=w.data,
+                cfg_override=cfg_override, data=w.data, macro_ctx=macro_ctx,
             )
             book = res["books"].get("agent", {})
         except Exception as e:
