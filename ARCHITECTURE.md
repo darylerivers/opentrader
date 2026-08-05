@@ -1,326 +1,103 @@
-# OpenTrader Architecture
+# OpenTrader — Architecture (canonical)
 
-```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': { 'primaryColor': '#1a1a2e', 'secondaryColor': '#16213e', 'tertiaryColor': '#0f3460', 'primaryTextColor': '#e0e0e0', 'lineColor': '#e94560'}}}%%
+**Last verified:** 2026-08-05 | **Supersedes:** ARCHITECTURE-v1, ARCHITECTURE-v2-superseded (see `docs/archive/`)
 
-flowchart TB
-    subgraph CLI["CLI / Entry Points"]
-        RH["run_harness.py<br/>CLI args & config"]
-        COORD["coordinator.py<br/>Multi-asset orchestration"]
-    end
+This is the single source of truth. If a doc or config disagrees with this file, this file wins and the other is wrong.
 
-    subgraph EXCHANGE["Exchange Layer"]
-        EX_ABC["ExchangeBase (ABC)<br/>get_bars / place_order / get_balance"]
-        PAPER["PaperExchange<br/>Synthetic data + paper settlements"]
-        LIVE["LiveExchange (CCXT)<br/>Real prices via Coinbase / Kraken<br/>Paper settlement"]
-        WEB3["Web3Onchain<br/>Uniswap V3 swaps (Base Sepolia)"]
-        EX_ABC --- PAPER
-        EX_ABC --- LIVE
-        EX_ABC --- WEB3
-    end
+---
 
-    subgraph HARNESS["Harness — Main Event Loop"]
-        H["OpenTraderHarness"]
-        CYCLE["run_cycle()"]
-        PROG["Progression System<br/>Stage 1→2→3 unlocks more symbols"]
+## 1. Verified runtime reality (as of 2026-08-05)
 
-        subgraph PHASE0["Phase 0: Pre-cycle"]
-            CB["Circuit Breaker check<br/>(portfolio drawdown guard)"]
-            SLTP["SL/TP Guardrails<br/>Stop-loss / Take-profit / Trailing / Timeout"]
-            DAILY["Daily trade limit check"]
-        end
+Do NOT trust historical docs for ports/models. This is what `ss`/`pgrep` actually showed:
 
-        subgraph PHASE1["Phase 1: Signal Generation"]
-            CONTEXT["Build AgentContext<br/>OHLCV + regime + economics<br/>news + arxiv + social + MTF"]
-            DEBATE["Debate Engine<br/>LLM (Qwythos-9B) deliberates"]
-            PARALLEL["Parallel debate<br/>One thread per symbol"]
-        end
+| Service | Port | Status | Notes |
+|---|---|---|---|
+| ollama serve | :11434 | **UP** | Only live LLM. Serves agent/architect models. |
+| dashboard.py | :8097 | UP | Web UI. |
+| mcp_server.py | :8092 | UP | `--exchange paper`. Imports `exchange/paper.py`, `exchange/base.py`, `risk/manager.py`, `data/regime_classifier.py`, `data/economics.py`. |
+| gpu_sync.py | :5801 | UP (DEGRADED) | Proxy → backends :5802/:5803, both DOWN. No trading LLM loaded. |
+| harness.py | — | **DEAD** | `health.json`: `"harness_state":"dead"`. Last launch targeted :5801 (dead proxy). |
+| llama-swap | :8080 | NOT INSTALLED | `~/llama-swap/` missing; systemd unit is broken. |
 
-        subgraph PHASE2["Phase 2: Portfolio Optimization"]
-            PORT_OPT["PortfolioOptimizer<br/>Correlation-aware Kelly allocation"]
-            COMMITTEE["CommitteeChair<br/>Historical accuracy veto"]
-        end
+**Consequence:** the live trading loop is down. The training/research stack (arena, value heads, setup_search) does NOT depend on it — it replays pkl archives via `setup_search.engine.run_backtest`.
 
-        subgraph PHASE3["Phase 3: Execution"]
-            RISK_CHECK["RiskManager.check()<br/>Kelly sizing + exposure caps"]
-            ORDER["Exchange.place_order()"]
-            REBALANCE["Dynamic rebalance<br/>drift correction"]
-        end
+## 2. Hardware
 
-        subgraph PHASE4["Phase 4: Post-cycle"]
-            RECORD["StateManager.write()"]
-            FLASH["FlashTrainer.on_hold()"]
-            REFLECT["ReflectionLog.record()"]
-            PATTERN["RealTradePatternBank.extract()"]
-            ARXIV_FEAT["arXiv feature extraction"]
-            TRAIN_EVAL["TrainScheduler.evaluate()"]
-            MOT_EVAL["MoT Coordinator evaluation"]
-            ADAPTER["Adapter lifecycle check"]
-        end
+| GPU | Card | Backend | Role |
+|---|---|---|---|
+| GPU0 | RTX 3070 (8GB) | CUDA | "Mathematical arsenal" — setup_search search, value-head training, QLoRA distillation |
+| GPU1 | RX 7900 GRE (16GB) | ROCm | 3-agent fleet / inference; freed VRAM reserved for the neural scenario generator |
 
-        H --> CYCLE
-        CYCLE --> PHASE0
-        PHASE0 --> PHASE1
-        PHASE1 --> PHASE2
-        PHASE2 --> PHASE3
-        PHASE3 --> PHASE4
-        PHASE4 -->|loop| CYCLE
+**VRAM lock rule:** training and trading cannot coexist. Training runs in idle windows (see `training/idle_trainer.py`, `training/train_scheduler.py`).
 
-        H --> PROG
-    end
+## 3. Core architecture: MoT expert mixture with rule-floor prior
 
-    subgraph DATA["Data Sources"]
-        NEWS["News API<br/>Fear & Greed"]
-        ARXIV["arXiv API<br/>q-fin papers → trading rules"]
-        SOCIAL["Social sentiment<br/>Reddit, Twitter"]
-        ECON["Economics MCP<br/>Economic indicators"]
-        MTF["Multi-timeframe<br/>1h + 4h bars"]
-    end
-
-    subgraph RISK["Risk Management"]
-        RM["RiskManager"]
-        KELLY["Kelly sizing<br/>max_position_pct"]
-        STOP_LOSS["Stop-loss / Take-profit<br/>Trailing stop"]
-        MAX_EXP["Max exposure<br/>Portfolio stop"]
-        REGIME_OV["Regime adaptation<br/>Market condition overrides"]
-        PERFORMANCE["PerformanceAnalytics<br/>Sharpe, win rate"]
-        PARAM_OPT["ParamOptimizer<br/>Portfolio-scale interpolation"]
-
-        RM --> KELLY
-        RM --> STOP_LOSS
-        RM --> MAX_EXP
-        RM --> REGIME_OV
-        RM --> PERFORMANCE
-        RM --> PARAM_OPT
-    end
-
-    subgraph MOT["Management of Trading (MoT)"]
-        MOT_COORD["MoTCoordinator<br/>Evaluates every REVIEW_HOURS"]
-        SCORER["AgentScorer<br/>Bull/Bear accuracy tracking"]
-        REFLECTION["ReflectionLog<br/>Trade outcomes → learning signals"]
-        ADAPTER_REG["AdapterRegistry<br/>LoRA adapter lifecycle"]
-        FINETUNED["FineTunedAgent<br/>Loaded adapter for inference"]
-
-        MOT_COORD -->|"increase / reduce / iterate"| RM
-    end
-
-    subgraph TRAINING["Training Pipeline"]
-        FLASH_TRAIN["FlashTrainer<br/>Single-step training during HOLD"]
-        FINETUNE["FinetuneCycle<br/>Subprocess: Unsloth + LoRA<br/>Qwen2.5-7B → Qwythos-9B"]
-        SCHEDULER["TrainScheduler<br/>When to train vs. trade"]
-        PATTERN_BANK["RealTradePatternBank<br/>Extract patterns from trades"]
-
-        FINETUNE --> ADAPTER_REG
-    end
-
-    subgraph STATE["State Persistence"]
-        ST_MGR["StateManager"]
-        AGENT_STATE["agent_state.json<br/>Cycle, positions, signals"]
-        PAPER_STATE["paper_state.json<br/>Portfolio, cash, fills"]
-        HIGH_LEVEL["high_level_state.json<br/>Regime, posture"]
-        TRAINING_DATA["training_data.jsonl<br/>Reflections → training examples"]
-
-        ST_MGR --> AGENT_STATE
-        ST_MGR --> PAPER_STATE
-        ST_MGR --> HIGH_LEVEL
-    end
-
-    subgraph DASHBOARD["Dashboard"]
-        DASH["FastAPI + HTMX<br/>Port 8097"]
-        STATE_READER["StateReader<br/>Reads JSON files"]
-        CHARTS["Equity curve, drawdown<br/>Positions, signals, accuracy"]
-        DASH --> STATE_READER
-    end
-
-    subgraph LLM["LLM Inference"]
-        LLAMA_SERVER["llama-server (port 5809)<br/>Qwythos-9B Q4_K_M<br/>Direct connection"]
-        LLAMA_SWAP["llama-swap (port 8080)<br/>Routing proxy<br/>⚠️ NOT used for harness"]
-    end
-
-    subgraph EXTERNAL["External Services"]
-        COINBASE["Coinbase / Kraken<br/>CCXT market data"]
-        UNISWAP["Uniswap V3 (Base Sepolia)<br/>On-chain swaps"]
-    end
-
-    %% Connections
-    RH --> HARNESS
-    COORD -->|spawns| HARNESS
-
-    HARNESS --> EXCHANGE
-    EXCHANGE --> EXTERNAL
-
-    HARNESS --> DATA
-
-    HARNESS --> RISK
-    HARNESS --> MOT
-    HARNESS --> TRAINING
-    HARNESS --> STATE
-    HARNESS --> LLM
-
-    DATA --> HARNESS
-
-    DASHBOARD --> STATE
-
-    LLAMA_SERVER --> HARNESS
-    LLAMA_SWAP -.-x|"× Not used"| HARNESS
-
-    %% Styling
-    classDef exchange fill:#1a3a2e,stroke:#4caf50
-    classDef harness fill:#1a1a4e,stroke:#536dfe
-    classDef risk fill:#3e1a1a,stroke:#f44336
-    classDef mot fill:#2e1a4e,stroke:#9c27b0
-    classDef training fill:#1a1a3e,stroke:#2196f3
-    classDef state fill:#1a2e1a,stroke:#4caf50
-    classDef data fill:#2e2e1a,stroke:#ffeb3b
-    classDef llm fill:#3e2e1a,stroke:#ff9800
-    classDef dashboard fill:#1a2e3e,stroke:#00bcd4
-    classDef external fill:#2e1a1a,stroke:#ff5722
-
-    class EX_ABC,PAPER,LIVE,WEB3 exchange
-    class H,CYCLE,PHASE0,PHASE1,PHASE2,PHASE3,PHASE4,PROG harness
-    class RM,KELLY,STOP_LOSS,MAX_EXP,REGIME_OV,PERFORMANCE,PARAM_OPT risk
-    class MOT_COORD,SCORER,REFLECTION,ADAPTER_REG,FINETUNED mot
-    class FLASH_TRAIN,FINETUNE,SCHEDULER,PATTERN_BANK training
-    class ST_MGR,AGENT_STATE,PAPER_STATE,HIGH_LEVEL state
-    class NEWS,ARXIV,SOCIAL,ECON,MTF data
-    class LLAMA_SERVER,LLAMA_SWAP llm
-    class DASH,STATE_READER,CHARTS dashboard
-    class COINBASE,UNISWAP external
-```
-
-## Cycle Flow (detailed)
+The current architecture is a **Mixture of Traders** (`mot/mixture.py`), NOT a single LLM debate engine.
 
 ```
-[Start] → Push bars → Check SL/TP → Circuit breaker? → Daily limit?
-    │
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Phase 1: Signal Generation (per symbol, in parallel)        │
-│  1. Build AgentContext (OHLCV + regime + economics + news)  │
-│  2. LLM debate (Bull/Bear/Risk deliberation)                │
-│  3. Record signal                                           │
-└─────────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Phase 1.5: Log ALL signals to history                       │
-└─────────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Phase 2: Portfolio Optimization                             │
-│  1. Compute correlation matrix                              │
-│  2. Correlation-aware Kelly allocation                      │
-│  3. Committee review (historical accuracy veto)             │
-└─────────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Phase 3: Execution (per symbol)                             │
-│  1. RiskManager.check() - position sizing                   │
-│  2. Regime overrides applied                                │
-│  3. Exchange.place_order()                                  │
-│  4. Set SL/TP levels if BUY                                 │
-│  5. Record trade to journal if SELL                         │
-└─────────────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─────────────────────────────────────────────────────────────┐
-│ Phase 4: Post-cycle                                         │
-│  1. FlashTrain (if HOLD streak)                             │
-│  2. ReflectionLog.record()                                  │
-│  3. StateManager.write() + agent_state.json                 │
-│  4. Pattern extraction (every 10 cycles)                    │
-│  5. arXiv feature extraction (every 50 cycles)              │
-│  6. Training scheduler eval (every 50 cycles)               │
-│  7. MoT evaluation (every REVIEW_HOURS)                     │
-│  8. Adapter lifecycle check                                 │
-└─────────────────────────────────────────────────────────────┘
-    │
-    ▼
-[Sleep cycle_interval] ───→ [Next cycle]
+                    ┌──────────────────────────────┐
+                    │  RegimeRouter (rule-floor)   │
+                    │  regime = SPY vs 200d MA     │
+                    │  rule holds w=1.0 until an   │
+                    │  expert EARNs weight (+0.1/  │
+                    │  window, cap 0.5, reset on   │
+                    │  failure)                    │
+                    └──────────────┬───────────────┘
+                                   │ picks per-regime
+        ┌────────────┬─────────────┼──────────────┬──────────────┐
+        ▼            ▼             ▼              ▼              ▼
+   RuleExpert   AdirExpert   ValueHeadExpert  (future)      (future)
+   (incumbent   (LLM debate   (tiny MLP V(s)→  sentiment    crypto /
+    floor)       proposes)     E[fwd], TAKE if  expert       macro /
+                               V(s)≥θ)                      international
 ```
 
-## Key Design Decisions
+- **Expert contract:** `ExpertDecision(action, size_pct, p_edge, evidence)` — `mot/mixture.py:17`.
+- **Rule floor is primary.** An expert only gets weight after `n ≥ min_evidence` validated per-regime windows with `mean_impact > rule` (`mot/mixture.py:103`).
+- **Deployable unit = tiny value-head MLPs** (929–2881 params, 3.6–11 KB). LLMs are the explainable/architect layer, not the edge.
+- **Current wiring gap:** `RegimeRouter` is only exercised by the standalone demo `setup_search/mot_router.py`. No production path feeds it per-trade impacts.
 
-| Decision | Rationale |
-|----------|-----------|
-| **Sync-only** | No asyncio. Threads for I/O (parallel debate per symbol); GIL protects shared state |
-| **Paper settlement always** | Exchange provides real prices, but settlement is always paper — no real funds at risk |
-| **Direct llama-server** | Bypass llama-swap (port 8080) for latency. Harness connects to port 5809 directly |
-| **State on disk** | Every cycle writes JSON files. Survives crashes, restartable. Dashboard reads same files |
-| **Training as subprocess** | Fine-tuning launched as subprocess so it doesn't block the trading loop |
-| **Flash training in-process** | Lightweight single-step training during HOLD — no separate process needed |
-| **Debate modes** | `fast` (single composite LLM call with Bull/Bear/Risk roles) or `adir` (independent agents) |
-| **Staged progression** | Starts with BTC only, graduates to more symbols after proving profitability |
-| **MoT meta-controller** | Periodically evaluates performance and adjusts risk posture (increase/reduce/iterate) |
+## 4. The training loop: arena (adversarial self-play)
 
-## Progression Stages
+One arena iteration (`arena/train.py:24`): **battle → fit → war → relabel → gate**.
 
-| Stage | Symbols | Unlock Hours | Unlock Return |
-|-------|---------|-------------|---------------|
-| 1 | BTC/USDT | 6h | +1% |
-| 2 | BTC/USDT, ETH/USDT, SOL/USDT | 24h | +5% |
-| 3 | + AAPL, NVDA, SONY (equities) | 48h | +10% |
+- **Candidates:** 11-dim feature rows (`mom, rev, rsi, brk, z, ma_dist, vol_spike, vol_level, momfilt, score, spy_ratio`) from 5y daily OHLCV (16 symbols + SPY regime).
+- **Opponent field:** hedge-fund persona bots — Citadel (relative-value), Citron (adversarial fade), AHL (trend) — `arena/opponents.py`. Pure rules, no LLM.
+- **Battle:** field-relative z-scored forward returns.
+- **War:** portfolio war referee reusing `setup_search.engine.run_backtest` (~0.27s/2y, CPU). Relabels per-state advantage `δ = (r − V(s)) + (r − r_field)`, per regime window (`arena/war.py:175`).
+- **Gate:** held-out discrimination `kept-mean − all-mean ≥ +1%` on BOTH regime windows (2022 bear + 2026). Currently FAILING (`+0.17% / −0.22%`).
+- **Curriculum:** tiers 1–5, skill gating, carrot/stick (`arena/curriculum.py`).
+- **LLM Architect:** Qwen2.5-7B+LoRA proposes the next skill (`arena/architect.py:302`), self-trained on synthetic supervisory data.
 
-## Port Map
+## 5. The five subsystems and their seams (the roadmap)
 
-| Port | Service |
-|------|---------|
-| 5809 | llama-server (Qwythos-9B, direct — harness uses this) |
-| 8080 | llama-swap (routing proxy — NOT for harness) |
-| 8092 | MCP server (economics, state tools) |
-| 8097 | Dashboard (no `--reload` flag) |
+| # | Subsystem | File(s) | Status |
+|---|---|---|---|
+| a | Scenario/multiverse generator | — | **MISSING.** Root cause of OOS overfit (single-path training). |
+| b | Real GRPO | `training/rl_trainer.py` | **MISSING.** It's "reward-conditioned SFT." Arena computes `δ` but feeds targets, not gradients. |
+| c | Arena → value-heads | `arena/` | One-way. Two divergent MLP checkpoints (`data/arena/arena_value_head.pt` vs `data/research_gate/value_head.pt`). |
+| d | Value-head → MoT roster | `mot/experts.py` | **NOT WIRED.** No `Expert` wraps a value head. |
+| e | MoT rule-floor feedback | `mot/mixture.py` | **BROKEN.** Skill `s15` checks `data/arena/momentum_gate.json`, which no code writes — curriculum can never graduate. |
 
-## File Layout
+Closing these five seams is the roadmap: multiverse into the war (a) → real GRPO (b) → close MoT loop (d+e) → expert roster (c+generalize).
 
-```
-opentrader/
-├── harness.py              # Main event loop
-├── coordinator.py          # Multi-asset deployment
-├── dashboard.py            # FastAPI + HTMX dashboard
-├── run_harness.py          # CLI entry point
-├── benchmark_models.py     # Model comparison
-├── exchange/
-│   ├── base.py             # ExchangeBase ABC
-│   ├── paper.py            # Paper/synthetic exchange
-│   └── live.py             # CCXT live exchange
-├── agent/
-│   ├── base.py             # BaseAgent + Signal + AgentContext
-│   ├── trading_agent.py    # LLM-backed agent
-│   └── mcp_client.py       # MCP tool client
-├── risk/
-│   ├── manager.py          # RiskManager: sizing, SL/TP, circuit breaker
-│   ├── portfolio_optimizer.py # Correlation-aware Kelly allocation
-│   ├── regime_adaptation.py   # Market-condition overrides
-│   ├── param_optimizer.py     # Portfolio-scale parameter interpolation
-│   └── performance_analytics.py # Sharpe, win rate, metrics
-├── state/
-│   └── manager.py          # JSON persistence layer
-├── mot/
-│   ├── coordinator.py      # MoT periodic evaluation
-│   ├── monitors.py         # CommitteeChair (per-trade veto)
-│   ├── scoring.py          # AgentScorer (Bull/Bear accuracy)
-│   ├── reflection.py       # ReflectionLog (outcome tracking)
-│   ├── adapter_registry.py # LoRA adapter lifecycle
-│   ├── finetuned_agent.py  # Loaded adapter for inference
-│   └── agents/             # debate engines (fast_debate, adir_debate)
-├── data/                   # JSON state files, training data
-│   ├── news.py
-│   ├── arxiv.py
-│   ├── social_sentiment.py
-│   ├── synthetic.py
-│   ├── regime_classifier.py
-│   └── feature_integrator.py
-├── training/
-│   ├── flash_train.py      # In-process light training
-│   ├── finetune_cycle.py   # Full LoRA fine-tune subprocess
-│   ├── train_scheduler.py  # Train-or-trade decision engine
-│   ├── real_pattern_bank.py # Pattern extraction from trades
-│   ├── data_builder.py     # Build training examples
-│   └── run_training.py     # Training entry point
-├── scripts/                # Deploy/restart scripts
-├── models/                 # Finetuned adapters
-├── charts/                 # Chart outputs
-└── logs/                   # Log files
-```
+## 6. Data & state layout
+
+| Path | Content |
+|---|---|
+| `data/setup_search/ohlcv_{1y,2y,5y}.pkl` | Replay archive (16 symbols + SPY). Primary war data. |
+| `data/setup_search/ledger.jsonl`, `best.json` | Config search ledger; validated rule config. |
+| `data/arena/` | Arena state (code in `arena/`). Runtime artifacts gitignored. |
+| `data/research_gate/` | Gate verdicts (`value_head_report.json`, `trap_holdout.json`). |
+| `data/history/cycle_*.json` | Live cycle snapshots (harness dead → stale). |
+| `data/models/finetune/` | LoRA adapters. `current_adapter` symlink → opentrader-data. |
+
+## 7. Known broken/messy items (fix list)
+
+1. `config/model_roles.json` references 6 phantom models — rewrite or delete.
+2. `data/connections.json` `base_url`/`url` disagree; statuses read "disconnected" for live services.
+3. `config/harness_config.json` `llama_host` points at :5801 (dead proxy).
+4. Systemd units reference `llama-swap.service` but `~/llama-swap/` doesn't exist.
+5. `data/health.json` `eval_lock: held_no_holder` — stale `/tmp/opentrader_eval_gate.lock` (>2h old); `ops_watchdog.py` auto-clears.
+6. `harness.py` is 4260 lines — the biggest maintainability debt (deferred split).
+7. Duplicate code: `onchain.py` vs `onchain_web3.py` (only `harness.py` imports `onchain`); `report_overnight.*`; `repro_volatility.py`.

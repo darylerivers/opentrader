@@ -1,14 +1,8 @@
 {
   "default_roles": ["trading"],
   "rules": [
-    ["deckard",       ["trading"],            100],
-    ["gemma-4-e4b",   ["trading", "student"],  90],
-    ["agentic",       ["trading", "teacher"],  80],
-    ["hermes",        ["trading", "student"],  70],
-    ["qwen",          ["trading", "teacher"],  70],
-    ["coder",         ["code", "student"],     60],
-    ["sushi-coder",   ["code"],                60],
-    ["neo-code",      ["code", "teacher"],     50],
-    ["v2-coder",      ["code", "student"],     60]
+    ["qwen2.5-7b-instruct", ["trading", "teacher", "student"], 100],
+    ["qwen2.5-7b",          ["trading", "student"],           90],
+    ["qwen",                ["code"],                         60]
   ]
 }

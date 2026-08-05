@@ -59,6 +59,14 @@ data/history/
 data/fast_test/
 *.bak.*
 
+# Arena runtime artifacts (regenerated each iteration; commit only small state)
+data/arena/arena_state.json
+data/arena/arena_snapshot.html
+data/arena/arena_view.html
+data/arena/relabels.json
+data/arena/run_status.json
+data/gpu_scheduler/*.out
+
 # Rust build artifacts
 exchange-engine/target/
 exchange_engine/
@@ -68,3 +76,5 @@ data/paper_state.json.synthetic-era-bak
 *.pkl
 data/shadow_aab/
 data/arxiv_library.json
+OpenTrader/
+data/gpu_scheduler/adapters/**/tokenizer.json
