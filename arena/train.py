@@ -30,6 +30,7 @@ def run_iteration(
     eta=1.0,
     epochs=400,
     use_previous=False,
+    grpo_steps=2,
 ):
     rows, cfg = cand_mod.collect(period)
     field = opp_mod.default_field(cfg, seed=field_seed)
@@ -131,6 +132,15 @@ def run_iteration(
     )
     (OUT / "relabels.json").write_text(json.dumps(combined, indent=1, default=str))
 
+    grpo_info = _run_grpo_refine(rows, war, bear, art, steps=grpo_steps)
+    if grpo_info:
+        print(
+            f"[arena]   GRPO refine: {grpo_info['n_decisions']} decisions, "
+            f"loss={grpo_info['loss']:.4f}",
+            flush=True,
+        )
+        agent_mod.save(art)
+
     mv_report = _run_multiverse_gate(rows, field, art, cfg, war_period)
     if mv_report:
         print(
@@ -155,12 +165,49 @@ def run_iteration(
             "n_trades": war["base_n_trades"],
         },
         "multiverse": mv_report,
+        "grpo": grpo_info,
         "n_relabels": len(combined),
         "n_bear_relabels": len(bear["relabels"]),
     }
     report["tech"] = tech_mod.snapshot(report, iteration)
     view_mod.write_snapshot(report)
     return report
+
+
+def _grpo_decisions(rows, relabels, group_label, action=1):
+    by_key = {(r["bar"], r["sym"]): r for r in rows}
+    ds = []
+    for rl in relabels:
+        row = by_key.get((rl["bar"], rl["sym"]))
+        if row is None:
+            continue
+        ds.append({"x": row["x"], "action": action, "reward": rl["pnl_pct"], "group": group_label})
+    return ds
+
+
+def _run_grpo_refine(rows, war, bear, art, steps=2, min_decisions=8):
+    """Refine the fitted value head with real GRPO (seam b): the war's realized
+    pnl_pct is the reward, the regime field (bull/bear) is the GRPO group, and
+    the advantage is the group-relative z-score of (reward - V(s)). Silent if
+    too few decisions or the module is unavailable."""
+    try:
+        from arena import grpo as grpo_mod
+
+        decisions = _grpo_decisions(rows, war["relabels"], "bull")
+        decisions += _grpo_decisions(rows, bear["relabels"], "bear")
+        if len(decisions) < min_decisions:
+            print(f"[arena]   GRPO skip: only {len(decisions)} decisions (< {min_decisions})", flush=True)
+            return None
+        grpo_mod.fit_grpo(art, decisions, steps=steps)
+        return {
+            "steps": steps,
+            "n_decisions": len(decisions),
+            "loss": art["report"].get("grpo", {}).get("loss"),
+            "mean_abs_advantage": art["report"].get("grpo", {}).get("mean_abs_advantage"),
+        }
+    except Exception as e:
+        print(f"[arena]   GRPO refine skipped ({e})", flush=True)
+        return None
 
 
 def _run_multiverse_gate(rows, field, art, cfg, war_period="5y", n_base=2, n_per_event=1):
@@ -216,6 +263,7 @@ if __name__ == "__main__":
     ap.add_argument("--epochs", type=int, default=400)
     ap.add_argument("--n-battles", type=int, default=8)
     ap.add_argument("--eta", type=float, default=1.0)
+    ap.add_argument("--grpo-steps", type=int, default=2)
     args = ap.parse_args()
     for i in range(args.iterations):
         rep = run_iteration(
@@ -223,6 +271,7 @@ if __name__ == "__main__":
             n_battles=args.n_battles,
             eta=args.eta,
             use_previous=(i > 0) or args.use_previous,
+            grpo_steps=args.grpo_steps,
         )
         print(
             f"iteration {rep['iteration']}: gate pass={rep['gate']['pass']} "
