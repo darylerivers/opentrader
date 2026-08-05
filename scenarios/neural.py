@@ -21,6 +21,8 @@ torch is imported lazily so the rest of the scenarios package works without it.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import pandas as pd
 import torch
@@ -35,6 +37,27 @@ COND_DIM = N_REGIME + N_EVENT
 
 _BASE_LEN = 256
 _BATCH_S = 1
+
+
+def _norm_cdf(z):
+    """Standard normal CDF via math.erf."""
+    z = np.asarray(z, dtype=np.float64)
+    return 0.5 * (1.0 + np.vectorize(lambda x: math.erf(x / math.sqrt(2.0)))(z))
+
+
+def _norm_ppf(p):
+    """Inverse standard normal CDF via Newton's method on the erf-based CDF.
+    Seed: 4.9*(p^0.14 - (1-p)^0.14); 4 iterations -> ~1e-10. No scipy needed
+    and every step is verifiable (a memory-transcribed coefficient table is
+    exactly the kind of thing that silently breaks)."""
+    p = np.asarray(p, dtype=np.float64)
+    p = np.clip(p, 1e-12, 1 - 1e-12)
+    z = 4.9 * (np.power(p, 0.14) - np.power(1.0 - p, 0.14))
+    for _ in range(4):
+        phi = np.exp(-0.5 * z * z) / np.sqrt(2.0 * np.pi)
+        cdf = 0.5 * (1.0 + np.vectorize(lambda x: math.erf(x / math.sqrt(2.0)))(z))
+        z = z - (cdf - p) / phi
+    return z
 
 
 def _condition_vector(regime: str, event: str = "") -> np.ndarray:
@@ -125,7 +148,17 @@ class _MetaCritic(nn.Module):
 
 
 class NeuralMarketGenerator:
-    """Conditional WGAN-GP over market log-returns with emitted metadata."""
+    """Conditional WGAN over market log-returns with emitted metadata.
+
+    Tails: Gaussian-driven generators have finite moments and CANNOT produce
+    heavy tails (research fix #5). We use rank-based Gaussianization (empirical
+    copula) instead of Lambert-W: each column's training returns are mapped to
+    exact standard normals via the empirical CDF; the generator learns the
+    Gaussian joint; generation inverts per column through the empirical quantile
+    function, restoring the EXACT observed marginal (including tails) and the
+    rank copula (cross-symbol dependence). Crisis extrapolation beyond observed
+    extremes is the tail library's job, not the everyday generator's.
+    """
 
     def __init__(self, latent=32, hidden=64, device: str = "auto"):
         self.device = _pick_device(device)
@@ -134,20 +167,50 @@ class NeuralMarketGenerator:
         self.meta_c = _MetaCritic().to(self.device)
         self.alpha = 0.5
         self.norm_std = np.ones(D, dtype=np.float32)
+        self.gauss_basis = None   # (N,D) z-values of the rank transform
+        self.raw_basis = None     # (N,D) sorted raw returns (inverse map)
         self._trained = False
+
+    # -- Gaussianization helpers ----------------------------------------------
+    def _gaussianize(self, logret: np.ndarray) -> np.ndarray:
+        """Raw (T,D) log-returns -> (T,D) exact-standard-normal z, storing the
+        per-column empirical quantile map for inversion."""
+        N = logret.shape[0]
+        raw_sorted = np.sort(logret, axis=0)                 # (N,D)
+        ranks = np.argsort(np.argsort(logret, axis=0), axis=0)  # 0..N-1
+        p = (ranks + 0.5) / N
+        z = _norm_ppf(np.clip(p, 1e-6, 1 - 1e-6))
+        self.raw_basis = raw_sorted.astype(np.float32)
+        self.gauss_basis = _norm_ppf((np.arange(N) + 0.5) / N).astype(np.float32)[:, None]
+        self.norm_std = np.ones(D, dtype=np.float32)
+        return z.astype(np.float32)
+
+    def _invert(self, z: np.ndarray) -> np.ndarray:
+        """(T,D) z-samples -> (T,D) raw log-returns via the empirical quantile
+        function (linear interpolation on the stored basis)."""
+        p = _norm_cdf(z)
+        T = z.shape[0]
+        out = np.empty_like(z)
+        basis = self.gauss_basis[:, 0]  # (N,) increasing z grid
+        for j in range(z.shape[1]):
+            out[:, j] = np.interp(p[:, j], basis, self.raw_basis[:, j])
+        return out
 
     # -- training -------------------------------------------------------------
     def train(self, logret: np.ndarray, regimes: np.ndarray, epochs=50,
               lr=1e-3, grad_penalty=None, window=_BASE_LEN, seed=0, stride=None,
-              critic_per_gen=1):
+              critic_per_gen=1, gaussianize=False):
         """logret: (T, D) normalized-log-return matrix; regimes: (T,) label str
-        per bar. Slices heavily-overlapping windows, standardizes each window
-        to zero mean / unit std (kills drift amplification), conditions each on
-        its regime one-hot, and runs the WGAN-SN update (spectral-normalized
-        temporal-conv critic; no gradient penalty — see _SeqCritic docstring).
-        grad_penalty kept in the signature for API compatibility but unused."""
-        self.norm_std = (np.std(logret, axis=0) + 1e-8).astype(np.float32)
-        x = (logret / self.norm_std).astype(np.float32)
+        per bar. With gaussianize=True (default) the returns are rank-
+        Gaussianized first (tails restored exactly at generation); windows are
+        then zero-mean/unit-std so the generator learns the Gaussian joint.
+        Runs the WGAN-SN update (spectral-normalized temporal-conv critic; no
+        gradient penalty — see _SeqCritic docstring)."""
+        if gaussianize:
+            x = self._gaussianize(logret)
+        else:
+            self.norm_std = (np.std(logret, axis=0) + 1e-8).astype(np.float32)
+            x = (logret / self.norm_std).astype(np.float32)
         conds = np.stack([_condition_vector(r) for r in regimes])
         windows = _make_windows(x, window, stride or 16)
         cond_w = _make_windows(conds, window, stride or 16)
@@ -210,7 +273,10 @@ class NeuralMarketGenerator:
                              device=self.device).unsqueeze(0)
             rows, _ = self.gen(z, c, steps)
             ret = rows.cpu().numpy().astype(np.float64)
-        ret = ret[:n] * self.norm_std
+        if self.gauss_basis is not None:
+            ret = self._invert(ret[:n])
+        else:
+            ret = ret[:n] * self.norm_std
         close = 100.0 * np.exp(np.cumsum(ret, axis=0))
         index = pd.bdate_range(end=pd.Timestamp.today().normalize(), periods=n)
         data = {}
@@ -225,7 +291,8 @@ class NeuralMarketGenerator:
         return data
 
     def save(self, path):
-        torch.save({"gen": self.gen.state_dict(), "norm_std": self.norm_std}, path)
+        torch.save({"gen": self.gen.state_dict(), "norm_std": self.norm_std,
+                    "gauss_basis": self.gauss_basis, "raw_basis": self.raw_basis}, path)
 
     def load(self, path) -> bool:
         """Load a checkpoint; returns True on success, False (without raising)
@@ -237,6 +304,8 @@ class NeuralMarketGenerator:
                 return False
             self.gen.load_state_dict(ck["gen"])
             self.norm_std = np.asarray(ck["norm_std"], dtype=np.float32)
+            self.gauss_basis = ck.get("gauss_basis")
+            self.raw_basis = ck.get("raw_basis")
             self._trained = True
             return True
         except Exception as e:

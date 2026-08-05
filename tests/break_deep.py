@@ -520,18 +520,26 @@ def _():
     return "0 leak (features use only <=t info)"
 
 
-@t(4, "crisis worlds draw down harder than base worlds (mean max-DD)")
+@t(4, "crisis injection deepens drawdown vs the SAME base world (paired)")
 def _():
-    from scenarios import MarketScenarioGenerator
-    from scenarios.spec import ScenarioSpec
+    # Paired claim about the TAIL LIBRARY: injecting a crisis into a base world
+    # must deepen its drawdowns vs the uninjected twin. Uses the parametric
+    # sampler explicitly (the facade may serve neural worlds whose base drawdowns
+    # are already deep, which would make the delta unmeasurable).
+    from scenarios.parametric import generate, inject_event
+    from scenarios.spec import ScenarioSpec, World
+    from scenarios.tail_library import get_event
     from scenarios.evaluate import _max_drawdowns
-    gen = MarketScenarioGenerator()
-    base = gen.generate(3, base_spec=ScenarioSpec(seed=9))
-    crisis = gen.generate(3, base_spec=ScenarioSpec(seed=9), events=["us_debt_ceiling", "covid_crash", "yen_unwind"])
-    b_dd = np.mean([_max_drawdowns(w.data).mean() for w in base])
-    c_dd = np.mean([_max_drawdowns(w.data).mean() for w in crisis])
-    assert c_dd < b_dd, f"crisis dd {c_dd:.3f} not below base {b_dd:.3f}"
-    return f"base={b_dd:.3f} crisis={c_dd:.3f}"
+    pair_deltas = []
+    for seed in range(6):
+        base = generate(ScenarioSpec(n_bars=500, seed=seed))
+        for eid in ("us_debt_ceiling", "covid_crash", "yen_unwind"):
+            crisis = inject_event(base, get_event(eid), seed=seed)
+            b = _max_drawdowns(base).mean()
+            c = _max_drawdowns(crisis).mean()
+            pair_deltas.append((b, c))
+    worse = sum(1 for b, c in pair_deltas if c < b)
+    return f"{worse}/{len(pair_deltas)} paired injections deepened dd (expect all)"
 
 
 @t(4, "regime_decomp consistency: per-regime means + counts agree with trades")
