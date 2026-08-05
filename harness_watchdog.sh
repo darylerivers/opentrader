@@ -22,14 +22,17 @@ MAX_CONSECUTIVE_CRASHES=20
 HARNESS_ARGS=(
     --exchange finnhub
     --no-synthetic
-    --stage 1
+    --stage 3
+    --symbols "AAPL,MSFT,NVDA,AMD,AMZN,GOOGL,META,JPM,XOM,JNJ,PG,KO,DIS,CSCO,WMT,NFLX,BTC/USDT,ETH/USDT,SOL/USDT"
+    --no-universe
     --cash 500
     --max-cycles 0
-    --max-daily-trades 10
+    --max-daily-trades 30
     --no-model
     --rule-primary
     --pin-risk
     --interval 60
+    --reset-portfolio
     "${@}"
 )
 

@@ -72,6 +72,10 @@ def main():
     # (rule_primary, no LLM), paper settlement on real prices (alpaca-paper),
     # pinned stage/cash/interval, risk config frozen (--pin-risk), and the
     # mixture router demoted to monitor-only (no --mot-force / --debate-mode).
+    # RUNWAY v2 (2026-08-05): broad multi-asset surface - the validated 16 US
+    # daily stocks + SPY regime + the engineered crypto sleeve, PINNED with
+    # --no-universe (the scout would silently replace this list with arbitrary
+    # INDUSTRY_REGISTRY picks). Crypto rides its own BTC-gated leg.
     harness_args = (
         unknown
         if unknown
@@ -80,18 +84,22 @@ def main():
             "finnhub",
             "--no-synthetic",
             "--stage",
-            "1",
+            "3",
+            "--symbols",
+            "AAPL,MSFT,NVDA,AMD,AMZN,GOOGL,META,JPM,XOM,JNJ,PG,KO,DIS,CSCO,WMT,NFLX,BTC/USDT,ETH/USDT,SOL/USDT",
+            "--no-universe",
             "--cash",
             "500",
             "--max-cycles",
             "0",
             "--max-daily-trades",
-            "10",
+            "30",
             "--no-model",
             "--rule-primary",
             "--pin-risk",
             "--interval",
             "60",
+            "--reset-portfolio",
         ]
     )
 

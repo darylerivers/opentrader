@@ -2442,7 +2442,13 @@ class OpenTraderHarness:
             from setup_search.core import DEFAULT_CONFIG, clamp_config
 
             crypto_syms = ["BTC/USDT", "ETH/USDT", "SOL/USDT"]
-            crypto_cfg = clamp_config({**DEFAULT_CONFIG, "_fee_pct": 0.0016})
+            # Crypto leg: gate on BTC's own 96d trend, NOT SPY (decoupled) and
+            # NOT un-gated (the pre-redo tail risk). regime_sym=BTC/USDT with
+            # regime_filter=1 turns on the screen's regime check.
+            crypto_cfg = clamp_config({**DEFAULT_CONFIG, "_fee_pct": 0.0016,
+                                       "regime_filter": 1,
+                                       "regime_sym": "BTC/USDT",
+                                       "regime_window": 96})
             c_closes, c_highs, c_lows, c_vols = {}, {}, {}, {}
             for s in crypto_syms + ["BTC/USDT"]:
                 bars = self.exchange.get_bars(s, "1d", limit=150)
@@ -2729,8 +2735,13 @@ class OpenTraderHarness:
 
         # ── 0b. Circuit breaker with recovery ─────────────────
         bal = self.exchange.get_balance()
-        # Dynamic focus: scale debate count by capital
+        # Dynamic focus: scale debate count by capital. With a PINNED surface
+        # (--no-universe) the focus cap must not silently truncate the
+        # validated symbol list (it capped stage-1 paper at 8 symbols while 19
+        # were configured); the cap applies to scout-selected surfaces only.
         max_focus = max(2, min(8, int(bal.total_value / 50)))
+        if not self.universe_mode:
+            max_focus = max(max_focus, len(active_symbols))
         if len(active_symbols) > max_focus:
             active_symbols = active_symbols[:max_focus]
             logger.info(
