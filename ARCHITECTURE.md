@@ -73,13 +73,14 @@ One arena iteration (`arena/train.py:24`): **battle → fit → war → relabel 
 
 | # | Subsystem | File(s) | Status |
 |---|---|---|---|
-| a | Scenario/multiverse generator | — | **MISSING.** Root cause of OOS overfit (single-path training). |
-| b | Real GRPO | `training/rl_trainer.py` | **MISSING.** It's "reward-conditioned SFT." Arena computes `δ` but feeds targets, not gradients. |
-| c | Arena → value-heads | `arena/` | One-way. Two divergent MLP checkpoints (`data/arena/arena_value_head.pt` vs `data/research_gate/value_head.pt`). |
-| d | Value-head → MoT roster | `mot/experts.py` | **NOT WIRED.** No `Expert` wraps a value head. |
-| e | MoT rule-floor feedback | `mot/mixture.py` | **BROKEN.** Skill `s15` checks `data/arena/momentum_gate.json`, which no code writes — curriculum can never graduate. |
+| a | Scenario/multiverse generator | `scenarios/` + `arena/war.py::run_multiverse_war` | **CLOSED** (2026-08-05). Parametric + neural (DoppelGANger-style) generator, tail-event library (incl. US debt ceiling), multiverse war gate wired into the arena. |
+| b | Real GRPO | `arena/grpo.py` | **CLOSED**. DeepSeekMath/R1 GRPO (group-relative advantage, KL-in-loss, μ=1 form) consuming the war's deltas; wired into `arena/train.py`. |
+| c | Arena → value-heads | `arena/` | PARTIAL. Arena trains + refines the MLP; two divergent checkpoints remain (`data/arena/arena_value_head.pt` is canonical for the arena; `data/research_gate/value_head.pt` is the setup_search path). Reconcile when wiring the expert roster. |
+| d | Value-head → MoT roster | `mot/experts.py::ValueHeadExpert` | **CLOSED**. Wraps the arena MLP as an `Expert`. |
+| e | MoT rule-floor feedback | `mot/mixture.py` + `_update_regime_router` | **CLOSED**. War per-regime impacts feed a persisted `RegimeRouter`; `momentum_gate.json` is now written on gate pass → skill `s15` reachable. |
 
-Closing these five seams is the roadmap: multiverse into the war (a) → real GRPO (b) → close MoT loop (d+e) → expert roster (c+generalize).
+Seams a, b, d, e are closed. Seam c (checkpoint reconciliation + the expert
+*roster* generalization, Phase 4) remains.
 
 ## 6. Data & state layout
 
