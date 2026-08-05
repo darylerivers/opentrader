@@ -33,6 +33,14 @@ def collect(
 ):
     base = clamp_config(__import__("json").loads(cfg_path.read_text())["config"])
     data = load_ohlcv(period)
+    return collect_from_data(data, base, gen_score_min=gen_score_min)
+
+
+def collect_from_data(data, base, gen_score_min=-0.5, bar_offset=0):
+    """Build arena candidate rows from ANY aligned-ready OHLCV dict
+    ({symbol: DataFrame}, SPY = regime marker) — real archives or generated
+    multiverse worlds. bar_offset shifts synthetic rows outside the real
+    bar range so the gate windows and war relabels never see them."""
     al = align(data, [s for s in data if s != REGIME_SYM])
     closes, highs, lows, vols = al
     feat = _features(closes, highs, lows, vols, base)
@@ -69,7 +77,7 @@ def collect(
             v += [s, spy_ratio]
             rows.append(
                 {
-                    "bar": master.get_loc(date),
+                    "bar": master.get_loc(date) + bar_offset,
                     "sym": sym,
                     "date": date,
                     "x": np.array(v, dtype=np.float32),

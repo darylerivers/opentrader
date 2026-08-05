@@ -34,8 +34,10 @@ def run_iteration(
     use_previous=False,
     grpo_steps=2,
     expert_id="momentum",
+    augment_worlds=3,
 ):
     rows, cfg = _collect_for(expert_id, period)
+    extra_rows = _multiverse_augment(expert_id, cfg, augment_worlds) if augment_worlds > 0 else []
     field = opp_mod.default_field(cfg, seed=field_seed)
     macro_ctx = _build_macro_ctx(war_period) if expert_id == "macro" else None
     data_source = _data_source_for(expert_id)
@@ -46,7 +48,7 @@ def run_iteration(
         if art is None:
             prev_report = agent_mod.load_report(agent_path)
             iteration = int(prev_report.get("iteration", 0)) + 1
-            art = agent_mod.fit(rows, None, epochs=epochs)
+            art = agent_mod.fit(rows, None, epochs=epochs, extra_rows=extra_rows or None)
             print(
                 f"[arena] checkpoint incompatible — refit fresh for iteration {iteration}",
                 flush=True,
@@ -54,7 +56,7 @@ def run_iteration(
         else:
             iteration = int(art["report"].get("iteration", 0)) + 1
     else:
-        art = agent_mod.fit(rows, None, epochs=epochs)
+        art = agent_mod.fit(rows, None, epochs=epochs, extra_rows=extra_rows or None)
         art["report"]["iteration"] = 0
         iteration = 1
     print(
@@ -251,6 +253,35 @@ def _load_relabels():
     return None
 
 
+
+def _multiverse_augment(expert_id, cfg, n_worlds):
+    """MULTI-DATASET TRAINING: generate n_worlds market realities (neural
+    generator if trained, else parametric) and build arena candidate rows
+    from them, appended to the REAL training set via fit(extra_rows=...).
+
+    The gate windows, val split, war relabels and GRPO decisions all consume
+    the REAL rows only (synthetic bars are offset to 2000+ so they never
+    collide) — the held-out discrimination benchmark stays real-data-only,
+    while the model trains on real + synthetic distributions."""
+    try:
+        from arena.candidates import collect_from_data
+        from scenarios import MarketScenarioGenerator
+        from scenarios.spec import ScenarioSpec
+
+        gen = MarketScenarioGenerator()
+        extra = []
+        for i in range(n_worlds):
+            w = gen.generate(1, base_spec=ScenarioSpec(seed=100 + i, n_bars=500))[0]
+            w_rows, _ = collect_from_data(w.data, cfg, bar_offset=2000 + i * 1000)
+            extra += w_rows
+        print(f"[arena]   multiverse augmentation: +{len(extra)} synthetic candidates "
+              f"({n_worlds} worlds)", flush=True)
+        return extra
+    except Exception as e:
+        print(f"[arena]   multiverse augmentation skipped ({e})", flush=True)
+        return []
+
+
 def _collect_for(expert_id, period):
     if expert_id == "macro":
         from arena import candidates_macro
@@ -410,6 +441,8 @@ if __name__ == "__main__":
     ap.add_argument("--n-battles", type=int, default=8)
     ap.add_argument("--eta", type=float, default=1.0)
     ap.add_argument("--grpo-steps", type=int, default=2)
+    ap.add_argument("--augment-worlds", type=int, default=3,
+                    help="Multi-dataset training: N generated worlds appended to the real candidates")
     args = ap.parse_args()
     for i in range(args.iterations):
         rep = run_iteration(
@@ -418,6 +451,7 @@ if __name__ == "__main__":
             eta=args.eta,
             use_previous=(i > 0) or args.use_previous,
             grpo_steps=args.grpo_steps,
+            augment_worlds=args.augment_worlds,
         )
         print(
             f"iteration {rep['iteration']}: gate pass={rep['gate']['pass']} "
