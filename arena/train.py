@@ -31,11 +31,12 @@ def run_iteration(
     epochs=400,
     use_previous=False,
     grpo_steps=2,
+    expert_id="momentum",
 ):
     rows, cfg = cand_mod.collect(period)
     field = opp_mod.default_field(cfg, seed=field_seed)
 
-    agent_path = OUT / "arena_value_head.pt"
+    agent_path = _checkpoint_for(expert_id)
     if use_previous and agent_path.exists():
         art = agent_mod.load(agent_path)
         if art is None:
@@ -208,6 +209,17 @@ def _update_regime_router(war, state_path=None):
     except Exception as e:
         print(f"[arena]   router update skipped ({e})", flush=True)
         return None
+
+
+def _checkpoint_for(expert_id="momentum"):
+    try:
+        from mot.roster import SPECIALIZATIONS
+        ck = SPECIALIZATIONS.get(expert_id, {}).checkpoint
+        if ck:
+            return Path(ck)
+    except Exception:
+        pass
+    return OUT / "arena_value_head.pt"
 
 
 def _write_momentum_gate(art):
