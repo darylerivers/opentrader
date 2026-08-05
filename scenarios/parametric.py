@@ -74,7 +74,12 @@ def generate(spec: ScenarioSpec) -> Dict[str, pd.DataFrame]:
     """
     rng = np.random.RandomState(spec.seed)
     n = spec.n_bars
-    syms = spec.symbols or list(DEFAULT_UNIVERSE)
+    syms = list(spec.symbols) if spec.symbols else list(DEFAULT_UNIVERSE)
+    # Every world needs a regime marker: the war's align() keys on data['SPY'].
+    # A caller-supplied universe that omits SPY silently produced un-warr-able
+    # worlds; enforce the marker instead of letting it fail downstream.
+    if "SPY" not in syms:
+        syms = ["SPY"] + syms
     rp = _regime_params(spec)
 
     # Market factor path (regime marker / SPY proxy).

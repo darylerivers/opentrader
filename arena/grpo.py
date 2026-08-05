@@ -54,8 +54,16 @@ def grpo_update(
     model = model.to(device)
     model.train()
 
+    # Non-finite rewards must not poison the policy update (NaN/inf gradients
+    # silently destroy the weights). Filter them out; nothing to learn from.
+    decisions = [d for d in decisions if np.isfinite(d.get("reward", 0.0))]
+    if not decisions:
+        return 0.0, 0.0
+
     X = np.stack([np.asarray(d["x"], dtype=np.float32) for d in decisions])
-    Xz = torch.tensor((X - mean) / (std + 1e-8), device=device)
+    # Enforce float32 regardless of input dtypes (a float64 mean/std would
+    # otherwise crash mat1/mat2 dtype checks).
+    Xz = torch.tensor(((X - mean) / (std + 1e-8)).astype(np.float32), device=device)
     acts = torch.tensor([d["action"] for d in decisions], dtype=torch.float32, device=device)
     rewards = np.array([d["reward"] for d in decisions], dtype=np.float64)
     groups = [d.get(group_key, "all") for d in decisions]
@@ -71,6 +79,8 @@ def grpo_update(
     for g in set(groups):
         idx = [i for i, gg in enumerate(groups) if gg == g]
         raw = rewards[idx] - base[idx].cpu().numpy()
+        if not np.all(np.isfinite(raw)):
+            raw = np.nan_to_num(raw, nan=0.0, posinf=0.0, neginf=0.0)
         sd = raw.std()
         if sd < 1e-8:
             sd = 1.0

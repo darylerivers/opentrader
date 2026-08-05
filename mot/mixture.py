@@ -12,6 +12,14 @@
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Protocol
+import math
+
+
+def _isfinite(v) -> bool:
+    try:
+        return math.isfinite(float(v))
+    except (TypeError, ValueError):
+        return False
 
 
 @dataclass
@@ -90,6 +98,8 @@ class RegimeRouter:
             return "unknown"
 
     def record(self, regime: str, expert: str, impact: float) -> None:
+        if not _isfinite(impact):
+            return  # a NaN/inf impact would silently corrupt the track record
         self.track.setdefault(regime, {}).setdefault(expert, {"sum": 0.0, "n": 0})
         self.track[regime][expert]["sum"] += impact
         self.track[regime][expert]["n"] += 1

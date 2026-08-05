@@ -59,17 +59,23 @@ class _Generator(nn.Module):
         self.head = nn.Sequential(nn.Linear(hidden, hidden), nn.ReLU(), nn.Linear(hidden, out))
 
     def forward(self, z, c, steps, batch_s=_BATCH_S):
-        """Return (records (steps*batch_s, D), fake_meta (D,))."""
+        """Return (records (steps*batch_s, D), fake_meta (D,)).
+
+        Batch generation per DoppelGANger: each GRU hidden step emits batch_s
+        correlated records (shared hidden state, independent per-row noise) so
+        long-range autocorrelation survives over long horizons.
+        """
         zc = torch.cat([z, c], dim=-1)
         meta = self.mlp_meta(zc)
-        h = zc.unsqueeze(1)  # (B,1,H) as initial GRU input; step through with same input
-        out_rows = []
         hh = None
         x_in = zc.unsqueeze(1)
+        out_rows = []
         for _ in range(steps):
-            _, hh = self.gru(x_in, hh)
-            row = self.head(hh.squeeze(0))
-            out_rows.append(row)
+            _, hh = self.gru(x_in, hh)          # hh: (1,1,H)
+            h = hh[0, 0]                        # (H,)
+            h_exp = h.unsqueeze(0).repeat(batch_s, 1)
+            noise = torch.randn(batch_s, h_exp.size(-1), device=h.device) * 0.5
+            out_rows.append(self.head(h_exp + noise))
         rows = torch.cat(out_rows, dim=0)
         return rows, meta
 
@@ -116,7 +122,7 @@ class NeuralMarketGenerator:
         """logret: (T, D) normalized-log-return matrix; regimes: (T,) label str
         per bar. Slices windows, conditions each on its regime one-hot, and runs
         the DoppelGANger-style WGAN-GP update."""
-        self.norm_std = np.std(logret, axis=0) + 1e-8
+        self.norm_std = (np.std(logret, axis=0) + 1e-8).astype(np.float32)
         x = (logret / self.norm_std).astype(np.float32)
         conds = np.stack([_condition_vector(r) for r in regimes])
         windows = _make_windows(x, window)
@@ -130,11 +136,14 @@ class NeuralMarketGenerator:
             g_loss_t, d_loss_t = 0.0, 0.0
             idx = rng.permutation(len(windows))
             for i in idx:
-                xw = torch.tensor(windows[i], device=self.device).unsqueeze(0)  # (1,T,D)
+                xw = torch.tensor(windows[i].astype(np.float32),
+                                  device=self.device).unsqueeze(0)  # (1,T,D)
                 cw = torch.tensor(cond_w[i][0], device=self.device)             # (Dc,)
                 for _ in range(2):  # critic updates per gen step
                     z = torch.randn(1, 32, device=self.device)
                     fake, fake_meta = self.gen(z, cw.unsqueeze(0), steps)
+                    # truncate the batch-generated fake to the real window length
+                    fake = fake[:xw.size(1)]
                     fake_seq = fake.unsqueeze(0)
                     d_real = self.seq_c(xw)
                     d_fake = self.seq_c(fake_seq.detach())
@@ -187,7 +196,7 @@ class NeuralMarketGenerator:
         torch.save({"gen": self.gen.state_dict(), "norm_std": self.norm_std}, path)
 
     def load(self, path):
-        ck = torch.load(path, map_location=self.device)
+        ck = torch.load(path, map_location=self.device, weights_only=False)
         self.gen.load_state_dict(ck["gen"])
         self.norm_std = ck["norm_std"]
         self._trained = True

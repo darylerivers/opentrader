@@ -65,7 +65,8 @@ def fit(
     np.random.seed(SEED)
     device = _device()
     print(f"[arena] fit on {device}" if device == "cuda" else "", flush=True)
-    train = [r for r in rows if TRAIN[0] <= r["bar"] < TRAIN[1]]
+    train_w, test_ws = _adaptive_windows(rows)
+    train = [r for r in rows if train_w[0] <= r["bar"] < train_w[1]]
     n_val = max(1, int(len(train) * VAL_FRAC))
     trn, val = train[: len(train) - n_val], train[-n_val:]
     if extra_rows:
@@ -132,8 +133,12 @@ def fit(
             best_d, best_theta = d, float(q)
 
     results = []
-    for lo, hi in TESTS:
+    for lo, hi in test_ws:
         win = [r for r in rows if lo <= r["bar"] < hi]
+        if not win:
+            results.append({"window": f"{lo}-{hi}", "n": 0, "kept": 0, "kept_mean": 0.0,
+                            "all_mean": 0.0, "margin": -1.0})
+            continue
         wp = preds(win)
         kept_f = [r["fwd"] for r, p in zip(win, wp) if p >= best_theta]
         all_m = statistics.mean(r["fwd"] for r in win)
@@ -151,8 +156,8 @@ def fit(
     passed = [r for r in results if r["margin"] >= THETA_BAR]
     pass_gate = len(passed) == len(results)
     report = {
-        "train_window": list(TRAIN),
-        "test_windows": [list(t) for t in TESTS],
+        "train_window": list(train_w),
+        "test_windows": [list(t) for t in test_ws],
         "n_train": len(trn),
         "n_val": len(val),
         "val_mse": best_val_loss,
@@ -220,6 +225,8 @@ def load_report(path=None):
 
 
 def predict_batch(art, xs):
+    if not xs:
+        return np.array([])
     model, mean, std = art["model"], art["mean"], art["std"]
     device = _device()
     model = model.to(device)
@@ -230,14 +237,43 @@ def predict_batch(art, xs):
     return v
 
 
+def _adaptive_windows(rows):
+    """Derive train/test bar windows from the actual data extent so the arena
+    runs on any archive length (1y ~250 bars through 5y ~1250), not just the
+    hardcoded 5y split. Feature warmup means rows may start well after bar 0
+    (e.g. 1y rows span 110-240), so windows are placed inside the real range.
+    Preserves the both-windows (bear + unseen) bar semantics on the 5y scale."""
+    bars = [r["bar"] for r in rows]
+    if not bars:
+        return TRAIN, TESTS
+    lo, hi = min(bars), max(bars) + 1
+    if hi - lo >= 1000:
+        return TRAIN, TESTS
+    seg = hi - lo
+    b = lo + int(0.4 * seg)
+    c = lo + int(0.8 * seg)
+    train = (b, c)
+    tests = [(lo, b), (c, hi)]
+    tests = [(x, y) for x, y in tests if y > x]
+    if len(tests) < 2:
+        mid = lo + seg // 2
+        tests = [(lo, max(lo + 1, mid)), (max(lo + 1, mid), hi)]
+    return train, tests
+
+
 def recompute_gate(art, rows):
     """Recompute the held-out discrimination gate on the CURRENT model weights
     (after a GRPO refinement the margins in art['report'] are stale). Mutates
     art['report']['results'] and art['report']['pass'] in place."""
     theta = art["theta"]
     results = []
-    for lo, hi in TESTS:
+    _, test_ws = _adaptive_windows(rows)
+    for lo, hi in test_ws:
         win = [r for r in rows if lo <= r["bar"] < hi]
+        if not win:
+            results.append({"window": f"{lo}-{hi}", "n": 0, "kept": 0, "kept_mean": 0.0,
+                            "all_mean": 0.0, "margin": -1.0})
+            continue
         wp = predict_batch(art, [r["x"] for r in win])
         kept_f = [r["fwd"] for r, p in zip(win, wp) if p >= theta]
         all_m = statistics.mean(r["fwd"] for r in win)

@@ -73,6 +73,10 @@ def _max_drawdowns(data: dict, window: int = 63) -> np.ndarray:
 
 def compare(gen_worlds: list, real_data: dict) -> Dict[str, object]:
     """Aggregate metrics across generated worlds vs the real archive."""
+    if not gen_worlds:
+        return {"dist_dist": 1.0, "acf_err": 1.0, "real_tail_index": None,
+                "gen_tail_index": None, "corr_dist": 1.0,
+                "real_mean_max_dd": None, "gen_mean_max_dd": None, "empty": True}
     real = _returns(real_data)
     all_gen = [_returns(w.data) for w in gen_worlds]
 
@@ -168,6 +172,8 @@ def gate(gen_worlds: list, real_data: dict, max_dist_dist=0.5, max_acf_err=0.05,
     using the fidelity war on real data.
     """
     m = compare(gen_worlds, real_data)
+    if m.get("empty"):
+        return {"pass": False, "checks": {"no_worlds": True}, "metrics": m}
     checks = {
         "dist_dist_ok": m["dist_dist"] <= max_dist_dist,
         "acf_err_ok": m["acf_err"] <= max_acf_err,
