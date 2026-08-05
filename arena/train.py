@@ -38,6 +38,7 @@ def run_iteration(
     rows, cfg = _collect_for(expert_id, period)
     field = opp_mod.default_field(cfg, seed=field_seed)
     macro_ctx = _build_macro_ctx(war_period) if expert_id == "macro" else None
+    data_source = _data_source_for(expert_id)
 
     agent_path = _checkpoint_for(expert_id)
     if use_previous and agent_path.exists():
@@ -104,6 +105,7 @@ def run_iteration(
         bar_hi=250,
         buy_thresh=0.15,
         macro_ctx=macro_ctx,
+        data_source=data_source,
     )
     print(
         f"[arena]   bear war done: {bear['n_base_trades']} down-regime trades",
@@ -129,7 +131,7 @@ def run_iteration(
 
     war = war_mod.run_war(
         rows, field, agent_mod.make_agent(art), cfg, period=war_period, eta=eta,
-        macro_ctx=macro_ctx,
+        macro_ctx=macro_ctx, data_source=data_source,
     )
     combined = war["relabels"] + bear["relabels"]
     print(
@@ -253,7 +255,19 @@ def _collect_for(expert_id, period):
     if expert_id == "macro":
         from arena import candidates_macro
         return candidates_macro.collect(period)
+    if expert_id == "international":
+        from arena import candidates_international
+        return candidates_international.collect(period)
     return cand_mod.collect(period)
+
+
+def _data_source_for(expert_id):
+    """Archive loader the WAR referee should replay. Momentum/macro replay the
+    US archive (default); the international expert replays its own universe."""
+    if expert_id == "international":
+        from arena import candidates_international
+        return candidates_international.load_international
+    return None
 
 
 def _checkpoint_for(expert_id="momentum"):

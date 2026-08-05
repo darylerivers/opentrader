@@ -76,10 +76,13 @@ SPECIALIZATIONS: dict = {
     "international": ExpertSpec(
         id="international",
         name="International value head",
-        description="International indices/currencies (the user's 'brewing problems abroad' surface).",
-        status="planned",
-        feature_plan="non-US index + FX + commodity OHLCV",
-        data_plan="no archive yet — needs data source (e.g. yfinance international tickers)",
+        description="International indices/FX/commodities (the user's 'brewing problems abroad' surface).",
+        status="ready",
+        checkpoint=ARENA_OUT / "arena_international_value_head.pt",
+        feature_plan="same 11-dim arena features over the 12-ticker international universe "
+                     "(^N225 ^FTSE ^GDAXI ^HSI ^VIX EEM EFA EURUSD=X USDJPY=X GC=F CL=F, ^GSPC=regime)",
+        data_plan="yfinance 5y daily cached to data/setup_search/international_ohlcv_5y.pkl "
+                  "(24h TTL); arena/candidates_international.py",
     ),
 }
 

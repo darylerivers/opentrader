@@ -136,12 +136,13 @@ def run_war(
     bar_hi=None,
     data=None,
     macro_ctx=None,
+    data_source=None,
 ):
     cfg = clamp_config(cfg)
     if cfg_override:
         cfg = clamp_config({**cfg, **cfg_override})
     if data is None:
-        data = load_ohlcv(period)
+        data = (data_source or load_ohlcv)(period)
     al = align(data, [s for s in data if s != REGIME_SYM])
     closes, highs, lows, vols = al
     feat = _features(closes, highs, lows, vols, cfg)
@@ -266,6 +267,7 @@ def run_bear_war(
     bar_hi=250,
     buy_thresh=0.15,
     macro_ctx=None,
+    data_source=None,
 ):
     """Down-regime relabels: war the 2022 bear segment with the regime filter
     off and a looser entry threshold so the rules actually execute there. The
@@ -283,6 +285,7 @@ def run_bear_war(
         bar_lo=bar_lo,
         bar_hi=bar_hi,
         macro_ctx=macro_ctx,
+        data_source=data_source,
     )
     return {
         "relabels": out["relabels"],
