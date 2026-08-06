@@ -12,7 +12,14 @@
   misread — the sim shows ~939 days / 44 trades at current cadence.
 
 - **Decision:** FTMO 2-Step (Swing account type) is the prop revenue vehicle.
-  Operational constraints adopted from the verified ruleset:
+  **US-resident path (2026-08-06 update):** FTMO's own "Who can join FTMO?"
+  directs US clients to the sanctioned US entity **FTMO US (ftmo.oanda.com)**,
+  served through **OANDA** (CFTC-registered FCM + NFA member 0325821). The
+  connector therefore targets the **OANDA v20 REST API** — US-regulated,
+  Linux-native, no MetaTrader, no Spotware, no geolocation workaround. A VPN
+  workaround is explicitly NOT pursued: FTMO's policy forbids US-geolocation
+  for MT/cTrader access and it would risk payout forfeiture. Operational
+  constraints adopted from the verified ruleset:
   - Sizing ≤ ~20% of account per trade during the challenge (5% daily loss,
     sized to survive two same-day stops, compounding-aware);
   - no entries within ±5 minutes of high-impact news, or within 2 hours of a
