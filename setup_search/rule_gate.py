@@ -45,9 +45,12 @@ def screen(closes: dict, highs: dict, lows: dict, vols: dict, sym: str, date, cf
         ma = spy.rolling(int(cfg["regime_window"]), min_periods=10).mean()
         v = ma.get(date)
         regime_ok = bool(v is not None and float(spy[date]) > float(v))
-    score = float(_score_at(
-        {s: feat[s].loc[date] for s in feat}, cfg, {s: 0.0 for s in feat}
-    )[sym])
+    # midnight-race guard: at the UTC rollover the regime symbol's (SPY/BTC)
+    # daily bar can lag the symbol's own bar; `.loc[date]` on a missing index
+    # raises KeyError(Timestamp) and crashes the whole cycle. Only score
+    # symbols whose index actually contains `date`.
+    feat_rows = {s: feat[s].loc[date] for s in feat if date in feat[s].index}
+    score = float(_score_at(feat_rows, cfg, {s: 0.0 for s in feat_rows})[sym])
     return (regime_ok and score >= cfg["buy_thresh"]), round(score, 4)
 
 

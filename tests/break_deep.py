@@ -217,6 +217,28 @@ def _():
     return "missing -> None"
 
 
+@t(2, "midnight race: regime symbol lags the symbol's new-day bar -> fail-closed, no crash")
+def _():
+    # The UTC rollover bug: at 00:00 the symbol's last bar is the new day while
+    # SPY/BTC's daily bar hasn't arrived; screen() iterated feat including the
+    # regime symbol and .loc[date] raised KeyError(Timestamp), crash-looping
+    # the harness for ~10 cycles every midnight. Must fail closed instead.
+    import json
+    import pandas as pd
+    from setup_search.rule_gate import screen
+    from setup_search.core import clamp_config
+    new_day = pd.Timestamp('2026-08-06 00:00:00+0000', tz='UTC')
+    old_day = pd.Timestamp('2026-08-05 00:00:00+0000', tz='UTC')
+    idx_new = pd.DatetimeIndex([pd.Timestamp('2026-08-04 00:00:00+0000', tz='UTC'), new_day])
+    idx_old = pd.DatetimeIndex([pd.Timestamp('2026-08-04 00:00:00+0000', tz='UTC'), old_day])
+    mk = lambda ix: pd.Series(100.0, index=ix)
+    closes = {'AAPL': mk(idx_new), 'SPY': mk(idx_old)}
+    cfg = clamp_config(json.loads(open('data/setup_search/best.json').read())['config'])
+    ok, score = screen(closes, closes, closes, closes, 'AAPL', new_day, cfg)
+    assert ok is False, "must fail closed, not crash"
+    return f"fail-closed ok (score={score})"
+
+
 @t(2, "corrupted arena checkpoint (garbage bytes) -> None, no crash")
 def _():
     from arena import agent as agent_mod
