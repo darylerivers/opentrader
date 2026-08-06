@@ -41,7 +41,40 @@ use the term below; don't drift to synonyms the glossary avoids.
 ## The deployment program
 
 - **Runway** — the phased plan: paper shadow → first real money at 1% → ladder to
-  10%, gated on shadow evidence and infra cleanliness.
+  15%, gated on shadow evidence and infra cleanliness. Capital ceiling $10k,
+  funded by work income + prop-challenge rewards (ADR-0005). Sizing ramps
+  1% → 15% gated on fidelity; the absolute-$ stop is 10% of account → halt +
+  review.
+- **Prop account** — the FTMO 2-Step challenge (ADR-0005), the project's
+  revenue vehicle: firm capital traded on a slow compounding clock
+  (~939 days to target at current cadence), 90% split at funding, sizing ≤20%
+  during the challenge, and a news/gap entry ban the rule engine must encode.
+- **Inactivity clock** — a firm's deactivation timer (The5ers 30d, FundedNext
+  60d): the system's 102-day no-trade gap disqualifies any firm with one; only
+  FTMO has none.
+- **Deployable** — the pre-committed gate for first real money: ≥3 closed paper
+  trades spanning at least two exit paths, zero fatal defects, ≤15bps realized
+  slippage; the shadow's up-regime rule-floor edge un-decayed; ≥10 weeks
+  continuous paper. Rare exits are force-tested in the sandbox, not awaited
+  live. Returns are deliberately not part of the criterion (see ADR-0002).
+- **Fatal defect** — a plumbing failure that disqualifies the paper phase on any
+  single occurrence: silent hold, state corruption, order rejection, >15bps
+  slippage, exit-ladder deviation.
+- **Three-tier structure** — how the system handles scale (ADR-0003): the live
+  loop trades a pinned liquid subset; the offline cross-section (the 35M-row
+  dataset) ranks all symbols; the portfolio ranker (later, gated) trades the
+  top-N. Offline rank, live trade top-N.
+- **Portfolio ranker** — Tier 3: an offline daily cross-sectional ranking over
+  the full universe; the live loop trades the top-N. Arrives after first real
+  money, re-gated under the faithful-replica principle.
+- **Versioned fidelity** — the validated ladder is a snapshot, not scripture:
+  re-validation on the appended archive quarterly (or on sustained shadow
+  drift), promoted through the same gates; the old config retires.
+- **Rotation detector** — the rank-based layer (cross-sectional mom/RSI
+  percentiles) that reacts to sector rotation; lives in Tier 2 (the macro
+  expert's feature set today, the offline cross-section tomorrow). The
+  validated 16-name rule's screen is absolute, not rank-based — it catches
+  rotation only within its universe.
 - **Sandbox** — opentrader-sandbox, an isolated copy of the repo. All changes are
   proven here before touching the live tree or the GPU.
 - **Faithful replica** — the principle that live must reproduce the validated
