@@ -58,6 +58,11 @@ def collect_from_data(data, base, gen_score_min=-0.5, bar_offset=0):
         for t in range(len(c)):
             if t + FORWARD >= len(c):
                 break
+            # data hygiene: delisted/suspended symbols in broad datasets carry
+            # zero/NaN closes — a zero close divides by zero in the label
+            c0, c1 = float(c.iloc[t]), float(c.loc[c.index[t + FORWARD]])
+            if not (np.isfinite(c0) and np.isfinite(c1) and c0 > 0 and c1 > 0):
+                continue
             date = c.index[t]
             if date not in master:
                 continue

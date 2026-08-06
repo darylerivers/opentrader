@@ -35,9 +35,11 @@ def run_iteration(
     grpo_steps=2,
     expert_id="momentum",
     augment_worlds=3,
+    augment_fullcross=20000,
 ):
     rows, cfg = _collect_for(expert_id, period)
     extra_rows = _multiverse_augment(expert_id, cfg, augment_worlds) if augment_worlds > 0 else []
+    extra_rows += _fullcross_augment(expert_id, cfg, augment_fullcross) if augment_fullcross > 0 else []
     field = opp_mod.default_field(cfg, seed=field_seed)
     macro_ctx = _build_macro_ctx(war_period) if expert_id == "macro" else None
     data_source = _data_source_for(expert_id)
@@ -254,6 +256,32 @@ def _load_relabels():
 
 
 
+def _fullcross_augment(expert_id, cfg, n_candidates):
+    """MULTI-DATASET TRAINING from the 35M-row HuggingFace stock dataset:
+    32 years x ~11k symbols of daily OHLCV in the SAME feature space as the
+    validated rule. Candidates are sampled and appended to the REAL training
+    set via fit(extra_rows=...); the gate stays on the real 5y archive.
+    Uses the cached build (data/setup_search/fullcross.pkl) when present."""
+    if expert_id != "momentum":
+        return []
+    from arena.candidates_fullcross import CACHE
+    if not CACHE.exists():
+        print("[arena]   fullcross augmentation skipped (build not cached yet; "
+              "run arena/candidates_fullcross.py once)", flush=True)
+        return []
+    try:
+        from arena.candidates_fullcross import collect as fullcross_collect
+        # 25 liquid symbols x ~6.7k bars each ~= 60k candidates in ~3min; the
+        # 6-position cap means breadth beyond this adds little per iteration
+        fc_rows, _ = fullcross_collect(sample=n_candidates, n_symbols=25)
+        print(f"[arena]   fullcross augmentation: +{len(fc_rows)} candidates "
+              f"(35M-row HF dataset)", flush=True)
+        return fc_rows
+    except Exception as e:
+        print(f"[arena]   fullcross augmentation skipped ({e})", flush=True)
+        return []
+
+
 def _multiverse_augment(expert_id, cfg, n_worlds):
     """MULTI-DATASET TRAINING: generate n_worlds market realities (neural
     generator if trained, else parametric) and build arena candidate rows
@@ -443,6 +471,8 @@ if __name__ == "__main__":
     ap.add_argument("--grpo-steps", type=int, default=2)
     ap.add_argument("--augment-worlds", type=int, default=3,
                     help="Multi-dataset training: N generated worlds appended to the real candidates")
+    ap.add_argument("--augment-fullcross", type=int, default=20000,
+                    help="Multi-dataset training: sample N candidates from the 35M-row HF stock dataset")
     args = ap.parse_args()
     for i in range(args.iterations):
         rep = run_iteration(
@@ -452,6 +482,7 @@ if __name__ == "__main__":
             use_previous=(i > 0) or args.use_previous,
             grpo_steps=args.grpo_steps,
             augment_worlds=args.augment_worlds,
+            augment_fullcross=args.augment_fullcross,
         )
         print(
             f"iteration {rep['iteration']}: gate pass={rep['gate']['pass']} "
