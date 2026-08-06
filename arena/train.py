@@ -291,6 +291,8 @@ def _multiverse_augment(expert_id, cfg, n_worlds):
     the REAL rows only (synthetic bars are offset to 2000+ so they never
     collide) — the held-out discrimination benchmark stays real-data-only,
     while the model trains on real + synthetic distributions."""
+    if expert_id != "momentum":
+        return []  # world rows are 11-dim; macro (18-dim) would crash the fit
     try:
         from arena.candidates import collect_from_data
         from scenarios import MarketScenarioGenerator
