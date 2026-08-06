@@ -87,3 +87,4 @@ data/health.json
 data/live_router_state.json
 data/high_level_state.json
 data/setup_search/fullcross.pkl
+data/defect_log.json

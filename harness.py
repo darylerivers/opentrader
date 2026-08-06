@@ -17,7 +17,7 @@ import subprocess
 import sys
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -1849,7 +1849,7 @@ class OpenTraderHarness:
                     rsi_4h = self._compute_rsi([b.close for b in bars_4h])
                     sma_4h = sum(b.close for b in bars_4h[-20:]) / min(20, len(bars_4h))
                 # 1d bars
-                bars_1d = self.exchange.get_bars(sym, "1d", 30)
+                bars_1d = self._daily_bars(sym, 30)
                 if bars_1d and len(bars_1d) >= 14:
                     rsi_1d = self._compute_rsi([b.close for b in bars_1d])
                     sma_1d = sum(b.close for b in bars_1d[-20:]) / min(20, len(bars_1d))
@@ -2414,7 +2414,7 @@ class OpenTraderHarness:
         syms = list(set(active_symbols) | {"SPY"})
         closes, highs, lows, vols = {}, {}, {}, {}
         for s in syms:
-            bars = self.exchange.get_bars(s, "1d", limit=150)
+            bars = self._daily_bars(s, 150)
             if not bars:
                 continue
             idx = [self._bar_ts(b) for b in bars]
@@ -2469,7 +2469,7 @@ class OpenTraderHarness:
             _sleeve_budget = max(0.0, (0.12 * _bal.total_value - _sleeve_now)) / max(_bal.total_value, 1.0)
             c_closes, c_highs, c_lows, c_vols = {}, {}, {}, {}
             for s in crypto_syms + ["BTC/USDT"]:
-                bars = self.exchange.get_bars(s, "1d", limit=150)
+                bars = self._daily_bars(s, 150)
                 if not bars:
                     continue
                 idx = [self._bar_ts(b) for b in bars]
@@ -2515,7 +2515,7 @@ class OpenTraderHarness:
         ~14 minutes). Returns ISO date or None."""
         try:
             from datetime import timedelta
-            bars = self.exchange.get_bars(sym, "1d", 1)
+            bars = self._daily_bars(sym, 1)
             if not bars:
                 return None
             d = self._bar_ts(bars[-1]).date()
@@ -2527,6 +2527,23 @@ class OpenTraderHarness:
             return d.isoformat()
         except Exception:
             return None
+
+    def _daily_bars(self, sym: str, limit: int):
+        """Fetch daily bars, DROPPING future-dated bars. The stock waterfall
+        can emit a next-UTC-midnight placeholder bar; a future date keyed into
+        other series' indexes raises KeyError(Timestamp) and crash-loops the
+        harness (the 22:33->00:34 UTC marathon). Root fix: the bad date never
+        enters any rule path."""
+        bars = self.exchange.get_bars(sym, "1d", limit=limit)
+        if not bars:
+            return bars
+        cutoff = datetime.now(timezone.utc) + timedelta(hours=1)
+        clean = [b for b in bars if self._bar_ts(b) <= cutoff]
+        if len(clean) != len(bars):
+            logger.warning(
+                f"  dropped {len(bars) - len(clean)} future-dated bar(s) for {sym}"
+            )
+        return clean
 
     @staticmethod
     def _bar_ts(b) -> "datetime":
@@ -2601,7 +2618,7 @@ class OpenTraderHarness:
         try:
             import pandas as pd
 
-            bars = self.exchange.get_bars("SPY", "1d", limit=250)
+            bars = self._daily_bars("SPY", 250)
             if not bars:
                 return "unknown"
             idx = [self._bar_ts(b) for b in bars]
@@ -2628,7 +2645,7 @@ class OpenTraderHarness:
 
             closes, highs, lows, vols = {}, {}, {}, {}
             for s in (sym, "SPY"):
-                bars = self.exchange.get_bars(s, "1d", limit=150)
+                bars = self._daily_bars(s, 150)
                 if not bars:
                     continue
                 index = [self._bar_ts(b) for b in bars]
