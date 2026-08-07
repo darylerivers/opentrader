@@ -2,7 +2,7 @@
 
 A self-improving algorithmic trading system: a walk-forward-validated rule floor (the incumbent edge) paired with value-head neural experts selected by a Mixture-of-Traders (MoT) router. Experts must earn their way in through an adversarial training arena — they are only deployed when they beat the incumbent's held-out gate.
 
-> 🎬 **Watch how it works:** open [`showcase/opentrader.html`](showcase/opentrader.html) in a browser for a self-contained animated walkthrough of the whole system (rule floor → arena → router → multiverse → live harness).
+![OpenTrader — how it works](showcase/opentrader.gif)
 
 ## The core idea
 
