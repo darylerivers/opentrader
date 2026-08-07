@@ -40,4 +40,4 @@ pip install -r requirements.txt
 python run_harness.py --help
 ```
 
-See `ARCHITECTURE.md` for the full design, ports, and integration seams.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design, ports, and integration seams, and [`docs/CONTEXT.md`](docs/CONTEXT.md) for the project's shared vocabulary.

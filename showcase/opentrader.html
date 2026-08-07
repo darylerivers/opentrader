@@ -6,475 +6,322 @@
 <title>OpenTrader — How It Works</title>
 <style>
   :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; height: 100%; background: #06090f; overflow: hidden; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #dbe4f0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #070b12; overflow: hidden;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   #stage { position: fixed; inset: 0; display: block; }
-  #hud {
-    position: fixed; bottom: 22px; left: 0; right: 0; display: flex;
-    justify-content: center; gap: 14px; z-index: 10;
-  }
-  .hud-btn {
-    background: rgba(20,30,48,0.75); border: 1px solid #2c3e5f; color: #a8c0e0;
-    padding: 8px 16px; border-radius: 999px; font-size: 13px; cursor: pointer;
-    transition: all .15s ease; user-select: none; backdrop-filter: blur(6px);
-  }
-  .hud-btn:hover { background: #16233b; color: #dbe4f0; border-color: #3e5b8a; }
-  #sceneLabel {
-    position: fixed; top: 20px; left: 24px; z-index: 10; font-size: 12px;
-    letter-spacing: 2px; text-transform: uppercase; color: #5f7399;
-  }
-  #caption {
-    position: fixed; bottom: 70px; left: 0; right: 0; text-align: center; z-index: 10;
-    font-size: 15px; color: #c6d4ea; pointer-events: none; text-shadow: 0 1px 8px rgba(0,0,0,.8);
-  }
-  #progress { position: fixed; bottom: 0; left: 0; height: 3px; background: #3e7bff; z-index: 12; transition: width .1s linear; }
+  .overlay { position: fixed; z-index: 10; }
+  #sceneLabel { top: 26px; left: 30px; font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: #5b7299; font-weight: 600; }
+  #caption { bottom: 84px; left: 0; right: 0; text-align: center; font-size: 15px;
+    color: #c2d0e8; line-height: 1.5; text-shadow: 0 2px 12px rgba(0,0,0,.9); pointer-events: none; }
+  #hud { bottom: 28px; left: 0; right: 0; display: flex; justify-content: center; gap: 12px; }
+  .btn { background: rgba(18,28,46,.7); border: 1px solid #2a3a58; color: #92aacc;
+    padding: 9px 18px; border-radius: 999px; font-size: 13px; cursor: pointer;
+    transition: all .15s; backdrop-filter: blur(8px); font-weight: 500; }
+  .btn:hover { background: #15243c; color: #e4edf8; border-color: #4a6699; }
+  #progress { bottom: 0; left: 0; height: 2px; background: linear-gradient(90deg,#3e7bff,#22d3ee); }
 </style>
 </head>
 <body>
 <canvas id="stage"></canvas>
-<div id="sceneLabel">OpenTrader</div>
-<div id="caption"></div>
-<div id="hud">
-  <button class="hud-btn" id="playBtn">⏸ Pause</button>
-  <button class="hud-btn" id="replayBtn">↻ Replay</button>
-  <button class="hud-btn" id="skipBtn">Skip →</button>
+<div class="overlay" id="sceneLabel"></div>
+<div class="overlay" id="caption"></div>
+<div class="overlay" id="hud">
+  <button class="btn" id="playBtn">⏸ Pause</button>
+  <button class="btn" id="replayBtn">↻ Replay</button>
+  <button class="btn" id="skipBtn">Skip →</button>
 </div>
-<div id="progress"></div>
+<div class="overlay" id="progress" style="width:0"></div>
 <script>
 "use strict";
+const cv = document.getElementById('stage');
+const x = cv.getContext('2d');
+let W, H, DPR;
+function resize(){ DPR=Math.min(devicePixelRatio||1,2); W=innerWidth; H=innerHeight;
+  cv.width=W*DPR; cv.height=H*DPR; cv.style.width=W+'px'; cv.style.height=H+'px';
+  x.setTransform(DPR,0,0,DPR,0,0); }
+addEventListener('resize', resize); resize();
 
-const canvas = document.getElementById('stage');
-const ctx = canvas.getContext('2d');
-let W = window.innerWidth, H = window.innerHeight, DPR = 1;
-function resize() {
-  DPR = Math.min(window.devicePixelRatio || 1, 2);
-  W = window.innerWidth; H = window.innerHeight;
-  canvas.width = W * DPR; canvas.height = H * DPR;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+const C = { bg:'#070b12', grid:'rgba(40,58,92,.18)', card:'rgba(20,32,54,.6)',
+  border:'#2c3e5f', text:'#d6e2f4', dim:'#6b82a8', faint:'#44557a',
+  blue:'#4b8bff', cyan:'#22d3ee', green:'#3ddc97', gold:'#fbbf24',
+  red:'#f87171', purple:'#a78bfa', orange:'#fb923c', pink:'#f472b6' };
+
+function rng(seed){ let s=seed>>>0; return ()=>{ s=(s*1664525+1013904223)>>>0; return s/4294967296; }; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function ease(t){ return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+function smooth(t){ return t*t*(3-2*t); }
+
+function bg(){
+  x.fillStyle=C.bg; x.fillRect(0,0,W,H);
+  x.strokeStyle=C.grid; x.lineWidth=1;
+  for(let i=0;i<=W;i+=44){ x.beginPath(); x.moveTo(i,0); x.lineTo(i,H); x.stroke(); }
+  for(let i=0;i<=H;i+=44){ x.beginPath(); x.moveTo(0,i); x.lineTo(W,i); x.stroke(); }
+  const g=x.createRadialGradient(W*.5,H*.42,0,W*.5,H*.42,Math.max(W,H)*.7);
+  g.addColorStop(0,'rgba(40,70,130,.10)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
 }
-window.addEventListener('resize', resize);
-resize();
 
-const COLOR = {
-  bg: '#06090f', grid: '#101a2c', line: '#2c3e5f',
-  text: '#c6d4ea', dim: '#5f7399',
-  blue: '#3e7bff', cyan: '#22d3ee', green: '#34d399', gold: '#fbbf24',
-  red: '#f87171', purple: '#a78bfa', orange: '#fb923c'
-};
+function card(rx,ry,rw,rh,opts){
+  opts=opts||{};
+  x.save();
+  x.shadowColor='rgba(0,0,0,.5)'; x.shadowBlur=20; x.shadowOffsetY=6;
+  x.fillStyle=opts.fill||C.card;
+  x.beginPath(); x.roundRect(rx,ry,rw,rh,opts.r||14); x.fill();
+  x.restore();
+  x.strokeStyle=opts.border||C.border; x.lineWidth=opts.lw||1.5;
+  x.beginPath(); x.roundRect(rx,ry,rw,rh,opts.r||14); x.stroke();
+  if(opts.glow){
+    x.save(); x.shadowColor=opts.border; x.shadowBlur=18;
+    x.strokeStyle=opts.border; x.lineWidth=2;
+    x.beginPath(); x.roundRect(rx,ry,rw,rh,opts.r||14); x.stroke(); x.restore();
+  }
+}
 
-let running = true;
-let paused = false;
-let skip = false;
-let t = 0; // global seconds
-let lastTs = 0;
+function text(t,tx,ty,o){
+  o=o||{}; x.fillStyle=o.color||C.text; x.font=(o.bold?'600 ':'')+(o.size||14)+'px ui-sans-serif,system-ui,sans-serif';
+  x.textAlign=o.align||'center'; x.textBaseline=o.base||'alphabetic';
+  if(o.letter) x.letterSpacing=o.letter+'px'; else x.letterSpacing='0px';
+  x.fillText(t,tx,ty);
+}
 
-const SCENES = [
-  { name: 'The Rule Floor', dur: 9 },
-  { name: 'The Arena', dur: 12 },
-  { name: 'Mixture-of-Traders', dur: 10 },
-  { name: 'Multiverse Stress Test', dur: 10 },
-  { name: 'Live Harness', dur: 9 },
-  { name: 'OpenTrader', dur: 6 }
+function pill(label,tx,ty,color){
+  x.font='600 11px ui-sans-serif,system-ui,sans-serif';
+  const w=x.measureText(label).width+22;
+  x.fillStyle=color+'22'; x.strokeStyle=color;
+  x.beginPath(); x.roundRect(tx-w/2,ty-12,w,22,11); x.fill(); x.stroke();
+  text(label,tx,ty+3,{color,size:11,bold:true});
+}
+
+function flow(a,b,color,prog,dash){
+  prog=prog===undefined?1:prog;
+  const mx=lerp(a.x,b.x,prog), my=lerp(a.y,b.y,prog);
+  x.strokeStyle=color; x.lineWidth=2; x.globalAlpha=.55;
+  x.setLineDash(dash?[6,5]:[]);
+  x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(mx,my); x.stroke();
+  x.setLineDash([]); x.globalAlpha=1;
+  if(prog>=.98){
+    const ang=Math.atan2(b.y-a.y,b.x-a.x), s=8;
+    x.fillStyle=color; x.beginPath();
+    x.moveTo(b.x,b.y);
+    x.lineTo(b.x-s*Math.cos(ang-.4),b.y-s*Math.sin(ang-.4));
+    x.lineTo(b.x-s*Math.cos(ang+.4),b.y-s*Math.sin(ang+.4));
+    x.closePath(); x.fill();
+  }
+  if(prog>0&&prog<1){ x.fillStyle=color; x.beginPath(); x.arc(mx,my,4,0,7); x.fill();
+    x.save(); x.shadowColor=color; x.shadowBlur=12; x.fillStyle=color;
+    x.beginPath(); x.arc(mx,my,4,0,7); x.fill(); x.restore(); }
+}
+
+function series(vals,ox,oy,ow,oh,color,fill){
+  if(vals.length<2) return;
+  const mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
+  if(fill){ const g=x.createLinearGradient(0,oy,0,oy+oh);
+    g.addColorStop(0,color+'40'); g.addColorStop(1,color+'00');
+    x.fillStyle=g; x.beginPath(); x.moveTo(ox,oy+oh);
+    vals.forEach((v,i)=>x.lineTo(ox+(i/(vals.length-1))*ow, oy+oh-((v-mn)/rg)*oh));
+    x.lineTo(ox+ow,oy+oh); x.closePath(); x.fill(); }
+  x.strokeStyle=color; x.lineWidth=2.5; x.lineJoin='round';
+  x.beginPath();
+  vals.forEach((v,i)=>{ const px=ox+(i/(vals.length-1))*ow, py=oy+oh-((v-mn)/rg)*oh;
+    i?x.lineTo(px,py):x.moveTo(px,py); });
+  x.stroke();
+}
+
+// ───────── scenes ─────────
+const SCENES=[
+  {name:'The Rule Floor', dur:11, fn:s1},
+  {name:'The Arena', dur:13, fn:s2},
+  {name:'Mixture-of-Traders', dur:11, fn:s3},
+  {name:'Multiverse', dur:11, fn:s4},
+  {name:'Live Harness', dur:10, fn:s5},
+  {name:'OpenTrader', dur:7, fn:s6}
 ];
-const TOTAL = SCENES.reduce((a, s) => a + s.dur, 0);
-let sceneIdx = 0;
-let sceneT = 0;
+const TOTAL=SCENES.reduce((a,s)=>a+s.dur,0);
+let idx=0, st=0, paused=false;
 
-function currentScene() { return SCENES[sceneIdx]; }
+function cur(){ return SCENES[idx]; }
+function next(){ idx=(idx+1)%SCENES.length; st=0; }
 
-function advanceScene() {
-  sceneIdx++;
-  if (sceneIdx >= SCENES.length) sceneIdx = 0;
-  sceneT = 0;
-  skip = false;
+document.getElementById('playBtn').onclick=()=>{ paused=!paused;
+  document.getElementById('playBtn').textContent=paused?'▶ Play':'⏸ Pause'; };
+document.getElementById('replayBtn').onclick=()=>{ idx=0; st=0; };
+document.getElementById('skipBtn').onclick=()=>next();
+
+// seeded price data (stable across frames)
+const rnd=rng(42);
+function gen(n,drift,vol){ let v=100,out=[v];
+  for(let i=1;i<n;i++){ v+=(rnd()-.5+drift)*vol; out.push(v); } return out; }
+const P1=gen(180,.06,2.2);
+function sma(d,p){ const o=[]; for(let i=0;i<d.length;i++){ const s=Math.max(0,i-p+1);
+  let t=0; for(let j=s;j<=i;j++) t+=d[j]; o.push(t/(i-s+1)); } return o; }
+const S1=sma(P1,18);
+
+function s1(p){
+  const cx=W*.5, baseY=H*.62;
+  card(cx-340,baseY-180,680,300,{border:C.blue,glow:true});
+  text('WALK-FORWARD VALIDATED RULE FLOOR',cx,baseY-150,{color:C.blue,size:12,bold:true,letter:2});
+  const vis=Math.floor(lerp(20,P1.length,smooth(clamp(p*1.15,0,1))));
+  series(P1.slice(0,vis),cx-310,baseY-130,620,180,C.text,true);
+  series(S1.slice(0,vis),cx-310,baseY-130,620,180,C.gold,false);
+  if(p>.25){
+    pill('96-day regime SMA',cx+150,baseY-118,C.gold);
+  }
+  if(p>.5){
+    const ix=lerp(cx-310,cx+310,.62), iy=baseY-130+180-((P1[Math.floor(vis*.62)]-Math.min(...P1))/(Math.max(...P1)-Math.min(...P1)))*180;
+    x.fillStyle=C.green; x.beginPath(); x.arc(ix,iy,7,0,7); x.fill();
+    x.save(); x.shadowColor=C.green; x.shadowBlur=15; x.beginPath(); x.arc(ix,iy,7,0,7); x.fill(); x.restore();
+    pill('BUY  ·  regime UP',ix,iy-22,C.green);
+  }
+  const stats=[['12.28%','stop'],['17.81%','target'],['14-day','max hold'],['~68%','win rate']];
+  stats.forEach((s,i)=>{ const sx=cx-270+i*180;
+    text(s[0],sx,baseY+150,{color:C.green,size:22,bold:true});
+    text(s[1],sx,baseY+172,{color:C.dim,size:12,letter:1}); });
 }
 
-document.getElementById('playBtn').addEventListener('click', () => {
-  paused = !paused;
-  document.getElementById('playBtn').textContent = paused ? '▶ Play' : '⏸ Pause';
-});
-document.getElementById('replayBtn').addEventListener('click', () => { sceneIdx = 0; sceneT = 0; t = 0; });
-document.getElementById('skipBtn').addEventListener('click', () => advanceScene());
-
-function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
-function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
-function lerp(a, b, t) { return a + (b - a) * t; }
-
-function drawBackground() {
-  ctx.fillStyle = COLOR.bg;
-  ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = COLOR.grid;
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.5;
-  const g = 48;
-  for (let x = 0; x < W; x += g) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-  for (let y = 0; y < H; y += g) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-  ctx.globalAlpha = 1;
+function s2(p){
+  const cx=W*.5, cy=H*.42;
+  text('THE ARENA — adversarial training',cx,H*.16,{color:C.purple,size:13,bold:true,letter:2});
+  const steps=['battle','fit','war','relabel','gate'];
+  const bw=Math.min(140,W*.12), gap=Math.min(26,W*.02);
+  const tw=steps.length*bw+(steps.length-1)*gap;
+  const x0=cx-tw/2, yy=cy-30;
+  const stepP=p*steps.length;
+  const act=Math.min(steps.length-1,Math.floor(stepP));
+  steps.forEach((s,i)=>{ const sx=x0+i*(bw+gap);
+    const done=i<act, now=i===act, col=done?C.green:now?C.gold:C.faint;
+    card(sx,yy,bw,60,{border:col,glow:now});
+    text(s.toUpperCase(),sx+bw/2,yy+28,{color:col,size:13,bold:true,letter:1.5});
+    text(done?'✓':now?'▸':'',sx+bw/2,yy+48,{color:col,size:11});
+    if(i>0) flow({x:x0+(i-1)*(bw+gap)+bw,y:yy+30},{x:sx,y:yy+30},done?C.green:C.faint,1); });
+  const gy=cy+80;
+  text('GATE  ·  +1% edge required on BOTH regime windows',cx,gy-22,{color:C.dim,size:13});
+  const cand=[
+    {n:'Candidate A',e:'+0.2%',ok:false,off:-1.4,col:C.red},
+    {n:'Candidate B',e:'+0.6%',ok:false,off:0,col:C.red},
+    {n:'Incumbent+',e:'+1.3%',ok:true,off:1.4,col:C.green}];
+  cand.forEach((c,i)=>{ const cw=180, sx=cx+c.off*200-cw/2;
+    const show=p>.45+i*.13;
+    if(show<1&&p<.45+i*.13) return;
+    card(sx,gy,cw,72,{border:c.col,glow:c.ok&&p>.8});
+    text(c.n,sx+cw/2,gy+26,{color:C.text,size:13,bold:true});
+    text(c.e,sx+cw/2,gy+48,{color:c.col,size:16,bold:true});
+    if(p>.55+i*.13) text(c.ok?'✓ promoted':'✗ rejected',sx+cw/2,gy+92,{color:c.col,size:12,bold:true}); });
 }
 
-function drawTitle(text, sub) {
-  ctx.textAlign = 'center';
-  ctx.fillStyle = COLOR.text;
-  ctx.font = '600 34px -apple-system, "Segoe UI", sans-serif';
-  ctx.fillText(text, W / 2, H / 2 - 12);
-  ctx.fillStyle = COLOR.dim;
-  ctx.font = '15px -apple-system, "Segoe UI", sans-serif';
-  ctx.fillText(sub, W / 2, H / 2 + 24);
+function s3(p){
+  const cx=W*.5, cy=H*.44;
+  text('MIXTURE-OF-TRADERS ROUTER',cx,H*.15,{color:C.cyan,size:13,bold:true,letter:2});
+  const rx=cx-360, ry=cy-30;
+  card(rx,ry,180,60,{border:C.gold,glow:true});
+  text('REGIME CLOCK',rx+90,ry+24,{color:C.gold,size:11,bold:true,letter:1.5});
+  const up=Math.sin(p*7)>.1;
+  text('SPY vs 96-day MA',rx+90,ry+44,{color:C.dim,size:11});
+  pill(up?'UP':'DOWN',rx+90,ry+72,up?C.green:C.red);
+  const exps=[{n:'rule floor',col:C.gold,off:-1.4,e:0.9},
+    {n:'momentum',col:C.blue,off:0,e:1.3},{n:'macro',col:C.purple,off:1.4,e:1.1}];
+  const pick=up?1:2;
+  exps.forEach((e,i)=>{ const ew=170, ex=cx+e.off*220-ew/2+360;
+    const on=i===pick, sel=clamp((p-.3)*3-i*.4,0,1);
+    card(ex,cy-30,ew,60,{border:on&&sel>.5?C.green:e.col,glow:on&&sel>.5});
+    text(e.n,ex+ew/2,cy+2,{color:on&&sel>.5?C.green:C.text,size:13,bold:true});
+    if(i>0) flow({x:rx+180,y:cy},{x:ex,y:cy},on?C.green:C.faint,sel);
+    else flow({x:rx+180,y:cy},{x:ex,y:cy},C.faint,1); });
+  if(p>.6) text(up?'regime UP → momentum expert takes the trade'
+    :'regime DOWN → macro expert takes the trade',cx,H*.74,{color:up?C.green:C.red,size:14,bold:true});
+  if(p>.78){ card(cx-330,H*.8,660,52,{border:C.green,fill:'rgba(61,220,151,.06)'});
+    text('per-trade impact tracked per regime — a weaker expert is demoted',cx,H*.8+32,{color:C.dim,size:13}); }
 }
 
-function drawBox(x, y, w, h, color, label, sub) {
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, 10);
-  ctx.stroke();
-  ctx.fillStyle = color + '14';
-  ctx.fill();
-  if (label) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = color;
-    ctx.font = '600 15px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText(label, x + w / 2, y + 24);
-    if (sub) {
-      ctx.fillStyle = COLOR.dim;
-      ctx.font = '12px -apple-system, "Segoe UI", sans-serif';
-      ctx.fillText(sub, x + w / 2, y + 44);
-    }
+function s4(p){
+  const cx=W*.5, cy=H*.5;
+  text('MULTIVERSE STRESS TEST',cx,H*.15,{color:C.orange,size:13,bold:true,letter:2});
+  const sx=cx-360;
+  card(sx,cy-30,150,60,{border:C.orange,glow:true});
+  text('STRATEGY',sx+75,cy+6,{color:C.orange,size:13,bold:true,letter:1.5});
+  const r=rng(7), worlds=9;
+  const spread=560;
+  for(let i=0;i<worlds;i++){ const wx=sx+200+(spread*i)/(worlds-1);
+    const trend=Math.sin(i*1.3)*.4+(i%3-1)*.25;
+    const crisis=(i===2||i===6);
+    const ph=clamp((p-.2)*1.6-i*.04,0,1);
+    if(ph<=0) continue;
+    const dy=crisis&&p>.5?-30*Math.sin((p-.5)*8)*ph:0;
+    const wy=cy+trend*60+dy;
+    const col=crisis&&p>.55?C.red:C.green;
+    flow({x:sx+150,y:cy},{x:wx,y:wy},C.faint,ph);
+    x.fillStyle=col; x.beginPath(); x.arc(wx,wy,7,0,7); x.fill();
+    x.save(); x.shadowColor=col; x.shadowBlur=12; x.beginPath(); x.arc(wx,wy,7,0,7); x.fill(); x.restore();
+    if(crisis&&p>.6) pill(crisis?'crisis':'world',wx,wy-20,C.red);
   }
+  if(p>.7){ const alive=worlds-2;
+    card(cx-260,H*.82,520,50,{border:C.green,fill:'rgba(61,220,151,.06)'});
+    text(alive+' of '+worlds+' worlds survived  ·  ruin: −25% net / −30% drawdown',cx,H*.82+31,{color:C.dim,size:13});
+  }
+  if(p>.85) text('crisis worlds: COVID crash · 2022 bear · yen unwind',cx,H*.92,{color:C.red,size:12});
 }
 
-function drawArrow(x1, y1, x2, y2, color, dash) {
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.setLineDash(dash || []);
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  const a = Math.atan2(y2 - y1, x2 - x1);
-  const s = 8;
-  ctx.beginPath();
-  ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - s * Math.cos(a - 0.4), y2 - s * Math.sin(a - 0.4));
-  ctx.lineTo(x2 - s * Math.cos(a + 0.4), y2 - s * Math.sin(a + 0.4));
-  ctx.closePath();
-  ctx.fillStyle = color;
-  ctx.fill();
+function s5(p){
+  const cx=W*.5, cy=H*.46;
+  text('LIVE HARNESS',cx,H*.13,{color:C.blue,size:13,bold:true,letter:2});
+  const N=[
+    {n:'Real feeds',s:'equities + crypto',col:C.cyan,x:.12,y:.32},
+    {n:'Regime gate',s:'risk rules',col:C.gold,x:.36,y:.32},
+    {n:'MoT router',s:'expert pick',col:C.blue,x:.6,y:.32},
+    {n:'Paper settle',s:'fills + PnL',col:C.green,x:.84,y:.32},
+    {n:'Evidence',s:'→ arena',col:C.purple,x:.84,y:.68},
+    {n:'Retrain',s:'loop',col:C.orange,x:.12,y:.68}];
+  N.forEach(d=>{ const px=d.x*W, py=d.y*H;
+    card(px-80,py-32,160,64,{border:d.col,glow:p>.3});
+    text(d.n,px,py-4,{color:C.text,size:13,bold:true});
+    text(d.s,px,py+16,{color:C.dim,size:11}); });
+  const E=[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0]];
+  const cyc=p*E.length;
+  E.forEach((e,i)=>{ const a=N[e[0]],b=N[e[1]];
+    const prog=clamp(cyc-i,0,1);
+    const on=i===Math.floor(cyc);
+    flow({x:a.x*W,y:a.y*H},{x:b.x*W,y:b.y*H},on?a.col:C.faint,on?1:prog,on?[7,5]:[]); });
+  if(p>.75) text('every paper trade feeds evidence back into the arena',cx,H*.9,{color:C.green,size:14,bold:true});
 }
 
-function drawSparkline(values, x, y, w, h, color) {
-  if (values.length < 2) return;
-  const min = Math.min(...values), max = Math.max(...values);
-  const rng = (max - min) || 1;
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  for (let i = 0; i < values.length; i++) {
-    const px = x + (i / (values.length - 1)) * w;
-    const py = y + h - ((values[i] - min) / rng) * h;
-    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-  }
-  ctx.stroke();
+function s6(p){
+  const cx=W*.5, cy=H*.42;
+  if(p<.3){ const a=smooth(p/.3);
+    x.globalAlpha=a; text('OpenTrader',cx,cy,{color:C.text,size:48,bold:true}); x.globalAlpha=1; }
+  else { text('OpenTrader',cx,cy,{color:C.text,size:48,bold:true}); }
+  if(p>.3){ const a=smooth((p-.3)/.5);
+    x.globalAlpha=a; text('a self-improving algorithmic trading system',cx,cy+38,{color:C.dim,size:16}); x.globalAlpha=1; }
+  if(p>.6){ const a=smooth((p-.6)/.4); x.globalAlpha=a;
+    ['validated rule floor · adversarial arena · mixture-of-traders router',
+     'multiverse stress testing · live paper harness',
+     '','validation-first — nothing deploys without a held-out gate']
+    .forEach((l,i)=>text(l,cx,cy+86+i*26,{color:i===3?C.green:C.faint,size:i===3?15:13,bold:i===3}));
+    x.globalAlpha=1; }
 }
 
-function drawDot(x, y, color, r) {
-  ctx.beginPath();
-  ctx.arc(x, y, r || 5, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-}
-
-// ──────────────────────────────── Scene 1: Rule Floor ────────────────────────────────
-let priceSeries = [];
-let smaSeries = [];
-function scene1(dt) {
-  const p = sceneT / currentScene().dur;
-  const cx = W * 0.42, cy = H * 0.52, cw = W * 0.34, ch = H * 0.34;
-  drawBox(W * 0.08, H * 0.12, W * 0.84, H * 0.78, COLOR.blue, 'Walk-Forward Validated Rule Floor',
-    'long-only daily momentum · 12.28% stop / 17.81% target · 14-day max hold');
-
-  const n = 200;
-  if (priceSeries.length < n) {
-    let v = 100;
-    for (let i = 0; i < n; i++) {
-      v += (Math.random() - 0.48) * 1.6 + 0.06;
-      priceSeries.push(v);
-    }
-    for (let i = 0; i < n; i++) {
-      const s = Math.max(1, i - 9);
-      smaSeries.push(priceSeries.slice(s, i + 1).reduce((a, b) => a + b, 0) / (i - s + 1));
-    }
-  }
-  const visible = Math.floor(n * p) + 2;
-  drawSparkline(priceSeries.slice(0, visible), cx, cy, cw, ch, COLOR.text);
-  drawSparkline(smaSeries.slice(0, visible), cx, cy, cw, ch, COLOR.gold);
-
-  if (p > 0.35) {
-    ctx.textAlign = 'left';
-    ctx.fillStyle = COLOR.gold;
-    ctx.font = '12px monospace';
-    ctx.fillText('— 96-day regime SMA', cx + cw + 12, cy + 10);
-  }
-  if (p > 0.55) {
-    const tx = cx + cw * 0.5;
-    const ty = cy - 18;
-    drawDot(tx, ty, COLOR.green, 7);
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLOR.green;
-    ctx.font = '600 13px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText('BUY — price above regime SMA', tx, ty - 18);
-  }
-  if (p > 0.8) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLOR.green;
-    ctx.font = '600 15px -apple-system, "Segoe UI", sans-serif';
-    const msg = '68% win rate on held-out regime windows';
-    ctx.fillText(msg, W / 2, H * 0.86);
-  }
-}
-
-// ──────────────────────────────── Scene 2: Arena ────────────────────────────────
-function scene2(dt) {
-  const p = sceneT / currentScene().dur;
-  drawBox(W * 0.08, H * 0.08, W * 0.84, H * 0.84, COLOR.purple, 'The Arena — adversarial training',
-    'battle → fit → war → relabel → gate');
-
-  const steps = ['battle', 'fit', 'war', 'relabel', 'gate'];
-  const cx = W * 0.5;
-  const bw = Math.min(150, W * 0.13);
-  const gap = Math.min(28, W * 0.02);
-  const total = steps.length * bw + (steps.length - 1) * gap;
-  let x0 = cx - total / 2;
-  const stepP = p * steps.length;
-  const active = Math.min(steps.length - 1, Math.floor(stepP));
-
-  steps.forEach((s, i) => {
-    const x = x0 + i * (bw + gap);
-    const done = i < active;
-    const activeNow = i === active;
-    const y = H * 0.42;
-    drawBox(x, y, bw, H * 0.12, done ? COLOR.green : activeNow ? COLOR.gold : COLOR.dim,
-      s.toUpperCase(), done ? '✓' : activeNow ? '▸' : '');
-    if (i > 0) {
-      const px = x0 + (i - 1) * (bw + gap) + bw;
-      drawArrow(px, y + H * 0.06, x, y + H * 0.06,
-        done ? COLOR.green : COLOR.dim);
-    }
-  });
-
-  const gateY = H * 0.66;
-  const w1 = 0.30, w2 = 0.42, w3 = 0.55;
-  const g1 = clamp((p - 0.55) / 0.2, 0, 1);
-  const g2 = clamp((p - 0.68) / 0.2, 0, 1);
-  const g3 = clamp((p - 0.82) / 0.18, 0, 1);
-  const xs = [cx - w1 * W * 0.3, cx, cx + w2 * W * 0.3];
-  const yc = [gateY - 6, gateY - 14, gateY - 6];
-
-  drawBox(cx - w1 * W * 0.28, gateY, w1 * W * 0.56, H * 0.09, COLOR.dim, 'Candidate A', 'edge +0.2%');
-  drawBox(cx - w2 * W * 0.16, gateY, w2 * W * 0.32, H * 0.09, COLOR.dim, 'Candidate B', 'edge +0.5%');
-  drawBox(cx - w3 * W * 0.09, gateY, w3 * W * 0.18, H * 0.09, COLOR.gold, 'Incumbent', 'edge +0.9%');
-
-  ctx.textAlign = 'center';
-  ctx.fillStyle = COLOR.dim;
-  ctx.font = '13px -apple-system, "Segoe UI", sans-serif';
-  ctx.fillText('+1% edge required on BOTH regime windows', W / 2, gateY + H * 0.13);
-
-  if (p > 0.55) {
-    ctx.fillStyle = COLOR.red;
-    ctx.fillText('✗ rejected', xs[0], yc[0]);
-  }
-  if (p > 0.68) {
-    ctx.fillStyle = COLOR.red;
-    ctx.fillText('✗ rejected', xs[1], yc[1]);
-  }
-  if (p > 0.82) {
-    ctx.fillStyle = COLOR.green;
-    ctx.fillText('✓ +1.3% — promoted to expert', xs[2], yc[2]);
-  }
-}
-
-// ──────────────────────────────── Scene 3: MoT Router ────────────────────────────────
-function scene3(dt) {
-  const p = sceneT / currentScene().dur;
-  drawBox(W * 0.08, H * 0.08, W * 0.84, H * 0.84, COLOR.cyan, 'Mixture-of-Traders router',
-    'per-regime expert selection · the floor holds until an expert beats it');
-
-  const cy = H * 0.42;
-  // regime clock
-  const rcx = W * 0.18, rcy = cy;
-  drawBox(rcx - 60, rcy - 40, 120, 80, COLOR.gold, 'Regime', 'SPY vs 96d');
-  const osc = Math.sin(p * Math.PI * 4) * 0.5 + 0.5;
-  const regimeUp = Math.sin(p * Math.PI * 4 + Math.PI * 0.3) > 0;
-  ctx.textAlign = 'center';
-  ctx.font = '600 22px monospace';
-  ctx.fillStyle = regimeUp ? COLOR.green : COLOR.red;
-  ctx.fillText(regimeUp ? 'UP' : 'DOWN', rcx, rcy + 62);
-
-  // experts
-  const experts = [
-    { label: 'rule floor', color: COLOR.gold, x: W * 0.42, w: 0.16, edge: 0.9 },
-    { label: 'momentum', color: COLOR.blue, x: W * 0.60, w: 0.14, edge: 1.3 },
-    { label: 'macro', color: COLOR.purple, x: W * 0.76, w: 0.14, edge: 1.1 }
-  ];
-  const chosen = regimeUp ? 1 : 2;
-  const sel = clamp(p * 3, 0, 3);
-
-  experts.forEach((e, i) => {
-    const w = e.w * W;
-    const x = e.x - w / 2;
-    const isActive = i === chosen;
-    drawBox(x, cy - 30, w, 60, isActive && sel >= i + 1 ? COLOR.green : e.color, e.label);
-    if (i > 0) drawArrow(e.x - w / 2 - 14, cy, e.x - w / 2, cy, COLOR.dim);
-  });
-
-  if (p > 0.45) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = regimeUp ? COLOR.green : COLOR.red;
-    ctx.font = '600 16px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText(
-      regimeUp ? 'Regime UP → momentum expert takes the trade' : 'Regime DOWN → macro expert takes the trade',
-      W / 2, H * 0.68);
-  }
-  if (p > 0.75) {
-    drawBox(W * 0.14, H * 0.74, W * 0.72, H * 0.09, COLOR.green, 'Evidence accrual',
-      'per-trade impact tracked per regime — a weaker expert is demoted');
-  }
-}
-
-// ──────────────────────────────── Scene 4: Multiverse ────────────────────────────────
-function scene4(dt) {
-  const p = sceneT / currentScene().dur;
-  drawBox(W * 0.08, H * 0.08, W * 0.84, H * 0.84, COLOR.orange, 'Multiverse stress test',
-    'neural + parametric market worlds + crisis tail-library');
-
-  const cx = W * 0.2, cy = H * 0.5;
-  drawBox(cx - 70, cy - 30, 140, 60, COLOR.orange, 'Strategy');
-
-  const worlds = 7;
-  const spread = W * 0.72;
-  let alive = 0;
-  for (let i = 0; i < worlds; i++) {
-    const x = cx + 150 + (spread * i) / (worlds - 1) + (Math.random() - 0.5) * 6;
-    const seed = i + 3;
-    const trend = Math.sin((p * 10 + seed) * 1.1) * 0.5 + (seed % 3 - 1) * 0.4;
-    const crisis = (seed % 4 === 0) ? (p > 0.5 ? -1.6 : 0) : 0;
-    const y = cy + 30 - trend * 14 + crisis * (p > 0.5 ? 10 : 0);
-    drawDot(x, y, p > 0.5 && crisis ? COLOR.red : COLOR.green, 6);
-    if (trend + crisis > -0.6) alive++;
-  }
-  if (p > 0.6) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLOR.green;
-    ctx.font = '600 15px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText(alive + ' of ' + worlds + ' worlds survived', W / 2, H * 0.76);
-    ctx.fillStyle = COLOR.dim;
-    ctx.font = '13px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText('ruin threshold: −25% net · −30% drawdown', W / 2, H * 0.8);
-  }
-  if (p > 0.85) {
-    ctx.fillStyle = COLOR.red;
-    ctx.fillText('crisis worlds: COVID crash · 2022 bear · yen unwind', W / 2, H * 0.86);
-  }
-}
-
-// ──────────────────────────────── Scene 5: Live Harness ────────────────────────────────
-function scene5(dt) {
-  const p = sceneT / currentScene().dur;
-  drawBox(W * 0.08, H * 0.08, W * 0.84, H * 0.84, COLOR.blue, 'Live harness',
-    'real price feeds · regime-gated risk · paper settlement');
-
-  const nodes = [
-    { label: 'Real feeds', sub: 'equities + crypto', color: COLOR.cyan, x: W * 0.16, y: H * 0.3 },
-    { label: 'Regime gate', sub: 'risk rules', color: COLOR.gold, x: W * 0.42, y: H * 0.3 },
-    { label: 'MoT router', sub: 'expert pick', color: COLOR.blue, x: W * 0.66, y: H * 0.3 },
-    { label: 'Paper settlement', sub: 'fills + PnL', color: COLOR.green, x: W * 0.86, y: H * 0.3 },
-    { label: 'Evidence', sub: 'back to arena', color: COLOR.purple, x: W * 0.86, y: H * 0.66 },
-    { label: 'Retrain', sub: 'loop', color: COLOR.orange, x: W * 0.16, y: H * 0.66 }
-  ];
-
-  nodes.forEach(n => {
-    drawBox(n.x - 70, n.y - 30, 140, 60, n.color, n.label, n.sub);
-  });
-
-  const edges = [
-    [0, 1], [1, 2], [2, 3],
-    [3, 4], [4, 5], [5, 0]
-  ];
-  const cycle = p * edges.length;
-  edges.forEach((e, i) => {
-    const a = nodes[e[0]], b = nodes[e[1]];
-    const done = i < cycle;
-    const on = i === Math.floor(cycle) && (cycle % 1 > 0.2);
-    const x2 = lerp(a.x, b.x, clamp(cycle - i, 0, 1));
-    const y2 = lerp(a.y, b.y, clamp(cycle - i, 0, 1));
-    drawArrow(a.x, a.y, b.x, b.y, done || on ? a.color : COLOR.dim, on ? [5, 4] : []);
-    if (on) drawDot(x2, y2, COLOR.gold, 6);
-  });
-
-  if (p > 0.7) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLOR.green;
-    ctx.font = '600 15px -apple-system, "Segoe UI", sans-serif';
-    ctx.fillText('Every paper trade feeds evidence back into the arena', W / 2, H * 0.88);
-  }
-}
-
-// ──────────────────────────────── Scene 6: Title ────────────────────────────────
-function scene6(dt) {
-  const p = sceneT / currentScene().dur;
-  drawTitle('OpenTrader', 'a self-improving algorithmic trading system');
-  if (p > 0.5) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLOR.dim;
-    ctx.font = '14px -apple-system, "Segoe UI", sans-serif';
-    const lines = [
-      'validated rule floor · adversarial arena · mixture-of-traders router',
-      'multiverse stress testing · live paper harness',
-      '',
-      'validation-first — nothing deploys without a held-out gate'
-    ];
-    lines.forEach((l, i) => ctx.fillText(l, W / 2, H / 2 + 48 + i * 24));
-  }
-}
-
-const SCENE_FNS = [scene1, scene2, scene3, scene4, scene5, scene6];
-const CAPTIONS = [
-  'The system starts with a walk-forward-validated rule: long-only daily momentum, a 12.28% stop, 17.81% target, and a SPY-vs-96d regime filter.',
-  'In the arena, candidate experts train adversarially against the incumbent. A candidate ships only if it clears a +1% edge on both regime windows.',
+const CAP=[
+  'The system begins with a walk-forward-validated rule: long-only daily momentum, a 12.28% stop, 17.81% target, gated by SPY vs its 96-day average.',
+  'In the arena, candidate experts train adversarially against the incumbent. A candidate ships only when it clears +1% edge on both regime windows.',
   'The Mixture-of-Traders router picks the best expert for the current regime — the floor holds until an expert proves it beats the floor.',
-  'The multiverse stress test runs the strategy across generated market worlds and crisis scenarios. A world that falls below −25% net is ruined.',
-  'The live harness streams real prices, gates risk, settles paper trades, and feeds every result back into the arena — the system keeps improving.',
-  'OpenTrader — validation-first algorithmic trading.'
-];
+  'The multiverse runs the strategy across generated market worlds and crisis scenarios. A world below −25% net is ruined.',
+  'The live harness streams real prices, gates risk, settles paper trades, and feeds every result back into the arena.',
+  'OpenTrader — validation-first algorithmic trading.'];
 
-function frame(ts) {
-  if (!lastTs) lastTs = ts;
-  const dt = paused ? 0 : Math.min(0.05, (ts - lastTs) / 1000);
-  lastTs = ts;
-  if (!paused) t += dt;
-
-  sceneT += dt;
-  const scene = currentScene();
-  if (sceneT >= scene.dur && !paused) {
-    advanceScene();
-  }
-
-  ctx.clearRect(0, 0, W, H);
-  drawBackground();
-  const fn = SCENE_FNS[sceneIdx];
-  fn(dt);
-
-  document.getElementById('sceneLabel').textContent = 'OpenTrader · ' + scene.name;
-  document.getElementById('caption').textContent = CAPTIONS[sceneIdx];
-  const elapsed = SCENES.slice(0, sceneIdx).reduce((a, s) => a + s.dur, 0) + sceneT;
-  document.getElementById('progress').style.width = (elapsed / TOTAL * 100) + '%';
-
-  requestAnimationFrame(frame);
+function loop(ts){
+  if(!loop.lt) loop.lt=ts;
+  const dt=paused?0:Math.min(.05,(ts-loop.lt)/1000); loop.lt=ts;
+  if(!paused) st+=dt;
+  if(st>=cur().dur&&!paused) next();
+  x.clearRect(0,0,W,H); bg(); cur().fn(st/cur().dur);
+  document.getElementById('sceneLabel').textContent='OpenTrader · '+cur().name;
+  document.getElementById('caption').textContent=CAP[idx];
+  const el=SCENES.slice(0,idx).reduce((a,s)=>a+s.dur,0)+st;
+  document.getElementById('progress').style.width=(el/TOTAL*100)+'%';
+  requestAnimationFrame(loop);
 }
-requestAnimationFrame(frame);
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
