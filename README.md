@@ -1,37 +1,65 @@
 # OpenTrader
 
-A self-improving algorithmic trading system: a walk-forward-validated rule floor (the incumbent edge) paired with value-head neural experts selected by a Mixture-of-Traders (MoT) router. Experts must earn their way in through an adversarial training arena — they are only deployed when they beat the incumbent's held-out gate.
+A self-improving algorithmic trading system. Most trading systems are a single model with a backtest — OpenTrader treats edge as something that must be *earned and re-proven*. Nothing deploys on vibes; everything earns its place against the incumbent on data it has never seen.
 
-![OpenTrader — how it works](showcase/opentrader.gif)
+> 🎬 Prefer the full walkthrough? Open [`showcase/opentrader.html`](showcase/opentrader.html) in a browser for the complete animated tour with controls.
 
-## The core idea
+---
 
-Most trading systems are a single model with a backtest. OpenTrader treats edge as something that must be *earned and re-proven*:
+## 1. The Rule Floor
 
-1. **Rule floor** — a long-only daily momentum strategy, validated with walk-forward analysis on real data (12.28% stop / 17.81% target, 14-day max hold, SPY-vs-96d regime gate). This is the incumbent; it holds all weight until an expert beats it.
-2. **Value-head experts** — small MLP experts (momentum, macro, international) trained on the same feature space, selected per-regime by the router.
-3. **Arena** — an adversarial loop (`battle → fit → war → relabel → gate`) where candidate experts train against the incumbent. A candidate only ships if it clears a **+1% edge on both regime windows** against held-out data.
-4. **Multiverse stress-testing** — neural + parametric market samplers plus a curated crisis tail-library (COVID crash, 2022 bear, yen unwind) to overfit-proof the edge before deployment.
-5. **Live harness** — real price feeds (equities + crypto), regime-gated risk, paper settlement, and continuous evidence accrual.
+The system starts with a walk-forward-validated long-only daily momentum strategy. This is the **incumbent** — it holds all trading weight until an expert proves it can beat it. The rule fires when price is above its 96-day regime average (SPY as the equities market clock), with a 12.28% stop, 17.81% target, and 14-day max hold.
 
-**Validation discipline is the product.** Nothing deploys on vibes; everything earns its place against the incumbent on data it has never seen.
+![The Rule Floor](showcase/rule_floor.gif)
+
+Validated with walk-forward analysis on real data — no in-sample leakage, no parameter mining. ~68% win rate across held-out regime windows.
+
+## 2. The Arena
+
+Candidate experts don't get deployed by default. They enter the **arena** — an adversarial training loop where they train against the incumbent rule floor through five stages: `battle → fit → war → relabel → gate`.
+
+![The Arena](showcase/arena.gif)
+
+A candidate only ships if it clears a **+1% edge on both regime windows** against held-out data. Most candidates fail the gate and are rejected. The few that pass are promoted to deployable experts.
+
+## 3. Mixture-of-Traders Router
+
+Deployed experts don't trade blindly. The **MoT router** checks the current market regime (SPY above or below its 96-day average) and selects the best expert for that regime.
+
+![Mixture-of-Traders](showcase/mot_router.gif)
+
+The rule floor holds all weight by default. An expert only takes the trade when its recorded per-trade impact in that regime beats the floor's. Weaker experts are demoted automatically as evidence accrues.
+
+## 4. Multiverse Stress Test
+
+Before any edge deploys, it survives the **multiverse** — a battery of generated market worlds (neural + parametric samplers) plus a curated crisis tail-library (COVID crash, 2022 bear, yen unwind).
+
+![Multiverse](showcase/multiverse.gif)
+
+A world is **ruined** if the strategy falls below −25% net or −30% drawdown. GANs under-sample tails; the crisis library is the countermeasure. Synthetic rows never enter the gate, the war, or the evidence — they exist only to break things.
+
+## 5. Live Harness
+
+The **live harness** streams real prices (equities + crypto), applies regime-gated risk rules, settles paper trades, and feeds every result back into the arena.
+
+![Live Harness](showcase/live_harness.gif)
+
+Every paper trade is evidence. The system doesn't just trade — it learns from each trade and refines its experts continuously.
+
+---
 
 ## Repository layout
 
 | Path | Purpose |
 |---|---|
-| `arena/` | Adversarial training loop (battle/fit/war/relabel/gate) |
+| `arena/` | Adversarial training loop (battle / fit / war / relabel / gate) |
 | `mot/` | Mixture-of-Traders router + expert definitions |
 | `setup_search/` | Value-head training, walk-forward validation, FTMO universe |
 | `training/` | RL / distillation refinement (GRPO) |
-| `exchange/` | Data sources, live/paper execution, multi-router |
+| `exchange/` | Data sources, live / paper execution, multi-router |
 | `risk/` | Regime-gated risk rules |
 | `harness.py` | Live paper-trading harness |
 | `docs/` | Architecture, ADRs, research decisions |
-
-## Validated configuration
-
-The current validated playbook lives in `data/setup_search/best.json` — the walk-forward-optimized parameters for the rule floor. Runtime state (agent/adapter state, training checkpoints, caches) is intentionally **not** committed; the repo tracks code, architecture, and validated artifacts only.
 
 ## Getting started
 

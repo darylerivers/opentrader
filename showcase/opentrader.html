@@ -142,8 +142,13 @@ const SCENES=[
 const TOTAL=SCENES.reduce((a,s)=>a+s.dur,0);
 let idx=0, st=0, paused=false;
 
+const _params=new URLSearchParams(location.search);
+const _lockScene=_params.get('scene');
+let locked=false;
+if(_lockScene!==null){ locked=true; idx=clamp(parseInt(_lockScene)||0,0,SCENES.length-1); }
+
 function cur(){ return SCENES[idx]; }
-function next(){ idx=(idx+1)%SCENES.length; st=0; }
+function next(){ if(locked){ st=0; } else { idx=(idx+1)%SCENES.length; st=0; } }
 
 document.getElementById('playBtn').onclick=()=>{ paused=!paused;
   document.getElementById('playBtn').textContent=paused?'▶ Play':'⏸ Pause'; };
