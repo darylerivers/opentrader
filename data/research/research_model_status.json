@@ -1,8 +1,0 @@
-{
-  "status": "completed",
-  "version": "research-v3",
-  "output_dir": "/home/mrc/opentrader/models/finetune/research/research-v3",
-  "rows": 60,
-  "epochs": 3,
-  "duration_s": 596.5
-}

@@ -291,8 +291,10 @@ def _multiverse_augment(expert_id, cfg, n_worlds):
     the REAL rows only (synthetic bars are offset to 2000+ so they never
     collide) — the held-out discrimination benchmark stays real-data-only,
     while the model trains on real + synthetic distributions."""
-    if expert_id != "momentum":
+    if expert_id == "macro":
         return []  # world rows are 11-dim; macro (18-dim) would crash the fit
+    # world rows are 11-dim, so every 11-dim expert (momentum, ftmo,
+    # international, us) can consume them as training augmentation
     try:
         from arena.candidates import collect_from_data
         from scenarios import MarketScenarioGenerator
@@ -319,15 +321,22 @@ def _collect_for(expert_id, period):
     if expert_id == "international":
         from arena import candidates_international
         return candidates_international.collect(period)
+    if expert_id == "ftmo":
+        from setup_search.ftmo_universe import collect as ftmo_collect
+        return ftmo_collect(period)
     return cand_mod.collect(period)
 
 
 def _data_source_for(expert_id):
     """Archive loader the WAR referee should replay. Momentum/macro replay the
-    US archive (default); the international expert replays its own universe."""
+    US archive (default); the international expert replays its own universe;
+    ftmo replays the FTMO-US universe (SPY = DXY regime anchor)."""
     if expert_id == "international":
         from arena import candidates_international
         return candidates_international.load_international
+    if expert_id == "ftmo":
+        from setup_search.ftmo_universe import load_ftmo, DXY_AS_SPY
+        return lambda period="5y", **kw: DXY_AS_SPY(load_ftmo())
     return None
 
 

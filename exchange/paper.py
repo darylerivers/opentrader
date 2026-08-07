@@ -224,6 +224,21 @@ class PaperExchange(ExchangeBase):
         self._prices.clear()
         self._order_counter = 1
 
+    def restore_ledger(
+        self, cash: float, positions: Dict[str, float],
+        cost_basis: Dict[str, float], fills: list = None,
+    ) -> None:
+        """Restore the in-memory ledger from persisted state.
+
+        Sets the attrs get_balance() reads so a restart resumes the real book
+        instead of reverting to init cash / zero positions.
+        """
+        self._cash = float(cash)
+        self._positions = dict(positions)
+        self._cost_basis = dict(cost_basis)
+        if fills is not None:
+            self._fills = list(fills)
+
     def discover_symbols(self) -> List[str]:
         """Return symbols currently loaded into the paper exchange."""
         return list(self._bars.keys()) if self._bars else list(self._prices.keys())

@@ -1032,11 +1032,21 @@ class OpenTraderHarness:
                 if sym not in restored_cost_basis and sym in restored_entries:
                     restored_cost_basis[sym] = restored_entries[sym] * qty
 
-            self.exchange._cash = saved_cash
-            self.exchange._positions = restored_positions
-            self.exchange._cost_basis = restored_cost_basis
-            if hasattr(self.exchange, "_fills"):
-                self.exchange._fills = saved_fills
+            # Route the restore through a per-exchange restore_ledger() so it
+            # reaches the attrs get_balance() actually reads. The old direct
+            # writes (_cash/_positions/_cost_basis) silently no-op'd on
+            # alpaca-paper (uses cash/positions) and multi-router (child
+            # ledgers) — the book reverted to init cash on every restart.
+            if hasattr(self.exchange, "restore_ledger"):
+                self.exchange.restore_ledger(
+                    saved_cash, restored_positions, restored_cost_basis, saved_fills
+                )
+            else:
+                self.exchange._cash = saved_cash
+                self.exchange._positions = restored_positions
+                self.exchange._cost_basis = restored_cost_basis
+                if hasattr(self.exchange, "_fills"):
+                    self.exchange._fills = saved_fills
 
             # Restore trade journal so coach/ATDL see historical trades on restart
             # Only use paper_state as fallback when agent_state didn't have the journal.
@@ -1068,9 +1078,19 @@ class OpenTraderHarness:
                 # otherwise measure drawdown from the wrong reference point.
                 self.risk.update_peak(self.peak_value)
 
-            # Recalculate portfolio value
+            # Recalculate portfolio value + ASSERT the restore landed in the
+            # real ledger (the old log fired off saved data, not the exchange
+            # book, so a no-op restore reported success). get_balance().cash
+            # must reflect saved_cash or the restore silently failed.
             bal = self.exchange.get_balance()
-            if bal.total_value > 0 and restored_positions:
+            _cash_ok = abs(bal.cash - saved_cash) <= max(1.0, abs(saved_cash) * 1e-6)
+            if not _cash_ok:
+                logger.error(
+                    f"Portfolio restore FAILED verification: get_balance().cash="
+                    f"${bal.cash:,.2f} != saved ${saved_cash:,.2f} "
+                    f"(exchange={self.exchange.name}) — book may have reverted to init"
+                )
+            if _cash_ok and bal.total_value > 0 and restored_positions:
                 logger.info(
                     f"Portfolio restored: ${bal.total_value:,.2f} "
                     f"({len(restored_positions)} positions, ${saved_cash:,.2f} cash)"
@@ -3254,7 +3274,11 @@ class OpenTraderHarness:
                     risk_data = debate.get("risk", {})
                     risk_action = risk_data.get("action", "")
                     risk_conf = risk_data.get("conf", 0)
-                    if bear_conf >= 0.40 or (
+                    # rule-primary: the rule's own SELL is the validated thesis
+                    # exit (_cycle_debates stays {} — no debate pool — so the
+                    # conviction gate below would block it forever).
+                    rule_primary_exit = self.rule_primary and signal.action == "SELL"
+                    if rule_primary_exit or bear_conf >= 0.40 or (
                         risk_action == "SELL" and risk_conf >= 0.4
                     ):
                         logger.info(

@@ -57,6 +57,17 @@ SPECIALIZATIONS: dict = {
         feature_plan="value_head_1m features: cross-sectional ranks + DFF/DGS10/CPIAUCSL + VIX + breadth",
         data_plan="data/setup_search/macro_series.pkl cache (FRED API + yahoo ^VIX), arena/candidates_macro.py",
     ),
+    "ftmo": ExpertSpec(
+        id="ftmo",
+        name="FTMO-US value head",
+        description="FX/metals/indices momentum over the FTMO US challenge universe (DXY regime anchor).",
+        status="ready",
+        checkpoint=ARENA_OUT / "arena_ftmo_value_head.pt",
+        feature_plan="same 11-dim arena features over 14 OANDA instruments "
+                     "(EUR_USD..NZD_USD, XAU_USD, XAG_USD, US30, SPX500, NAS100, GER30; DXY=regime)",
+        data_plan="yfinance 5y daily cached to data/setup_search/ftmo_ohlcv_5y.pkl; "
+                  "setup_search/ftmo_universe.py",
+    ),
     "sentiment": ExpertSpec(
         id="sentiment",
         name="Sentiment value head",

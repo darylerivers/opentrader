@@ -1,8 +1,0 @@
-{
- "sep_tech": 0.0002784058451652527,
- "sep_sent": -0.002506793010979891,
- "margin": -0.0027851988561451435,
- "verdict": "sentiment adds nothing here",
- "n_train": 4704,
- "n_test": 1990
-}

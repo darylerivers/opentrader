@@ -1,8 +1,0 @@
-{
- "n": 200,
- "taken": 0,
- "all_m": 0.02503822559883233,
- "take_m": 0.0,
- "margin": -0.02503822559883233,
- "verdict": "FAIL - agent not discriminating yet"
-}

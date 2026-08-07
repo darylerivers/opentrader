@@ -1,5 +1,0 @@
-{
- "base": "Qwen/Qwen2.5-7B-Instruct",
- "examples": 300,
- "take_pct": 0.53
-}

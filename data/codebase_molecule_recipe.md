@@ -1,82 +1,42 @@
-# OpenTrader codebase — physical molecular model recipe
+# OpenTrader — buildable physical molecule (OLD NOBBY kit)
 
-Build a ball-and-stick model: each **module is a colored atom**, each
-**dependency (import) is a bond stick**. Colors match the render.
+8 atoms, 7 rods. Each atom = a major module; each rod = a key
+dependency. Geometry uses the kit's natural bond angles.
 
-## Atoms (modules)
+## Atoms (your kit pieces)
 
-| # | Atom (module) | Role | Element | Kit color |
-|---|---------------|------|---------|-----------|
-| 1 | harness.py | hub | N | #1f6feb |
-| 2 | mcp_server.py | service | H | #f8f9fa |
-| 3 | dashboard.py | ui | Cl | #2a9d8f |
-| 4 | tui_dashboard.py | ui | Cl | #2a9d8f |
-| 5 | mot | agents | O | #d62828 |
-| 6 | exchange | data-io | S | #f4d35e |
-| 7 | risk | risk | Cl | #2a9d8f |
-| 8 | setup_search | research | P | #8338ec |
-| 9 | training | training | O | #d62828 |
-| 10 | data | core | C | #222222 |
-| 11 | state | core | C | #222222 |
-| 12 | agent | agents | O | #d62828 |
-| 13 | tools | util | C | #222222 |
-| 14 | charts | ui | Cl | #2a9d8f |
-| 15 | scripts | util | C | #222222 |
-| 16 | coordinator.py | training | O | #d62828 |
-| 17 | connections.py | core | C | #222222 |
-| 18 | model_manager.py | training | O | #d62828 |
-| 19 | onchain.py | data-io | S | #f4d35e |
-| 20 | gpu_sync.py | service | H | #f8f9fa |
-| 21 | run_harness.py | service | H | #f8f9fa |
-| 22 | tests | util | C | #222222 |
-| 23 | data_mgmt.py | core | C | #222222 |
+| # | Kit piece | Atom (module) | Also represents |
+|---|-----------|---------------|-----------------|
+| 1 | C (core) | data | connections.py, data_mgmt.py |
+| 2 | C (core) | state |  |
+| 3 | N (hub) | harness.py | mcp_server.py, run_harness.py, gpu_sync.py |
+| 4 | O (agents) | mot | agent |
+| 5 | O (training) | training | coordinator.py, model_manager.py |
+| 6 | S (data-io) | exchange | onchain.py |
+| 7 | Cl (risk) | risk |  |
+| 8 | P (research) | setup_search | tools, tests |
 
-## Bonds (dependencies)
+## Assembly (connect the rods)
 
-- harness.py → mot
-- harness.py → exchange
-- harness.py → risk
-- harness.py → setup_search
-- harness.py → training
-- harness.py → data
-- harness.py → state
-- harness.py → agent
-- mcp_server.py → mot
-- mcp_server.py → exchange
-- mcp_server.py → risk
-- mcp_server.py → data
-- mcp_server.py → state
-- mcp_server.py → tools
-- mcp_server.py → charts
-- mot → exchange
-- mot → setup_search
-- mot → training
-- mot → data
-- mot → tools
-- mot → tests
-- exchange → risk
-- exchange → data
-- exchange → state
-- risk → data
-- risk → state
-- setup_search → data
-- training → data
-- training → state
-- training → agent
-- data → state
-- data → agent
-- data → model_manager.py
-- data → gpu_sync.py
+  connect **state** to **data** (black-black, a back bond)
+  connect **data** to **harness** (black to blue) — the main axis
+  connect **harness** to **mot** (blue to red, up) — the agents branch
+  connect **mot** to **training** (red to red) — the lifecycle chain
+  connect **data** to **setup_search** (black to purple, down-left) — the research branch
+  connect **harness** to **exchange** (blue to yellow, down-right) — the data-I/O branch
+  connect **harness** to **risk** (blue to green, down) — the risk pendant
 
-## Color legend
+## Reading the molecule
 
-- hub: #1f6feb
-- core: #222222
-- agents: #d62828
-- data-io: #f4d35e
-- risk: #2a9d8f
-- research: #8338ec
-- training: #d62828
-- service: #f8f9fa
-- ui: #2a9d8f
-- util: #222222
+- The blue **harness** hub bonds the agents (mot), data-I/O (exchange) and risk.
+- The black **data** core substrates the research branch (setup_search) and state.
+- **mot → training** is the model-lifecycle chain.
+- Peripheral modules (UI, services, tools) are folded into their parent atoms
+  — keep the model buildable; hang them as extra balls on the parent if you
+  have spare pieces.
+
+## Optimization reads
+- The blue hub holds 3 rods: if it's overloaded, that's the coupling you see.
+- mot/training are a red chain: they grow together.
+- setup_search hangs off data, not the hub: research is decoupled from the
+  trading loop — a good isolation to preserve.

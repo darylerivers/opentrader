@@ -432,19 +432,6 @@ class AlpacaPaperExchange:
         self.trades.clear()
         self._bars.clear()
 
-    def restore_ledger(
-        self, cash: float, positions: Dict[str, float],
-        cost_basis: Dict[str, float] = None, fills: list = None,
-    ) -> None:
-        """Restore the ledger from persisted state.
-
-        alpaca-paper tracks cash/positions (read by get_balance) but no
-        separate cost_basis dict; cost_basis is stashed for harness compat.
-        """
-        self.cash = float(cash)
-        self.positions = dict(positions)
-        self._restored_cost_basis = dict(cost_basis or {})
-
     def discover_symbols(self) -> List[str]:
         """Return known symbols from loaded bars, cache, and defaults."""
         symbols = set()

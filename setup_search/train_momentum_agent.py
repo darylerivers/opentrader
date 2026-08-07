@@ -29,7 +29,9 @@ def build_dataset(n_examples: int, seed: int = 11):
     from setup_search.data import REGIME_SYM, load_ohlcv, align
     from setup_search.engine import _features, _score_at
 
-    base = clamp_config(json.loads((PROJECT / "data/setup_search/best.json").read_text())["config"])
+    base = clamp_config(
+        json.loads((PROJECT / "data/setup_search/best.json").read_text())["config"]
+    )
     data = load_ohlcv("5y")
     al = align(data, list(data.keys()))
     spy = al[0].get(REGIME_SYM)
@@ -42,8 +44,13 @@ def build_dataset(n_examples: int, seed: int = 11):
         if sym == REGIME_SYM:
             continue
         c, f = al[0][sym], feat[sym]
-        score = (w["w_mom"] * f["mom"] + w["w_rev"] * f["rev"] + w["w_rsi"] * f["rsi"]
-                 + w["w_brk"] * f["brk"] + w["w_z"] * f["z"])
+        score = (
+            w["w_mom"] * f["mom"]
+            + w["w_rev"] * f["rev"]
+            + w["w_rsi"] * f["rsi"]
+            + w["w_brk"] * f["brk"]
+            + w["w_z"] * f["z"]
+        )
         fwd = (c.shift(-FORWARD) / c - 1.0).values
         for t in range(60, len(c) - FORWARD):
             s = score.iloc[t]
@@ -51,7 +58,7 @@ def build_dataset(n_examples: int, seed: int = 11):
                 continue
             d = c.index[t]
             regime = "up" if (spy[d] > spy_ma200[d]) else "down"
-            recent = " -> ".join(f"{v:,.0f}" for v in c.iloc[t - 5:t + 1])
+            recent = " -> ".join(f"{v:,.0f}" for v in c.iloc[t - 5 : t + 1])
             decision = "TAKE" if fwd[t] > 0 else "SKIP"
             prompt = (
                 f"[Market context]\nSymbol: {sym}\nRegime (SPY vs 200d): {regime}\n"
@@ -69,33 +76,83 @@ def main():
     ap.add_argument("--steps", type=int, default=24)
     ap.add_argument("--examples", type=int, default=400)
     ap.add_argument("--batch", type=int, default=1)
+    ap.add_argument(
+        "--dataset",
+        default=None,
+        help="JSONL of {prompt, decision} rows (arena export) instead of build_dataset",
+    )
+    ap.add_argument(
+        "--out-dir",
+        default=None,
+        help="override the adapter output directory (default: gpu_scheduler/adapters/momentum-agent)",
+    )
     args = ap.parse_args()
+    global OUT
+    if args.out_dir:
+        OUT = PROJECT / args.out_dir
 
     import torch
     import pandas as pd
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
     from peft import LoraConfig, get_peft_model
 
-    print("GPU0 free VRAM:", round(torch.cuda.mem_get_info()[0] / 1e9, 2), "GB", flush=True)
-    rows = build_dataset(args.examples)
+    print(
+        "GPU0 free VRAM:",
+        round(torch.cuda.mem_get_info()[0] / 1e9, 2),
+        "GB",
+        flush=True,
+    )
+    if args.dataset:
+        import json as _json
+
+        with open(args.dataset) as f:
+            rows = [_json.loads(line) for line in f if line.strip()]
+        print(
+            f"[mom] loaded {len(rows)} arena-labeled examples from {args.dataset}",
+            flush=True,
+        )
+    else:
+        rows = build_dataset(args.examples)
     pos = sum(1 for r in rows if r["decision"] == "TAKE")
-    print(f"[mom] {len(rows)} examples ({pos} TAKE / {len(rows)-pos} SKIP)", flush=True)
+    print(
+        f"[mom] {len(rows)} examples ({pos} TAKE / {len(rows) - pos} SKIP)",
+        flush=True,
+    )
 
     tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
     tok.pad_token = tok.eos_token
-    bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
-                             bnb_4bit_compute_dtype=torch.float16)
-    model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct",
-                                                 quantization_config=bnb, device_map="auto",
-                                                 attn_implementation="eager")
-    lora = LoraConfig(r=8, lora_alpha=16,
-                      target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-                      lora_dropout=0.05)
+    bnb = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.float16,
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        "Qwen/Qwen2.5-7B-Instruct",
+        quantization_config=bnb,
+        device_map="auto",
+        attn_implementation="eager",
+    )
+    lora = LoraConfig(
+        r=8,
+        lora_alpha=16,
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ],
+        lora_dropout=0.05,
+    )
     model.gradient_checkpointing_enable()
     model = get_peft_model(model, lora).to("cuda")
 
-    texts = [f"<|im_start|>user\n{r['prompt']}<|im_end|>\n<|im_start|>assistant\n{r['decision']}<|im_end|>"
-             for r in rows]
+    texts = [
+        f"<|im_start|>user\n{r['prompt']}<|im_end|>\n<|im_start|>assistant\n{r['decision']}<|im_end|>"
+        for r in rows
+    ]
     tokd = tok(texts, truncation=True, max_length=64, padding=True, return_tensors="pt")
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=2e-4)
     lossf = torch.nn.CrossEntropyLoss()
@@ -105,7 +162,7 @@ def main():
     for epoch in range(2):
         total = 0.0
         for i in range(0, len(texts), args.batch):
-            b = {k: v[i:i + args.batch].to("cuda") for k, v in tokd.items()}
+            b = {k: v[i : i + args.batch].to("cuda") for k, v in tokd.items()}
             out = model(**b, labels=b["input_ids"].clone())
             loss = out.loss / n_batches
             opt.zero_grad()
@@ -120,8 +177,11 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(OUT)
     tok.save_pretrained(OUT)
-    (OUT / "summary.json").write_text(json.dumps(
-        {"base": BASE, "examples": len(rows), "take_pct": pos / len(rows)}, indent=1))
+    (OUT / "summary.json").write_text(
+        json.dumps(
+            {"base": BASE, "examples": len(rows), "take_pct": pos / len(rows)}, indent=1
+        )
+    )
     print(f"[mom] adapter saved -> {OUT}", flush=True)
 
 

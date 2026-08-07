@@ -153,6 +153,29 @@ class MultiExchangeRouter(ExchangeBase):
 
     # ── Balance ──────────────────────────────────────────────
 
+    def restore_ledger(
+        self, cash: float, positions: Dict[str, float],
+        cost_basis: Dict[str, float] = None, fills: list = None,
+    ) -> None:
+        """Restore both child ledgers from the persisted aggregate.
+
+        Positions + cost basis are routed by symbol convention ("/" → crypto);
+        the aggregate cash is split 50/50 (matching init) so get_balance()'s
+        aggregate total matches the saved book.
+        """
+        cost_basis = cost_basis or {}
+        crypto_pos = {s: q for s, q in positions.items() if self._is_crypto(s)}
+        stock_pos = {s: q for s, q in positions.items() if self._is_stock(s)}
+        crypto_cb = {s: v for s, v in cost_basis.items() if self._is_crypto(s)}
+        stock_cb = {s: v for s, v in cost_basis.items() if self._is_stock(s)}
+        half = float(cash) / 2.0
+        for ex, pos, cb in (
+            (self._crypto, crypto_pos, crypto_cb),
+            (self._stock, stock_pos, stock_cb),
+        ):
+            if ex is not None and hasattr(ex, "restore_ledger"):
+                ex.restore_ledger(half, pos, cb, fills)
+
     def get_balance(self) -> Balance:
         """Aggregate balances from both exchanges."""
         total_cash = 0.0

@@ -1,4 +1,0 @@
-{
- "rc": 0,
- "tail": "Result: ft_error (20.0s)\nart|>assistant\n<think>\n\n</think>\n\n'\n0.02.098.587 I srv          init: init: chat template, thinking = 0\n0.02.098.627 I srv  llama_server: model loaded\n0.02.098.631 I srv  llama_server: server is listening on http://127.0.0.1:5813\n0.02.098.639 I srv  update_slots: all slots are idle\n2026-08-02 14:14:51,622 [opentrader.scheduler] INFO llama-server restarted\n2026-08-02 14:14:51,622 [opentrader.scheduler] INFO Trading resumed\n41.11.992.704 I srv    operator(): operator(): cleaning up before exit...\n"
-}

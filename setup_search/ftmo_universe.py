@@ -72,26 +72,23 @@ def load_ftmo(fresh=False) -> dict:
     return out
 
 
-def shadow_ftmo(period="5y", n_symbols=None, seed=7) -> dict:
-    """Run the rule floor + 11-dim value heads over the FTMO universe through
-    the RegimeRouter, with DXY as the regime anchor. Returns the router state
-    and per-expert per-regime impacts."""
+def DXY_AS_SPY(data: dict) -> dict:
+    """Rename the DXY regime anchor to SPY so the war's REGIME_SYM works.
+    Returns a copy; tradeables unchanged."""
+    out = {k: v for k, v in data.items() if k != "DXY"}
+    if "DXY" in data:
+        out["SPY"] = data["DXY"]
+    return out
+
+
+def collect(period="5y", n_symbols=None, seed=7) -> tuple:
+    """Arena candidate rows over the FTMO universe (SPY = DXY regime anchor),
+    in the full arena contract. The war's fidelity replay uses the same data."""
     from arena.candidates import collect_from_data
-    from mot.mixture import RegimeRouter
     from setup_search.core import clamp_config
-    from arena import agent as agent_mod
-    from mot.experts import ValueHeadExpert
 
     cfg = clamp_config(json.loads((PROJECT / "data/setup_search/best.json").read_text())["config"])
     data = load_ftmo(fresh=False)
-    if "DXY" not in data:
-        print("[ftmo] WARNING: DXY missing; regime proxy = cross-sectional mean")
-        mkt = pd.concat([d["close"] for d in data.values()], axis=1).mean(axis=1)
-        data["DXY"] = pd.DataFrame({"open": mkt, "high": mkt, "low": mkt,
-                                    "close": mkt, "volume": 0.0})
-    # DXY is the regime anchor; the rest are tradeables. If DXY is missing
-    # (yfinance intermittently drops it), fall back to the equal-weight
-    # cross-sectional mean as the market clock.
     tradeable = {k: v for k, v in data.items() if k != "DXY"}
     if "DXY" not in data:
         print("[ftmo] WARNING: DXY missing; regime proxy = cross-sectional mean")
@@ -99,8 +96,20 @@ def shadow_ftmo(period="5y", n_symbols=None, seed=7) -> dict:
         tradeable["SPY"] = pd.DataFrame({"open": mkt, "high": mkt, "low": mkt,
                                          "close": mkt, "volume": 0.0})
     else:
-        tradeable["SPY"] = data["DXY"]  # collect_from_data keys regime on SPY
-    rows, base = collect_from_data(tradeable, cfg)
+        tradeable["SPY"] = data["DXY"]
+    return collect_from_data(tradeable, cfg)
+
+
+def shadow_ftmo(period="5y", n_symbols=None, seed=7) -> dict:
+    """Run the rule floor + 11-dim value heads over the FTMO universe through
+    the RegimeRouter, with DXY as the regime anchor. Returns the router state
+    and per-expert per-regime impacts."""
+    from arena.candidates import collect_from_data
+    from mot.mixture import RegimeRouter
+    from arena import agent as agent_mod
+    from mot.experts import ValueHeadExpert
+
+    rows, base = collect(period)
     print(f"[ftmo] {len(rows)} candidates over the FTMO universe")
 
     router = RegimeRouter(rule_floor="rule", min_evidence=5)
